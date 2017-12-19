@@ -102,3 +102,4 @@ ENV/
 
 # local
 db.sqlite3
+.vscode
