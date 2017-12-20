@@ -2,23 +2,6 @@
     font-size: 4em;
 }
 
-body{
-    color: #5a5a5a;
-}
-
-a{
-    color: #006ffa;
-}
-
-a:hover{
-    color: #33cfff;
-    text-decoration: unset;
-}
-
-small{
-    color: #aaaaaa;
-}
-
 .index-separator{
     background-color:#006cf3;
     border-top: 2px solid #00c2fd;

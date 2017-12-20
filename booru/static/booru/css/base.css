@@ -1,0 +1,16 @@
+body{
+    color: #5a5a5a;
+}
+
+a{
+    color: #006ffa;
+}
+
+a:hover{
+    color: #33cfff;
+    text-decoration: unset;
+}
+
+small{
+    color: #aaaaaa;
+}

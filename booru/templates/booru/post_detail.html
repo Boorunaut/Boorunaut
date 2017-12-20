@@ -1,0 +1,69 @@
+{% extends 'booru/base.html' %}
+
+{% block css %}
+    {% load staticfiles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'booru/css/index.css' %}"/>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block body %}
+    {% load static %}
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h1 class="site-title"><a href="#">Boorunaut</a></h1>
+            </div>            
+        </div>
+        <div class="row">
+            <div class="col">                    
+                <a href="#" class="col-1 font-weight-bold" title="A paginated list of every post">Sign In</a>
+                <a href="#" class="col-1 font-weight-bold" title="A paginated list of every post">Posts</a>
+                <a href="#" class="col-1" title="All comments listing">Comments</a>
+                <a href="#" class="col-1" title="All comments listing">Notes</a>
+                <a href="#" class="col-1" title="All comments listing">Artists</a>
+                <a href="#" class="col-1" title="All comments listing">Tags</a>
+                <a href="#" class="col-1" title="All comments listing">Pools</a>
+                <a href="#" class="col-1" title="Wiki pages with database documentation">Wiki</a>
+                <a href="#" class="col-1" title="Forum listing">Forum</a>
+                <a href="#" class="col-1" title="Help page and tools">More»</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">                    
+                <a href="#" class="col-1" title="All comments listing">Listing</a>
+                <a href="#" class="col-1" title="All comments listing">Upload</a>
+                <a href="#" class="col-1" title="All comments listing">Hot</a>
+                <a href="#" class="col-1" title="All comments listing">Changes</a>
+                <a href="#" class="col-1" title="All comments listing">Help</a>
+            </div>
+        </div>
+        <form>
+            <div class="form-row mt-3 mb-3">
+                <div class="col">
+                    <input class="form-control form-control-sm" type="search" aria-label="Search" placeholder="Ex: super_mario_odyssey">
+                </div>
+                <div class="col-1">
+                    <button class="btn btn-sm btn-primary" type="submit">Search</button>
+                </div>
+            </div>
+        </form>
+
+        <div class="row">
+            <div id="sidebar" class="col-2">
+                <div class="row col">
+                    <p class="font-weight-bold">Tags: </p>
+                </div>
+                {% for tag in post.tags.all %}
+                <div class="row col">
+                    <a href="#">?</a> <a class="" href="#">{{tag}}</a> 0
+                </div>
+                {% endfor %}
+            </div>
+            <div id="post" class="col">
+                <img src="/media/testing/test_sample.png" alt="Card image cap">
+            </div>
+        </div>
+    </div>
+{% endblock %}
