@@ -62,7 +62,9 @@
                 {% endfor %}
             </div>
             <div id="post" class="col">
-                <img src="{{post.get_sample_url}}" alt="">
+                {% for post in posts %}
+                <a href="{{post.get_url}}"><img src="{{post.preview.url}}" alt=""></a>
+                {% endfor %}
             </div>
         </div>
     </div>

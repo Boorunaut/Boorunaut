@@ -102,3 +102,11 @@ class Post(models.Model):
 
         super(Post, self).save(*args, **kwargs)
 
+    def get_sample_url(self):
+        if self.sample:
+            return self.sample.url
+        else:
+            return self.image.url
+
+    def get_url(self):
+        return "/posts/{}/".format(self.id)
