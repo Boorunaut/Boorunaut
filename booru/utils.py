@@ -37,7 +37,7 @@ def get_converted_image(pil_image):
     if pil_image.mode == 'RGBA':
         pil_image = convert_to_rgb(pil_image)
 
-    return convert_to_image_content(pil_image, 'JPEG')
+    return convert_to_content_file(pil_image, 'JPEG')
 
 def reduce_image_to_maximum_size(image, max_resolution):
     ''' Reduce image to be equal to the maximum resolution allowed (if less, it returns None). If one of the max_resolution's components is equal to None, it will be ignored.'''
@@ -66,7 +66,7 @@ def reduce_image_to_maximum_size(image, max_resolution):
 
         return image.resize(new_size)
 
-def convert_to_image_content(pil_image, img_format):
+def convert_to_content_file(pil_image, img_format):
     ''' Returns a ContentFile from a PIL Image. '''    
     if pil_image == None:
         return None

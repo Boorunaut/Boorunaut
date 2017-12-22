@@ -75,6 +75,20 @@
                         {% endif %}
                     </div>
 
+                    <div class="form-group row">
+                        <label for="{{ form.source.auto_id }}" class="col-1 col-form-label">{{ form.source.label }}</label>
+                        
+                        <div class="col-4">
+                            {{form.source}}
+                        </div>
+
+                        {% if form.source.errors %}
+                        <div class="col-md-offset-2 col-8 has-errors text-danger small">
+                            {{form.source.errors}}
+                        </div>
+                        {% endif %}
+                    </div>
+
                     <button type="submit" class="btn btn-primary">Post</button>
                 </form>
             </div>

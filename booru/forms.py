@@ -8,6 +8,7 @@ class CreatePostForm(forms.ModelForm):
     sample = forms.ImageField(required=False)
     preview = forms.ImageField(required=False)
     tags = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), required=True)
+    source = forms.URLField(widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
 
     class Meta:
         model = Post
