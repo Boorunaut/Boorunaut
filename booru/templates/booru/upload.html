@@ -1,0 +1,83 @@
+{% extends 'booru/base.html' %}
+
+{% block css %}
+    {% load staticfiles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'booru/css/index.css' %}"/>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block body %}
+    {% load static %}
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h1 class="site-title"><a href="#">Boorunaut</a></h1>
+            </div>            
+        </div>
+        <div class="row">
+            <div class="col">                    
+                <a href="#" class="col-1 font-weight-bold" title="A paginated list of every post">Sign In</a>
+                <a href="#" class="col-1 font-weight-bold" title="A paginated list of every post">Posts</a>
+                <a href="#" class="col-1" title="All comments listing">Comments</a>
+                <a href="#" class="col-1" title="All comments listing">Notes</a>
+                <a href="#" class="col-1" title="All comments listing">Artists</a>
+                <a href="#" class="col-1" title="All comments listing">Tags</a>
+                <a href="#" class="col-1" title="All comments listing">Pools</a>
+                <a href="#" class="col-1" title="Wiki pages with database documentation">Wiki</a>
+                <a href="#" class="col-1" title="Forum listing">Forum</a>
+                <a href="#" class="col-1" title="Help page and tools">More»</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">                    
+                <a href="#" class="col-1" title="All comments listing">Listing</a>
+                <a href="#" class="col-1" title="All comments listing">Upload</a>
+                <a href="#" class="col-1" title="All comments listing">Hot</a>
+                <a href="#" class="col-1" title="All comments listing">Changes</a>
+                <a href="#" class="col-1" title="All comments listing">Help</a>
+            </div>
+        </div>
+
+        <div class="row">
+            <div id="upload" class="col">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form.is_front_paged.errors }}
+
+                    <div class="form-group row">
+                        <label for="{{ form.image.auto_id }}" class="col-1 col-form-label">{{ form.image.label }}</label>
+                        
+                        <div class="col-4">
+                            {{form.image}}
+                            <span class="custom-file-control"></span>
+                        </div>
+
+                        {% if form.image.errors %}
+                        <div class="col-md-offset-2 col-8 has-errors text-danger small">
+                            {{form.image.errors}}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="{{ form.tags.auto_id }}" class="col-1 col-form-label">{{ form.tags.label }}</label>
+                        
+                        <div class="col-4">
+                            {{form.tags}}
+                        </div>
+
+                        {% if form.tags.errors %}
+                        <div class="col-md-offset-2 col-8 has-errors text-danger small">
+                            {{form.tags.errors}}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Post</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

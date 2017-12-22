@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from taggit.managers import TaggableManager
 from taggit.models import CommonGenericTaggedItemBase, TaggedItemBase
-
+from . import utils
 
 def get_file_path(instance, filename):
     ext = filename.split('.')[-1]
@@ -87,3 +87,18 @@ class Post(models.Model):
         choices=STATUS_CHOICES,
         default=PENDING,
     )
+
+    def save(self, *args, **kwargs):
+        pil_image = utils.get_pil_image_if_valid(self.image)
+
+        if pil_image:
+            sample = utils.get_sample(pil_image)
+            preview = utils.get_preview(pil_image)
+            
+            if sample:
+                self.sample.save(".jpg", sample, save=False)
+
+            self.preview.save(".jpg", preview, save=False)
+
+        super(Post, self).save(*args, **kwargs)
+

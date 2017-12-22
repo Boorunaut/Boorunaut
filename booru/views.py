@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from .models import Post
 from django.shortcuts import get_object_or_404
+from .forms import CreatePostForm
 
 def index(request):
     return render(request, 'booru/index.html', {})
@@ -22,3 +23,11 @@ def post_detail(request, post_id):
     """
 
     return render(request, 'booru/post_detail.html', {"post": post})
+
+def upload(request):
+    form = CreatePostForm(request.POST or None, request.FILES or None)
+
+    if form.is_valid():
+        form.save()
+
+    return render(request, 'booru/upload.html', {"form": form})
