@@ -28,9 +28,3 @@ class UtilitiesTests(TestCase):
         generated_tags = space_splitter(tag_string)
         expected_generated_tags = ["test1", "test2", "test:test_3", "test_4"]
         self.assertEqual(generated_tags, expected_generated_tags)
-
-    def test_space_joiner_turns_tags_into_a_string(self):
-        tags = ["test4", "test_5", "test:test6"]
-        generated_string = space_joiner(tags)
-        expected_generated_string = "test4 test_5 test:test6"
-        self.assertEqual(generated_string, expected_generated_string)
