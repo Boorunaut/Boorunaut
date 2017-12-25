@@ -3,6 +3,7 @@
 {% block css %}
     {% load staticfiles %}
     <link rel="stylesheet" type="text/css" href="{% static 'booru/css/index.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'booru/css/menu.css' %}"/>
 {% endblock %}
 
 {% block scripts %}
@@ -11,35 +12,7 @@
 {% block body %}
     {% load static %}
     <div class="container">
-        <div class="row">
-            <div class="col">
-                <h1 class="site-title"><a href="#">Boorunaut</a></h1>
-            </div>            
-        </div>
-        <div class="row">
-            <div class="col">                    
-                <a href="#" class="col-1 font-weight-bold" title="A paginated list of every post">Sign In</a>
-                <a href="#" class="col-1 font-weight-bold" title="A paginated list of every post">Posts</a>
-                <a href="#" class="col-1" title="All comments listing">Comments</a>
-                <a href="#" class="col-1" title="All comments listing">Notes</a>
-                <a href="#" class="col-1" title="All comments listing">Artists</a>
-                <a href="#" class="col-1" title="All comments listing">Tags</a>
-                <a href="#" class="col-1" title="All comments listing">Pools</a>
-                <a href="#" class="col-1" title="Wiki pages with database documentation">Wiki</a>
-                <a href="#" class="col-1" title="Forum listing">Forum</a>
-                <a href="#" class="col-1" title="Help page and tools">More»</a>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">                    
-                <a href="#" class="col-1" title="All comments listing">Listing</a>
-                <a href="#" class="col-1" title="All comments listing">Upload</a>
-                <a href="#" class="col-1" title="All comments listing">Hot</a>
-                <a href="#" class="col-1" title="All comments listing">Changes</a>
-                <a href="#" class="col-1" title="All comments listing">Help</a>
-            </div>
-        </div>
-
+        {% include 'booru/menu.html' %}
         <div class="row">
             <div id="upload" class="col">
                 <form method="post" enctype="multipart/form-data">
