@@ -31,9 +31,9 @@ def upload(request):
         post = form.save()
         return redirect('booru:post_detail', post_id=post.id)
 
-    return render(request, 'booru/upload.html', {"form": form})
+    return render(request, 'booru/upload.html', {"form": form, "current_menu": "posts"})
 
 def posts(request):
     last_ten_posts = Post.objects.all()[:10]
 
-    return render(request, 'booru/posts.html', {"posts": last_ten_posts})
+    return render(request, 'booru/posts.html', {"posts": last_ten_posts, "current_menu": "posts"})

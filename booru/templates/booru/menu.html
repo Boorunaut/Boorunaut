@@ -1,0 +1,104 @@
+<div class="row">
+    <div class="col">
+        <h1 class="site-title"><a href="/">Boorunaut</a></h1>
+    </div>            
+</div>
+<div class="row">
+    <div class="col menu">
+        <a href="#" id="sign-in" class="col-1" title="A paginated list of every post">Sign In</a>
+        <a href="/posts/" id="posts" class="col-1" title="A paginated list of every post">Posts</a>
+        <a href="#" id="comments" class="col-1" title="All comments listing">Comments</a>
+        <a href="#" id="notes" class="col-1" title="All comments listing">Notes</a>
+        <a href="#" id="artists" class="col-1" title="All comments listing">Artists</a>
+        <a href="#" id="tags" class="col-1" title="All comments listing">Tags</a>
+        <a href="#" id="pools" class="col-1" title="All comments listing">Pools</a>
+        <a href="#" id="wiki" class="col-1" title="Wiki pages with database documentation">Wiki</a>
+        <a href="#" id="forum" class="col-1" title="Forum listing">Forum</a>
+        <a href="#" id="more" class="col-1" title="Help page and tools">More »</a>
+    </div>
+</div>
+<div class="row">
+    {% if current_menu == "sign-in" %}
+    <div class="col selected">
+        <a href="#" class="col-1" title="All comments listing">Sign up</a>
+        <a href="#" class="col-1" title="All comments listing">Reset Password</a>
+        <a href="#" class="col-1" title="All comments listing">Login Reminder</a>
+    </div>
+    {% endif %}
+    {% if current_menu == "posts" %}
+    <div class="col selected">
+        <a href="#" class="col-1" title="All comments listing">Listing</a>
+        <a href="/upload/" class="col-1" title="All comments listing">Upload</a>
+        <a href="#" class="col-1" title="All comments listing">Hot</a>
+        <a href="#" class="col-1" title="All comments listing">Changes</a>
+        <a href="#" class="col-1" title="All comments listing">Help</a>
+    </div>
+    {% endif %}
+    {% if current_menu == "comments" %}
+    <div class="col selected">
+        <a href="#" class="col-1" title="All comments listing">Listing</a>
+        <a href="#" class="col-1" title="All comments listing">Search</a>
+        <a href="#" class="col-1" title="All comments listing">Help</a>
+    </div>
+    {% endif %}
+    {% if current_menu == "notes" %}
+    <div class="col selected">
+        <a href="#" class="col-1" title="All comments listing">Listing</a>
+        <a href="#" class="col-1" title="All comments listing">Posts</a>
+        <a href="#" class="col-1" title="All comments listing">Search</a>
+        <a href="#" class="col-1" title="All comments listing">History</a>
+        <a href="#" class="col-1" title="All comments listing">Requests</a>
+        <a href="#" class="col-1" title="All comments listing">Help</a>
+    </div>
+    {% endif %}
+    {% if current_menu == "artists" %}
+    <div class="col selected">
+        <a href="#" class="col-1" title="All comments listing">Listing</a>
+        <a href="#" class="col-1" title="All comments listing">Banned</a>
+        <a href="#" class="col-1" title="All comments listing">New</a>
+        <a href="#" class="col-1" title="All comments listing">Recent changes</a>
+    </div>
+    {% endif %}
+    {% if current_menu == "tags" %}
+    <div class="col selected">
+        <a href="#" class="col-1" title="All comments listing">Listing</a>
+        <a href="#" class="col-1" title="All comments listing">MetaSearch</a>
+        <a href="#" class="col-1" title="All comments listing">Related tags</a>
+        <a href="#" class="col-1" title="All comments listing">Cheatsheet</a>
+        <a href="#" class="col-1" title="All comments listing">Help</a>
+    </div>
+    {% endif %}
+    {% if current_menu == "pools" %}
+    <div class="col selected">
+        <a href="#" class="col-1" title="All comments listing">Gallery</a>
+        <a href="#" class="col-1" title="All comments listing">Listing</a>
+        <a href="#" class="col-1" title="All comments listing">New</a>
+        <a href="#" class="col-1" title="All comments listing">Help</a>
+    </div>
+    {% endif %}
+    {% if current_menu == "wiki" %}
+    <div class="col selected">
+        <a href="#" class="col-1" title="All comments listing">Listing</a>
+        <a href="#" class="col-1" title="All comments listing">Search</a>
+        <a href="#" class="col-1" title="All comments listing">Help</a>
+        |
+        <a href="#" class="col-1" title="All comments listing">Posts</a>
+        <a href="#" class="col-1" title="All comments listing">History</a>
+    </div>
+    {% endif %}
+    {% if current_menu == "forum" %}
+    <div class="col selected">
+        <a href="#" class="col-1" title="All comments listing">Listing</a>
+        <a href="#" class="col-1" title="All comments listing">Search</a>
+        <a href="#" class="col-1" title="All comments listing">Help</a>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    bold_menu("{{current_menu|escapejs}}");
+
+    function bold_menu(name) {
+        $(".menu #" + name)[0].className += ' font-weight-bold selected';
+    }
+</script>
