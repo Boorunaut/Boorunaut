@@ -26,6 +26,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+AUTH_USER_MODEL = 'account.Account'
 
 # Application definition
 
@@ -37,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'booru.apps.BooruConfig',
+    'account.apps.AccountConfig',
     # Dependency apps
     'taggit',
 ]
