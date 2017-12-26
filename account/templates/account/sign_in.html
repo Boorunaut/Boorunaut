@@ -1,0 +1,22 @@
+{% extends 'booru/base.html' %}
+
+{% block css %}
+    {% load staticfiles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'booru/css/index.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'booru/css/menu.css' %}"/>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block body %}
+    {% load static %}
+    <div class="container">
+        {% include 'booru/menu.html' %}
+        <div class="row mt-3 mb-3">
+            <div class="col">
+                <h1>Sign in</h1>
+            </div>
+        </div>
+    </div>
+{% endblock %}

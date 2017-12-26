@@ -1,7 +1,7 @@
 import os
 import uuid
 
-from django.contrib.auth.models import User
+from account.models import Account
 from django.db import models
 from taggit.managers import TaggableManager
 from taggit.models import CommonGenericTaggedItemBase, TaggedItemBase
@@ -50,7 +50,7 @@ class Post(models.Model):
     preview = models.ImageField(upload_to=get_file_path_preview, blank=True)
     sample = models.ImageField(upload_to=get_file_path_sample, blank=True)
     image = models.ImageField(upload_to=get_file_path_image, blank=True)
-    uploader = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    uploader = models.ForeignKey(Account, null=True, on_delete=models.SET_NULL)
     timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
     update_timestamp = models.DateTimeField(auto_now=True, auto_now_add=False)
     source = models.URLField(blank=True)
