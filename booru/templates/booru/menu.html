@@ -1,0 +1,88 @@
+<div class="row">
+    <div class="col">
+        <h1 class="site-title"><a href="/">Boorunaut</a></h1>
+    </div>            
+</div>
+<div class="row">
+    <div class="col menu">
+        <a href="/account/sign-in/" id="sign-in" class="col-1 pt-1 pb-1" title="A paginated list of every post">Sign In</a>
+        <a href="/posts/" id="posts" class="col-1 pt-1 pb-1" title="A paginated list of every post">Posts</a>
+        <a href="#" id="comments" class="col-1 pt-1 pb-1" title="All comments listing">Comments</a>
+        <a href="#" id="notes" class="col-1 pt-1 pb-1" title="">Notes</a>
+        <a href="#" id="artists" class="col-1 pt-1 pb-1" title="">Artists</a>
+        <a href="#" id="tags" class="col-1 pt-1 pb-1" title="">Tags</a>
+        <a href="#" id="pools" class="col-1 pt-1 pb-1" title="">Pools</a>
+        <a href="#" id="wiki" class="col-1 pt-1 pb-1" title="Wiki pages with database documentation">Wiki</a>
+        <a href="#" id="forum" class="col-1 pt-1 pb-1" title="Forum listing">Forum</a>
+        <a href="#" id="more" class="col-1 pt-1 pb-1" title="Help page and tools">More »</a>
+    </div>
+</div>
+<div class="row">
+    <div class="col selected-menu-item">
+        {% if current_menu == "sign-in" %}
+        <a href="#" class="col-1" title="">Sign up</a>
+        <a href="#" class="col-1" title="">Reset Password</a>
+        <a href="#" class="col-1" title="">Login Reminder</a>
+        {% endif %}
+        {% if current_menu == "posts" %}
+        <a href="#" class="col-1" title="">Listing</a>
+        <a href="/upload/" class="col-1" title="">Upload</a>
+        <a href="#" class="col-1" title="">Hot</a>
+        <a href="#" class="col-1" title="">Changes</a>
+        <a href="#" class="col-1" title="">Help</a>
+        {% endif %}
+        {% if current_menu == "comments" %}
+        <a href="#" class="col-1" title="">Listing</a>
+        <a href="#" class="col-1" title="">Search</a>
+        <a href="#" class="col-1" title="">Help</a>
+        {% endif %}
+        {% if current_menu == "notes" %}
+        <a href="#" class="col-1" title="">Listing</a>
+        <a href="#" class="col-1" title="">Posts</a>
+        <a href="#" class="col-1" title="">Search</a>
+        <a href="#" class="col-1" title="">History</a>
+        <a href="#" class="col-1" title="">Requests</a>
+        <a href="#" class="col-1" title="">Help</a>
+        {% endif %}
+        {% if current_menu == "artists" %}
+        <a href="#" class="col-1" title="">Listing</a>
+        <a href="#" class="col-1" title="">Banned</a>
+        <a href="#" class="col-1" title="">New</a>
+        <a href="#" class="col-1" title="">Recent changes</a>
+        {% endif %}
+        {% if current_menu == "tags" %}
+        <a href="#" class="col-1" title="">Listing</a>
+        <a href="#" class="col-1" title="">MetaSearch</a>
+        <a href="#" class="col-1" title="">Related tags</a>
+        <a href="#" class="col-1" title="">Cheatsheet</a>
+        <a href="#" class="col-1" title="">Help</a>
+        {% endif %}
+        {% if current_menu == "pools" %}
+        <a href="#" class="col-1" title="">Gallery</a>
+        <a href="#" class="col-1" title="">Listing</a>
+        <a href="#" class="col-1" title="">New</a>
+        <a href="#" class="col-1" title="">Help</a>
+        {% endif %}
+        {% if current_menu == "wiki" %}
+        <a href="#" class="col-1" title="">Listing</a>
+        <a href="#" class="col-1" title="">Search</a>
+        <a href="#" class="col-1" title="">Help</a>
+        |
+        <a href="#" class="col-1" title="">Posts</a>
+        <a href="#" class="col-1" title="">History</a>
+        {% endif %}
+        {% if current_menu == "forum" %}
+        <a href="#" class="col-1" title="">Listing</a>
+        <a href="#" class="col-1" title="">Search</a>
+        <a href="#" class="col-1" title="">Help</a>
+    {% endif %}
+    </div>
+</div>
+
+<script>
+    bold_menu("{{current_menu|escapejs}}");
+
+    function bold_menu(name) {
+        $(".menu #" + name).addClass("font-weight-bold selected-menu-item");
+    }
+</script>

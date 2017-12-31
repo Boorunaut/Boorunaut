@@ -16,6 +16,10 @@ def space_joiner(tags):
 def get_sample(original_pil_image):
     ''' Returns the resized sample image. '''
     pil_image = reduce_image_to_maximum_size(original_pil_image, sample_max_resolution)
+
+    if pil_image == None:
+        return None
+
     pil_image = convert_to_rgb(pil_image)
     pil_image = convert_image_to_jpeg_bytes(pil_image)
 
@@ -27,6 +31,10 @@ def get_sample(original_pil_image):
 def get_preview(original_pil_image):
     ''' Returns the resized preview image. '''
     pil_image = reduce_image_to_maximum_size(original_pil_image, preview_max_resolution)
+
+    if pil_image == None:
+        return None
+
     pil_image = convert_to_rgb(pil_image)
     pil_image = convert_image_to_jpeg_bytes(pil_image)
 
@@ -65,9 +73,6 @@ def reduce_image_to_maximum_size(image, max_resolution):
 
 def convert_image_to_jpeg_bytes(pil_image):
     ''' Convert an PIL Image to JPEG and returns it as bytes. '''
-    if pil_image == None:
-        return None
-
     f = BytesIO()
     pil_image.save(f, format='JPEG', quality=jpg_quality)
 
@@ -75,9 +80,6 @@ def convert_image_to_jpeg_bytes(pil_image):
 
 def convert_bytes_to_content_file(pil_image_bytes):
     ''' Convert the bytes of an Image to a Django ContentFile. '''
-    if pil_image_bytes == None:
-        return None
-
     s = pil_image_bytes.getvalue()
     pil_image_bytes.close()
 
