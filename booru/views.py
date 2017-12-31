@@ -1,7 +1,9 @@
-from django.shortcuts import render
-from .models import Post
-from django.shortcuts import get_object_or_404, redirect
+from django.core.paginator import Paginator
+from django.shortcuts import get_object_or_404, redirect, render
+
 from .forms import CreatePostForm
+from .models import Post
+
 
 def index(request):
     return render(request, 'booru/index.html', {})
@@ -33,7 +35,10 @@ def upload(request):
 
     return render(request, 'booru/upload.html', {"form": form, "current_menu": "posts"})
 
-def posts(request):
-    last_ten_posts = Post.objects.all()[:10]
-
-    return render(request, 'booru/posts.html', {"posts": last_ten_posts, "current_menu": "posts"})
+def post_list_detail(request, page_number = 1):
+    page_limit = 4
+    p = Paginator(Post.objects.all(), page_limit)
+    page = p.page(page_number)
+    post_list = page.object_list
+    
+    return render(request, 'booru/posts.html', {"posts": post_list, "page": page, "current_menu": "posts"})
