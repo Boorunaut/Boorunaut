@@ -22,6 +22,7 @@ from django.urls import path
 urlpatterns = [
     path('admin/', admin.site.urls),
     url(r'^', include('booru.urls')),
+    url(r'^account/', include('account.urls')),
 ]
 
 if settings.DEBUG == True:
