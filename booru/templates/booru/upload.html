@@ -12,7 +12,9 @@
 {% block body %}
     {% load static %}
     <div class="container">
-        {% include 'booru/menu.html' %}
+        {% with current_menu="posts"%}
+            {% include 'booru/menu.html' %}
+        {% endwith %}
         <div class="row mt-3 mb-3">
             <div id="upload" class="col">
                 <form method="post" enctype="multipart/form-data">
