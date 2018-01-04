@@ -5,8 +5,8 @@
 </div>
 <div class="row">
     <div class="col menu">
-        <a href="/account/sign-in/" id="sign-in" class="col-1 pt-1 pb-1" title="A paginated list of every post">Sign In</a>
-        <a href="/posts/" id="posts" class="col-1 pt-1 pb-1" title="A paginated list of every post">Posts</a>
+        <a href="{% url 'account:sign_in' %}" id="sign-in" class="col-1 pt-1 pb-1" title="A paginated list of every post">Sign In</a>
+        <a href="{% url 'booru:posts' %}" id="posts" class="col-1 pt-1 pb-1" title="A paginated list of every post">Posts</a>
         <a href="#" id="comments" class="col-1 pt-1 pb-1" title="All comments listing">Comments</a>
         <a href="#" id="notes" class="col-1 pt-1 pb-1" title="">Notes</a>
         <a href="#" id="artists" class="col-1 pt-1 pb-1" title="">Artists</a>
@@ -26,7 +26,7 @@
         {% endif %}
         {% if current_menu == "posts" %}
         <a href="#" class="col-1" title="">Listing</a>
-        <a href="/upload/" class="col-1" title="">Upload</a>
+        <a href="{% url 'booru:upload' %}" class="col-1" title="">Upload</a>
         <a href="#" class="col-1" title="">Hot</a>
         <a href="#" class="col-1" title="">Changes</a>
         <a href="#" class="col-1" title="">Help</a>

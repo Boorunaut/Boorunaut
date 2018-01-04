@@ -40,7 +40,7 @@ def upload(request):
     else:
         pass
 
-    return render(request, 'booru/upload.html', {"form": form, "current_menu": "posts"})
+    return render(request, 'booru/upload.html', {"form": form})
 
 def post_list_detail(request, page_number = 1):
     page_limit = 4
@@ -48,4 +48,4 @@ def post_list_detail(request, page_number = 1):
     page = p.page(page_number)
     post_list = page.object_list
     
-    return render(request, 'booru/posts.html', {"posts": post_list, "page": page, "current_menu": "posts"})
+    return render(request, 'booru/posts.html', {"posts": post_list, "page": page})
