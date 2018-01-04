@@ -29,9 +29,16 @@ def post_detail(request, post_id):
 def upload(request):
     form = CreatePostForm(request.POST or None, request.FILES or None)
 
-    if form.is_valid():
-        post = form.save()
-        return redirect('booru:post_detail', post_id=post.id)
+    if request.user.is_active:
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.uploader = request.user
+            post.save()
+            form.save_m2m()
+
+            return redirect('booru:post_detail', post_id=post.id)
+    else:
+        pass
 
     return render(request, 'booru/upload.html', {"form": form, "current_menu": "posts"})
 
