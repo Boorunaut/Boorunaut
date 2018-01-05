@@ -31,14 +31,15 @@ AUTH_USER_MODEL = 'account.Account'
 # Application definition
 
 INSTALLED_APPS = [
+    'account.apps.AccountConfig', # Needs to be migrated first
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # Site apps
     'booru.apps.BooruConfig',
-    'account.apps.AccountConfig',
     # Dependency apps
     'taggit',
 ]
