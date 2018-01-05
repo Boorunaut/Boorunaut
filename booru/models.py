@@ -6,6 +6,7 @@ from django.db import models
 from taggit.managers import TaggableManager
 from taggit.models import CommonGenericTaggedItemBase, TaggedItemBase
 from . import utils
+from django.urls import reverse
 
 def get_file_path(instance, filename):
     ext = filename.split('.')[-1]
@@ -108,5 +109,5 @@ class Post(models.Model):
         else:
             return self.image.url
 
-    def get_url(self):
-        return "/posts/{}/".format(self.id)
+    def get_absolute_url(self):
+        return reverse('booru:post_detail', kwargs={'post_id': self.id})

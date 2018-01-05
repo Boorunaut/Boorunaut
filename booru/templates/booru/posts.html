@@ -39,7 +39,7 @@
             </div>
             <div id="post" class="col">
                 {% for post in posts %}
-                <a href="{{post.get_url}}"><img src="{{post.preview.url}}" alt=""></a>
+                <a href="{{post.get_absolute_url}}"><img src="{{post.preview.url}}" alt=""></a>
                 {% endfor %}
 
                 <nav aria-label="..." class="mt-5">
