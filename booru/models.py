@@ -115,3 +115,15 @@ class Post(models.Model):
 
     def get_absolute_url(self):
         return reverse('booru:post_detail', kwargs={'post_id': self.id})
+
+    def get_ordered_tags(self):
+        ordered_tags = {}
+
+        for tag in self.tags.all():
+            try:
+                ordered_tags[tag.category]
+            except:
+                ordered_tags[tag.category] = []
+            ordered_tags[tag.category].append(tag)
+        
+        return ordered_tags
