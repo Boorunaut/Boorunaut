@@ -4,8 +4,9 @@ import uuid
 from account.models import Account
 from django.db import models
 from taggit.managers import TaggableManager
-from taggit.models import CommonGenericTaggedItemBase, TaggedItemBase
+from taggit.models import TagBase, GenericTaggedItemBase
 from . import utils
+from django.urls import reverse
 
 def get_file_path(instance, filename):
     ext = filename.split('.')[-1]
@@ -34,19 +35,23 @@ class Category(models.Model):
     def __str__(self):
         return self.title_singular
 
-class TaggedPost(CommonGenericTaggedItemBase, TaggedItemBase):
-    '''Basic model for the content app. It should be inherited from the other models.'''
-    object_id = models.CharField(max_length=50, verbose_name=('Object id'), db_index=True)
-    label = models.CharField(max_length=100, blank=True)
-    description = models.CharField(max_length=2500, blank=True)
-    category = models.ForeignKey(Category, null=True, on_delete=models.SET_NULL)
+    class Meta:
+        verbose_name_plural = 'Categories'
 
-    def get_name(self):
-        split_name = self.label.replace("_", " ")
-        return split_name
+class PostTag(TagBase):
+    category = models.ForeignKey(Category, default=1, on_delete=models.SET_DEFAULT)
+    
+    class Meta:
+        verbose_name = ("Tag")
+        verbose_name_plural = ("Tags")
+
+    def get_count(self):
+        return TaggedPost.objects.filter(tag=self).count()
+
+class TaggedPost(GenericTaggedItemBase):
+    tag = models.ForeignKey(PostTag, related_name="%(app_label)s_%(class)s_items", on_delete=models.CASCADE)
 
 class Post(models.Model):
-    '''Basic model for the content app. It should be inherited from the other models.'''
     preview = models.ImageField(upload_to=get_file_path_preview, blank=True)
     sample = models.ImageField(upload_to=get_file_path_sample, blank=True)
     image = models.ImageField(upload_to=get_file_path_image, blank=True)
@@ -108,5 +113,17 @@ class Post(models.Model):
         else:
             return self.image.url
 
-    def get_url(self):
-        return "/posts/{}/".format(self.id)
+    def get_absolute_url(self):
+        return reverse('booru:post_detail', kwargs={'post_id': self.id})
+
+    def get_ordered_tags(self):
+        ordered_tags = {}
+
+        for tag in self.tags.all():
+            try:
+                ordered_tags[tag.category]
+            except:
+                ordered_tags[tag.category] = []
+            ordered_tags[tag.category].append(tag)
+        
+        return ordered_tags

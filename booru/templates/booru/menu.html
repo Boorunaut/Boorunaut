@@ -25,19 +25,19 @@
         <a href="#" class="col-1" title="">Login Reminder</a>
         {% endif %}
         {% if current_menu == "posts" %}
-        <a href="#" class="col-1" title="">Listing</a>
+        <a href="{% url 'booru:posts' %}" class="col-1" title="A paginated list of every post">Listing</a>
         <a href="{% url 'booru:upload' %}" class="col-1" title="">Upload</a>
         <a href="#" class="col-1" title="">Hot</a>
         <a href="#" class="col-1" title="">Changes</a>
         <a href="#" class="col-1" title="">Help</a>
         {% endif %}
         {% if current_menu == "comments" %}
-        <a href="#" class="col-1" title="">Listing</a>
+        <a href="{% url 'booru:posts' %}" class="col-1" title="A paginated list of every post">Listing</a>
         <a href="#" class="col-1" title="">Search</a>
         <a href="#" class="col-1" title="">Help</a>
         {% endif %}
         {% if current_menu == "notes" %}
-        <a href="#" class="col-1" title="">Listing</a>
+        <a href="{% url 'booru:posts' %}" class="col-1" title="A paginated list of every post">Listing</a>
         <a href="#" class="col-1" title="">Posts</a>
         <a href="#" class="col-1" title="">Search</a>
         <a href="#" class="col-1" title="">History</a>
@@ -45,13 +45,13 @@
         <a href="#" class="col-1" title="">Help</a>
         {% endif %}
         {% if current_menu == "artists" %}
-        <a href="#" class="col-1" title="">Listing</a>
+        <a href="{% url 'booru:posts' %}" class="col-1" title="A paginated list of every post">Listing</a>
         <a href="#" class="col-1" title="">Banned</a>
         <a href="#" class="col-1" title="">New</a>
         <a href="#" class="col-1" title="">Recent changes</a>
         {% endif %}
         {% if current_menu == "tags" %}
-        <a href="#" class="col-1" title="">Listing</a>
+        <a href="{% url 'booru:posts' %}" class="col-1" title="A paginated list of every post">Listing</a>
         <a href="#" class="col-1" title="">MetaSearch</a>
         <a href="#" class="col-1" title="">Related tags</a>
         <a href="#" class="col-1" title="">Cheatsheet</a>
@@ -59,12 +59,12 @@
         {% endif %}
         {% if current_menu == "pools" %}
         <a href="#" class="col-1" title="">Gallery</a>
-        <a href="#" class="col-1" title="">Listing</a>
+        <a href="{% url 'booru:posts' %}" class="col-1" title="A paginated list of every post">Listing</a>
         <a href="#" class="col-1" title="">New</a>
         <a href="#" class="col-1" title="">Help</a>
         {% endif %}
         {% if current_menu == "wiki" %}
-        <a href="#" class="col-1" title="">Listing</a>
+        <a href="{% url 'booru:posts' %}" class="col-1" title="A paginated list of every post">Listing</a>
         <a href="#" class="col-1" title="">Search</a>
         <a href="#" class="col-1" title="">Help</a>
         |
@@ -72,7 +72,7 @@
         <a href="#" class="col-1" title="">History</a>
         {% endif %}
         {% if current_menu == "forum" %}
-        <a href="#" class="col-1" title="">Listing</a>
+        <a href="{% url 'booru:posts' %}" class="col-1" title="A paginated list of every post">Listing</a>
         <a href="#" class="col-1" title="">Search</a>
         <a href="#" class="col-1" title="">Help</a>
     {% endif %}
