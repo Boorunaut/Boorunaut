@@ -63,7 +63,7 @@ class Post(models.Model):
     favorites = models.IntegerField(default=0)
     identifier = models.UUIDField(default=uuid.uuid4, editable=False)
     locked = models.BooleanField(default=False)
-    tags = TaggableManager(through=TaggedPost, related_name="posts") #TODO: Check django-taggit issue #497
+    tags = TaggableManager(through=TaggedPost, related_name="posts")
 
     NONE = 0
     SAFE = 1
