@@ -1,7 +1,7 @@
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
 
-from .forms import CreatePostForm
+from .forms import CreatePostForm, EditPostForm
 from .models import Post, TaggedPost
 
 
@@ -10,9 +10,13 @@ def index(request):
 
 def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
+    form = EditPostForm(request.POST or None, request.FILES or None, instance=post)
+
+    if request.method == "POST" and form.is_valid():
+        post = form.save()
 
     ordered_tags = post.get_ordered_tags()
-    return render(request, 'booru/post_detail.html', {"post": post, "ordered_tags": ordered_tags})
+    return render(request, 'booru/post_detail.html', {"post": post, "ordered_tags": ordered_tags, "form": form})
 
 def upload(request):
     form = CreatePostForm(request.POST or None, request.FILES or None)
@@ -32,7 +36,8 @@ def upload(request):
 
 def post_list_detail(request, page_number = 1):
     page_limit = 4
-    p = Paginator(Post.objects.all(), page_limit)
+    posts = Post.objects.all().order_by('id')
+    p = Paginator(posts, page_limit)
     page = p.page(page_number)
     post_list = page.object_list
     
