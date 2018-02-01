@@ -104,6 +104,5 @@ ENV/
 db.sqlite3
 .vscode
 staticfiles/
-migrations/
 media/data/
 data/
