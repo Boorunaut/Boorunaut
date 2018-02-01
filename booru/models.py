@@ -52,6 +52,7 @@ class TaggedPost(GenericTaggedItemBase):
     tag = models.ForeignKey(PostTag, related_name="%(app_label)s_%(class)s_items", on_delete=models.CASCADE)
 
 class Post(models.Model):
+    parent = models.IntegerField(null=True)
     preview = models.ImageField(upload_to=get_file_path_preview, blank=True)
     sample = models.ImageField(upload_to=get_file_path_sample, blank=True)
     image = models.ImageField(upload_to=get_file_path_image, blank=True)
