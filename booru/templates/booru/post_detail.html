@@ -24,20 +24,45 @@
         </form>
 
         <div class="row">
-            <div id="sidebar" class="col-2">
+            <div id="sidebar" class="col-3">
                 {% for category, tags in ordered_tags.items %}
-                <div class="row col">
-                    <p class="font-weight-bold">{{category}}</p>
-                </div>
-                {% for tag in tags %}
-                <div class="row col">
-                    <a href="#">?</a> <a class="" href="#">{{tag}}</a> {{tag.get_count}}
+                <div class="col mb-3">
+                    <div class="row col">
+                        <span class="font-weight-bold">{{category}}</span>
+                    </div>
+                    {% for tag in tags %}
+                    <div class="row col">
+                        {% if tag.category.label != "general" %}
+                        <a style="color:#{{tag.category.color}};" href="#">?</a> <a style="color:#{{tag.category.color}};" href="#">{{tag}}</a> {{tag.get_count}}
+                        {% else %}
+                        <a href="#">?</a> <a href="#">{{tag}}</a> {{tag.get_count}}
+                        {% endif %}
+                    </div>
+                    {% endfor %}
                 </div>
                 {% endfor %}
-                {% endfor %}
+                <div class="col mb-3">
+                    <div class="row col">
+                        <span class="font-weight-bold">Information</span>
+                    </div>
+                    <div class="row col">ID: {{post.id}}</div>
+                    <div class="row col">Uploader: {{post.uploader}}</div>
+                    <div class="row col">Date: {{post.timestamp}}</div>
+                    <div class="row col">Size: #TODO</div>
+                    <div class="row col d-inline-block text-truncate">Source: {{post.source}}</div>
+                    <div class="row col">Rating: {{post.rating}}</div>
+                    <div class="row col">Score: #TODO</div>
+                    <div class="row col">Favorites: #TODO</div>
+                    <div class="row col">Status: #TODO</div>
+                </div>
             </div>
             <div id="post" class="col">
-                <img src="{{post.get_sample_url}}" alt="">
+                <div class="row mb-3">
+                    <img src="{{post.get_sample_url}}" alt="">
+                </div>
+                <div class="row">
+                    <button id="show_edit_form" class="btn btn-primary btn-sm">Edit</button>
+                </div>
             </div>
         </div>
     </div>
