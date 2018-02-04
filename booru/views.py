@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import CreatePostForm
 from .models import Post, TaggedPost
+from .utils import space_splitter
 
 
 def index(request):
@@ -31,8 +32,18 @@ def upload(request):
     return render(request, 'booru/upload.html', {"form": form})
 
 def post_list_detail(request, page_number = 1):
+    tags = request.GET.get("tags", "")
+    tags = space_splitter(tags)
+
+    print (tags)
+
+    posts = Post.objects.all()
+    if len(tags) > 0:
+        for tag in tags:
+            posts = posts.filter(tags__name__in=[tag])
+
     page_limit = 4
-    p = Paginator(Post.objects.all(), page_limit)
+    p = Paginator(posts, page_limit)
     page = p.page(page_number)
     post_list = page.object_list
     
