@@ -33,9 +33,9 @@
                     {% for tag in tags %}
                     <div class="row col">
                         {% if tag.category.label != "general" %}
-                        <a style="color:#{{tag.category.color}};" href="#">?</a> <a style="color:#{{tag.category.color}};" href="#">{{tag}}</a> {{tag.get_count}}
+                        <a style="color:#{{tag.category.color}};" href="">?</a> <a style="color:#{{tag.category.color}};" href="{% url 'booru:posts' %}?tags={{tag}}">{{tag}}</a> {{tag.get_count}}
                         {% else %}
-                        <a href="#">?</a> <a href="#">{{tag}}</a> {{tag.get_count}}
+                        <a href="#">?</a> <a href="{% url 'booru:posts' %}?tags={{tag}}">{{tag}}</a> {{tag.get_count}}
                         {% endif %}
                     </div>
                     {% endfor %}
