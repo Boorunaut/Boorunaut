@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
 
@@ -15,6 +16,7 @@ def post_detail(request, post_id):
     ordered_tags = post.get_ordered_tags()
     return render(request, 'booru/post_detail.html', {"post": post, "ordered_tags": ordered_tags})
 
+@login_required
 def upload(request):
     form = CreatePostForm(request.POST or None, request.FILES or None)
 
@@ -69,6 +71,7 @@ def tags_list(request, page_number = 1):
     
     return render(request, 'booru/tag_list.html', {"tags": tags_list, "page": page, "form": form})
 
+@login_required
 def tag_edit(request, tag_id):
     tag = get_object_or_404(PostTag, pk=tag_id)
     form = TagEditForm(request.POST or None, instance=tag)
