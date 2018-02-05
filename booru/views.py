@@ -1,8 +1,8 @@
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
 
-from .forms import CreatePostForm
-from .models import Post, TaggedPost
+from .forms import CreatePostForm, TagEditForm, TagListSearchForm
+from .models import Post, PostTag, TaggedPost
 from .utils import space_splitter
 
 
@@ -35,8 +35,6 @@ def post_list_detail(request, page_number = 1):
     tags = request.GET.get("tags", "")
     tags = space_splitter(tags)
 
-    print (tags)
-
     posts = Post.objects.all()
     if len(tags) > 0:
         for tag in tags:
@@ -48,3 +46,34 @@ def post_list_detail(request, page_number = 1):
     post_list = page.object_list
     
     return render(request, 'booru/posts.html', {"posts": post_list, "page": page})
+
+def tags_list(request, page_number = 1):
+    searched_tag = request.GET.get("tags", "")
+    category = request.GET.get("category", "")
+    form = TagListSearchForm(request.GET or None)
+
+    tags = PostTag.objects.all()
+    if searched_tag != "":
+        tags = tags.filter(name=searched_tag)
+
+    if category != "":
+        try:
+            tags = tags.filter(category=int(category))
+        except:
+            pass
+    
+    page_limit = 10
+    p = Paginator(tags, page_limit)
+    page = p.page(page_number)
+    tags_list = page.object_list
+    
+    return render(request, 'booru/tag_list.html', {"tags": tags_list, "page": page, "form": form})
+
+def tag_edit(request, tag_id):
+    tag = get_object_or_404(PostTag, pk=tag_id)
+    form = TagEditForm(request.POST or None, instance=tag)
+
+    if form.is_valid() and request.POST:
+        tag = form.save()
+        
+    return render(request, 'booru/tag_edit.html', {"tag": tag, "form": form})
