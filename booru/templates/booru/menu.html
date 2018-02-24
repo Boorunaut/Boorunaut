@@ -78,11 +78,3 @@
     {% endif %}
     </div>
 </div>
-
-<script>
-    bold_menu("{{current_menu|escapejs}}");
-
-    function bold_menu(name) {
-        $(".menu #" + name).addClass("font-weight-bold selected-menu-item");
-    }
-</script>
