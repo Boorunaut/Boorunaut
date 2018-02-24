@@ -1,5 +1,5 @@
 from django import forms
-from .models import Post
+from .models import Post, Category, PostTag
 from taggit.forms import TagField, TagWidget
 
 class CreatePostForm(forms.ModelForm):
@@ -25,3 +25,24 @@ class EditPostForm(forms.ModelForm):
     class Meta:
         model = Post
         fields = ["rating", "parent", "source", "tags"]
+class TagListSearchForm(forms.Form):
+    '''Form for creating an post.'''
+
+    tags = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control form-control-sm'}), required=False)
+    category = forms.ModelChoiceField(queryset=Category.objects.all(),
+                                    widget=forms.Select(attrs={'class': 'form-control form-control-sm'}),
+                                    required=False, empty_label=None)
+
+    class Meta:
+        fields = "__all__"
+
+class TagEditForm(forms.ModelForm):
+    '''Form for creating an post.'''
+
+    category = forms.ModelChoiceField(queryset=Category.objects.all(),
+                                    widget=forms.Select(attrs={'class': 'form-control'}),
+                                    required=False, empty_label=None)
+
+    class Meta:
+        model = PostTag
+        fields = ["category"]
