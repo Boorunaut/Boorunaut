@@ -25,6 +25,31 @@ def get_file_path_image(instance, filename):
     name = get_file_path(instance, filename)
     return os.path.join('data/image/', name)
 
+class Implication(models.Model):
+    from_post = models.ForeignKey('booru.PostTag', blank=True, null=True, default=None, on_delete=models.CASCADE, related_name="from_implications")    
+    to_post = models.ForeignKey('booru.PostTag', blank=True, null=True, default=None, on_delete=models.CASCADE, related_name="to_implications")    
+    author = models.ForeignKey(Account, null=True, on_delete=models.SET_NULL, related_name="authored_implications")
+    approver = models.ForeignKey(Account, blank=True, null=True, default=None, on_delete=models.SET_NULL, related_name="approved_implications")
+    approved = models.BooleanField(default=False)
+    timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
+
+    def __str__(self):
+        return "{} -> {}".format(self.from_post, self.to_post)
+
+class Alias(models.Model):
+    from_post = models.ForeignKey('booru.PostTag', blank=True, null=True, default=None, on_delete=models.CASCADE, related_name="from_aliases")    
+    to_post = models.ForeignKey('booru.PostTag', blank=True, null=True, default=None, on_delete=models.CASCADE, related_name="to_aliases")    
+    author = models.ForeignKey(Account, null=True, on_delete=models.SET_NULL, related_name="authored_aliases")
+    approver = models.ForeignKey(Account, blank=True, null=True, default=None, on_delete=models.SET_NULL, related_name="approved_aliases")
+    approved = models.BooleanField(default=False)
+    timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
+
+    def __str__(self):
+        return "{} -> {}".format(self.from_post, self.to_post)
+
+    class Meta:
+        verbose_name_plural = 'Aliases'
+
 class Category(models.Model):
     '''Basic model for the content app. It should be inherited from the other models.'''
     label = models.CharField(max_length=100, blank=True)
@@ -40,7 +65,9 @@ class Category(models.Model):
 
 class PostTag(TagBase):
     category = models.ForeignKey(Category, default=1, on_delete=models.SET_DEFAULT)
-    
+    #alias_of = models.ForeignKey('booru.PostTag', blank=True, null=True, default=None, on_delete=models.SET_DEFAULT, related_name="aliases")
+    #implies = models.ManyToManyField('booru.PostTag', blank=True)
+
     class Meta:
         verbose_name = ("Tag")
         verbose_name_plural = ("Tags")
@@ -50,6 +77,12 @@ class PostTag(TagBase):
 
 class TaggedPost(GenericTaggedItemBase):
     tag = models.ForeignKey(PostTag, related_name="%(app_label)s_%(class)s_items", on_delete=models.CASCADE)
+
+    def save(self, *args, **kwargs):
+        super(TaggedPost, self).save(*args, **kwargs)
+
+        tag_name = self.tag
+        utils.verify_and_perform_aliases_and_implications(tag_name)
 
 class Post(models.Model):
     parent = models.IntegerField(null=True)
@@ -105,7 +138,6 @@ class Post(models.Model):
                 self.sample.save(".jpg", sample, save=False)
 
             self.preview.save(".jpg", preview, save=False)
-
         super(Post, self).save(*args, **kwargs)
 
     def get_sample_url(self):
