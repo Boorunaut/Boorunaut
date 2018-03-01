@@ -65,8 +65,6 @@ class Category(models.Model):
 
 class PostTag(TagBase):
     category = models.ForeignKey(Category, default=1, on_delete=models.SET_DEFAULT)
-    #alias_of = models.ForeignKey('booru.PostTag', blank=True, null=True, default=None, on_delete=models.SET_DEFAULT, related_name="aliases")
-    #implies = models.ManyToManyField('booru.PostTag', blank=True)
 
     class Meta:
         verbose_name = ("Tag")
