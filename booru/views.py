@@ -1,11 +1,11 @@
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views import generic
 
-from .forms import CreatePostForm, EditPostForm
-from .models import Post, TaggedPost
-from .forms import CreatePostForm, TagEditForm, TagListSearchForm
-from .models import Post, PostTag, TaggedPost
+from .forms import CreatePostForm, EditPostForm, TagEditForm, TagListSearchForm
+from .models import Alias, Implication, Post, PostTag, TaggedPost
 from .utils import space_splitter
 
 
@@ -87,3 +87,28 @@ def tag_edit(request, tag_id):
         tag = form.save()
         
     return render(request, 'booru/tag_edit.html', {"tag": tag, "form": form})
+
+class ImplicationListView(generic.ListView):
+    model = Implication
+    paginate_by = 20
+
+    def get_queryset(self):
+        queryset = Implication.objects.all()
+
+        if self.request.GET.get('name'):
+            queryset = queryset.filter(Q(from_tag__name=self.request.GET.get('name'))|
+                                        Q(to_tag__name=self.request.GET.get('name')))
+        return queryset
+
+class AliasListView(generic.ListView):
+    model = Alias
+    paginate_by = 20
+
+    def get_queryset(self):
+        queryset = Alias.objects.all()
+
+        if self.request.GET.get('name'):
+            queryset = queryset.filter(Q(from_tag__name=self.request.GET.get('name'))|
+                                        Q(to_tag__name=self.request.GET.get('name')))
+        return queryset
+
