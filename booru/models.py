@@ -119,7 +119,7 @@ class Post(models.Model):
 
     def get_ordered_tags(self):
         ordered_tags = {}
-
+        
         for tag in self.tags.all():
             try:
                 ordered_tags[tag.category]

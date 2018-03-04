@@ -24,18 +24,18 @@ def post_detail(request, post_id):
 
 @login_required
 def upload(request):
+    if not request.user.is_active:
+        return redirect('account:sign_in')
+    
     form = CreatePostForm(request.POST or None, request.FILES or None)
+    
+    if form.is_valid():
+        post = form.save(commit=False)
+        post.uploader = request.user
+        post.save()
+        form.save_m2m()
 
-    if request.user.is_active:
-        if form.is_valid():
-            post = form.save(commit=False)
-            post.uploader = request.user
-            post.save()
-            form.save_m2m()
-
-            return redirect('booru:post_detail', post_id=post.id)
-    else:
-        pass
+        return redirect('booru:post_detail', post_id=post.id)
 
     return render(request, 'booru/upload.html', {"form": form})
 
