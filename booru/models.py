@@ -26,26 +26,26 @@ def get_file_path_image(instance, filename):
     return os.path.join('data/image/', name)
 
 class Implication(models.Model):
-    from_post = models.ForeignKey('booru.PostTag', blank=True, null=True, default=None, on_delete=models.CASCADE, related_name="from_implications")    
-    to_post = models.ForeignKey('booru.PostTag', blank=True, null=True, default=None, on_delete=models.CASCADE, related_name="to_implications")    
+    from_tag = models.ForeignKey('booru.PostTag', blank=True, null=True, default=None, on_delete=models.CASCADE, related_name="from_implications")    
+    to_tag = models.ForeignKey('booru.PostTag', blank=True, null=True, default=None, on_delete=models.CASCADE, related_name="to_implications")    
     author = models.ForeignKey(Account, null=True, on_delete=models.SET_NULL, related_name="authored_implications")
     approver = models.ForeignKey(Account, blank=True, null=True, default=None, on_delete=models.SET_NULL, related_name="approved_implications")
     approved = models.BooleanField(default=False)
     timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
 
     def __str__(self):
-        return "{} -> {}".format(self.from_post, self.to_post)
+        return "{} -> {}".format(self.from_tag, self.to_tag)
 
 class Alias(models.Model):
-    from_post = models.ForeignKey('booru.PostTag', blank=True, null=True, default=None, on_delete=models.CASCADE, related_name="from_aliases")    
-    to_post = models.ForeignKey('booru.PostTag', blank=True, null=True, default=None, on_delete=models.CASCADE, related_name="to_aliases")    
+    from_tag = models.ForeignKey('booru.PostTag', blank=True, null=True, default=None, on_delete=models.CASCADE, related_name="from_aliases")    
+    to_tag = models.ForeignKey('booru.PostTag', blank=True, null=True, default=None, on_delete=models.CASCADE, related_name="to_aliases")    
     author = models.ForeignKey(Account, null=True, on_delete=models.SET_NULL, related_name="authored_aliases")
     approver = models.ForeignKey(Account, blank=True, null=True, default=None, on_delete=models.SET_NULL, related_name="approved_aliases")
     approved = models.BooleanField(default=False)
     timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
 
     def __str__(self):
-        return "{} -> {}".format(self.from_post, self.to_post)
+        return "{} -> {}".format(self.from_tag, self.to_tag)
 
     class Meta:
         verbose_name_plural = 'Aliases'

@@ -114,15 +114,15 @@ def verify_and_perform_aliases_and_implications(tag_name):
     Alias = apps.get_model('booru', 'Alias')
     posts = Post.objects.filter(tags__name__in=[tag_name])
     
-    implications = Implication.objects.filter(from_post__name=tag_name, approved=True)    
-    alias = Alias.objects.filter(from_post__name=tag_name, approved=True).first()
+    implications = Implication.objects.filter(from_tag__name=tag_name, approved=True)    
+    alias = Alias.objects.filter(from_tag__name=tag_name, approved=True).first()
 
     if alias != None or implications.count() > 0:        
         for post in posts:
             if alias != None:
-                post.tags.remove(alias.from_post)
-                post.tags.add(alias.to_post)
+                post.tags.remove(alias.from_tag)
+                post.tags.add(alias.to_tag)
             if implications.count() > 0:
                 for implication in implications:
-                    post.tags.add(implication.to_post)
+                    post.tags.add(implication.to_tag)
 
