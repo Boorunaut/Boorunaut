@@ -1,7 +1,8 @@
-from PIL import Image as ImagePIL
-
 from io import BytesIO
+
+from django.apps import apps
 from django.core.files.base import ContentFile
+from PIL import Image as ImagePIL
 
 sample_max_resolution = (850, None)
 preview_max_resolution = (150, 150)
@@ -105,3 +106,23 @@ def convert_to_rgb(pil_image):
         return rgb_image
     else:
         return pil_image
+
+
+def verify_and_perform_aliases_and_implications(tag_name):
+    Post = apps.get_model('booru', 'Post')
+    Implication = apps.get_model('booru', 'Implication')
+    Alias = apps.get_model('booru', 'Alias')
+    posts = Post.objects.filter(tags__name__in=[tag_name])
+    
+    implications = Implication.objects.filter(from_tag__name=tag_name, approved=True)    
+    alias = Alias.objects.filter(from_tag__name=tag_name, approved=True).first()
+
+    if alias != None or implications.count() > 0:        
+        for post in posts:
+            if alias != None:
+                post.tags.remove(alias.from_tag)
+                post.tags.add(alias.to_tag)
+            if implications.count() > 0:
+                for implication in implications:
+                    post.tags.add(implication.to_tag)
+
