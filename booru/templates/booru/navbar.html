@@ -11,7 +11,7 @@
         </li>
         </ul>
         <form class="form-inline my-2 my-lg-0">
-            <input class="form-control" type="search" placeholder="Search" aria-label="Search">
+            <input id="tags" name="tags" class="form-control" type="search" placeholder="Ex: super_mario_odyssey" aria-label="Search">
             <div class="input-group-append">
                 <button class="btn btn-outline-light my-2 my-sm-0" type="submit">Search</button>
             </div>
@@ -32,40 +32,45 @@
         </ul>
     </div>
 </nav>
-<ul class="nav">
+<ul class="nav sub_navbar">
     <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-            Images</a>
+            Images
+        </a>
         <div class="dropdown-menu">
-        <a class="dropdown-item" href="#">Random</a>
+            <a class="dropdown-item" href="{% url 'booru:posts' %}">List</a>
+            <a class="dropdown-item" href="#">Random</a>
         </div>
     </li>
     <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-            Activity</a>
+            Activity
+        </a>
         <div class="dropdown-menu">
-        <a class="dropdown-item" href="#">Rankings</a>
-        <a class="dropdown-item" href="#">Comments</a>
+            <a class="dropdown-item" href="#">Rankings</a>
+            <a class="dropdown-item" href="#">Comments</a>
         </div>
     </li>
     <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-            Forums</a>
+            Forums
+        </a>
         <div class="dropdown-menu">
-        <a class="dropdown-item" href="#">General Discussion</a>
-        <a class="dropdown-item" href="#">Tagging Discussion</a>
-        <a class="dropdown-item" href="#">Site and Policy</a>
-        <a class="dropdown-item" href="#">Uploader Discussion</a>
-        <a class="dropdown-item" href="#">Post Search</a>
+            <a class="dropdown-item" href="#">General Discussion</a>
+            <a class="dropdown-item" href="#">Tagging Discussion</a>
+            <a class="dropdown-item" href="#">Site and Policy</a>
+            <a class="dropdown-item" href="#">Uploader Discussion</a>
+            <a class="dropdown-item" href="#">Post Search</a>
         </div>
     </li>
     <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-            Tags</a>
+            Tags
+        </a>
         <div class="dropdown-menu">
-        <a class="dropdown-item" href="#">Ratings</a>
-        <a class="dropdown-item" href="#">Aliased</a>
-        <a class="dropdown-item" href="#">Implied</a>
+            <a class="dropdown-item" href="#">Ratings</a>
+            <a class="dropdown-item" href="#">Aliased</a>
+            <a class="dropdown-item" href="#">Implied</a>
         </div>
     </li>
     <li class="nav-item">
