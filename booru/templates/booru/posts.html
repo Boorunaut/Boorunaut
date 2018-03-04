@@ -3,7 +3,6 @@
 {% block css %}
     {% load staticfiles %}
     <link rel="stylesheet" type="text/css" href="{% static 'booru/css/index.css' %}"/>
-    <link rel="stylesheet" type="text/css" href="{% static 'booru/css/menu.css' %}"/>
 {% endblock %}
 
 {% block scripts %}
@@ -12,9 +11,6 @@
 {% block body %}
     {% load static %}
     <div class="container">
-        {% with current_menu="posts" %}
-            {% include 'booru/menu.html' %}
-        {% endwith %}
         <form method="get" enctype="text/plain">
             <div class="form-row mt-3 mb-3">
                 <div class="col">
