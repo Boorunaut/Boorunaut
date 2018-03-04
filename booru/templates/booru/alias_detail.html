@@ -1,0 +1,41 @@
+{% extends 'booru/base.html' %}
+
+{% block css %}
+    {% load staticfiles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'booru/css/index.css' %}"/>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block body %}
+    {% load static %}
+    <div class="container">
+       <h1>Tag implication: {{object.from_tag}} → {{object.to_tag}}</h1> 
+        
+        <div class="row">
+            <div id="table" class="col mt-3">
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <td>From:</td>
+                            <td>{{object.from_tag}}</td>
+                        </tr>
+                        <tr>
+                            <td>To:</td>
+                            <td>{{object.to_tag}}</td>
+                        </tr>
+                        <tr>
+                            <td>Creator:</td>
+                            <td>{{object.author}}</td>
+                        </tr>
+                        <tr>
+                            <td>Date:</td>
+                            <td>{{object.timestamp}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -100,6 +100,9 @@ class ImplicationListView(generic.ListView):
                                         Q(to_tag__name=self.request.GET.get('name')))
         return queryset
 
+class ImplicationDetailView(generic.DetailView):
+    model = Implication
+
 class AliasListView(generic.ListView):
     model = Alias
     paginate_by = 20
@@ -112,3 +115,5 @@ class AliasListView(generic.ListView):
                                         Q(to_tag__name=self.request.GET.get('name')))
         return queryset
 
+class AliasDetailView(generic.DetailView):
+    model = Alias
