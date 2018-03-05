@@ -30,8 +30,20 @@ class Implication(models.Model):
     to_tag = models.ForeignKey('booru.PostTag', blank=True, null=True, default=None, on_delete=models.CASCADE, related_name="to_implications")    
     author = models.ForeignKey(Account, null=True, on_delete=models.SET_NULL, related_name="authored_implications")
     approver = models.ForeignKey(Account, blank=True, null=True, default=None, on_delete=models.SET_NULL, related_name="approved_implications")
-    approved = models.BooleanField(default=False)
     timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
+    
+    PENDING = 0
+    APPROVED = 1
+    UNAPPROVED = 2
+    STATUS_CHOICES = (
+        (PENDING, 'Pending'),
+        (APPROVED, 'Approved'),
+        (UNAPPROVED, 'Unapproved')
+    )
+    status = models.IntegerField(
+        choices=STATUS_CHOICES,
+        default=PENDING,
+    )
 
     def __str__(self):
         return "{} -> {}".format(self.from_tag, self.to_tag)
@@ -41,8 +53,20 @@ class Alias(models.Model):
     to_tag = models.ForeignKey('booru.PostTag', blank=True, null=True, default=None, on_delete=models.CASCADE, related_name="to_aliases")    
     author = models.ForeignKey(Account, null=True, on_delete=models.SET_NULL, related_name="authored_aliases")
     approver = models.ForeignKey(Account, blank=True, null=True, default=None, on_delete=models.SET_NULL, related_name="approved_aliases")
-    approved = models.BooleanField(default=False)
     timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
+
+    PENDING = 0
+    APPROVED = 1
+    UNAPPROVED = 2
+    STATUS_CHOICES = (
+        (PENDING, 'Pending'),
+        (APPROVED, 'Approved'),
+        (UNAPPROVED, 'Unapproved')
+    )
+    status = models.IntegerField(
+        choices=STATUS_CHOICES,
+        default=PENDING,
+    )
 
     def __str__(self):
         return "{} -> {}".format(self.from_tag, self.to_tag)

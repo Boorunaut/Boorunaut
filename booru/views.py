@@ -1,3 +1,4 @@
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Q
@@ -152,3 +153,40 @@ def implication_create(request):
 
     return render(request, 'booru/implication_create.html', { "form": form })
 
+@staff_member_required
+def implication_approve(request, implication_id):
+    implication = Implication.objects.get(id=implication_id)
+
+    if implication.status == 0:
+        implication.status = 1
+        implication.approver = request.user
+        implication.save()
+    
+    utils.verify_and_perform_aliases_and_implications(implication.from_tag)
+    return redirect('booru:implication-detail', implication.id)
+
+@staff_member_required
+def alias_approve(request, alias_id):
+    alias = Alias.objects.get(id=alias_id)
+
+    if alias.status == 0:
+        alias.status = 1
+        alias.approver = request.user
+        alias.save()
+    
+    utils.verify_and_perform_aliases_and_implications(alias.from_tag)    
+    return redirect('booru:alias-detail', alias.id)
+
+@staff_member_required
+def implication_disapprove(request, implication_id):
+    implication = Implication.objects.get(id=implication_id)
+    implication.status = 2
+    implication.save()
+    return redirect('booru:implication-detail', implication.id)
+
+@staff_member_required
+def alias_disapprove(request, alias_id):
+    alias = Alias.objects.get(id=alias_id)
+    alias.status = 2
+    alias.save()    
+    return redirect('booru:alias-detail', alias.id)

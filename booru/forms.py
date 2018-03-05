@@ -25,6 +25,7 @@ class EditPostForm(forms.ModelForm):
     class Meta:
         model = Post
         fields = ["rating", "parent", "source", "tags"]
+
 class TagListSearchForm(forms.Form):
     '''Form for creating an post.'''
 
@@ -46,3 +47,17 @@ class TagEditForm(forms.ModelForm):
     class Meta:
         model = PostTag
         fields = ["category"]
+
+class AliasCreateForm(forms.Form):
+    from_tag = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), required=True)
+    to_tag = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), required=True)
+
+    class Meta:
+        fields = "__all__"
+
+class ImplicationCreateForm(forms.Form):
+    from_tag = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), required=True)
+    to_tag = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), required=True)
+
+    class Meta:
+        fields = "__all__"
