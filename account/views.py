@@ -7,6 +7,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import FormView, RedirectView
 from django.shortcuts import render
+from .forms import UserRegisterForm
 
 class LoginView(FormView):
     """
@@ -57,11 +58,12 @@ class RegisterView(FormView):
     Provides the ability to a visitor to register as new user with a username and password
     """
     success_url = '/post/list'
-    form_class = UserCreationForm
+    form_class = UserRegisterForm
     redirect_field_name = REDIRECT_FIELD_NAME
     template_name = "account/register.html"
 
-    @method_decorator(sensitive_post_parameters('password'))
+    @method_decorator(sensitive_post_parameters('password1'))
+    @method_decorator(sensitive_post_parameters('password2'))
     @method_decorator(csrf_protect)
     @method_decorator(never_cache)
     def dispatch(self, request, *args, **kwargs):
