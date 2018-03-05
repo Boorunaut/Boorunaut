@@ -3,7 +3,6 @@
 {% block css %}
     {% load staticfiles %}
     <link rel="stylesheet" type="text/css" href="{% static 'booru/css/index.css' %}"/>
-    <link rel="stylesheet" type="text/css" href="{% static 'booru/css/menu.css' %}"/>
 {% endblock %}
 
 {% block scripts %}
@@ -11,13 +10,11 @@
 
 {% block body %}
     {% load static %}
+    {% include 'booru/navbar.html' %}
     <div class="container">
-        {% with current_menu="sign-in" %}
-            {% include 'booru/menu.html' %}
-        {% endwith %}
         <div class="row mt-3 mb-3">
             <div class="col">
-                <h1>Sign in</h1>
+                <h1>Register</h1>
             </div>
         </div>
     </div>

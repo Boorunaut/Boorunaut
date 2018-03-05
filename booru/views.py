@@ -23,10 +23,7 @@ def post_detail(request, post_id):
     return render(request, 'booru/post_detail.html', {"post": post, "ordered_tags": ordered_tags, "form": form})
 
 @login_required
-def upload(request):
-    if not request.user.is_active:
-        return redirect('account:sign_in')
-    
+def upload(request):    
     form = CreatePostForm(request.POST or None, request.FILES or None)
     
     if form.is_valid():

@@ -10,8 +10,8 @@
 
 {% block body %}
     {% load static %}
+    {% include 'booru/navbar.html' %}
     <div class="container">
-        {% include 'booru/menu.html' %}
         <div class="row">
             <h1>Tag: {{tag.name}}</h1>
         </div>

@@ -3,7 +3,6 @@
 {% block css %}
     {% load staticfiles %}
     <link rel="stylesheet" type="text/css" href="{% static 'booru/css/index.css' %}"/>
-    <link rel="stylesheet" type="text/css" href="{% static 'booru/css/menu.css' %}"/>
 {% endblock %}
 
 {% block scripts %}
@@ -11,21 +10,8 @@
 
 {% block body %}
     {% load static %}
+    {% include 'booru/navbar.html' %}
     <div class="container">
-        {% with current_menu="posts" %}
-            {% include 'booru/menu.html' %}
-        {% endwith %}
-        <form method="get" enctype="text/plain">
-            <div class="form-row mt-3 mb-3">
-                <div class="col">
-                    <input id="tags" name="tags" class="form-control form-control-sm" type="search" aria-label="Search" placeholder="Ex: super_mario_odyssey">
-                </div>
-                <div class="col-1">
-                    <button class="btn btn-sm btn-primary" type="submit">Search</button>
-                </div>
-            </div>
-        </form>
-
         <div class="row">
             <div id="sidebar" class="col-2">
                 <div class="row col">

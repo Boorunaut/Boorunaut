@@ -10,8 +10,8 @@
 
 {% block body %}
     {% load static %}
+    {% include 'booru/navbar.html' %}
     <div class="container">
-        {% include 'booru/menu.html' %}
         <form method="get">
             {% for field in form %}
             <div class="form-group">

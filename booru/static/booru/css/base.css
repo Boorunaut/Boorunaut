@@ -1,5 +1,5 @@
 body{
-    color: #5a5a5a;
+    font-family: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
 
 a{
@@ -13,4 +13,8 @@ a:hover{
 
 small{
     color: #aaaaaa;
+}
+
+.sub_navbar{
+    background-color: #e7f1fc;
 }
