@@ -42,12 +42,8 @@
                             <th scope="row">{{ forloop.counter }}</th>
                             <td>{{implication.from_tag}} {{implication.from_tag.get_count}}</td>
                             <td>{{implication.to_tag}} {{implication.to_tag.get_count}}</td>
-                            <td>{{implication.approver}}</td>
-                            {% if implication.approved == True %}
-                            <td>Approved</td>
-                            {% else %}
-                            <td>Pending</td>
-                            {% endif %}                            
+                            <td>{{implication.approver}}</td>                            
+                            <td>{{implication.get_status_display}}</td>                      
                             <td><a href="{% url 'booru:implication-detail' implication.id %}">Show</a></td>
                         </tr>
                         {% endfor %}
