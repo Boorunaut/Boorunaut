@@ -13,26 +13,31 @@
     {% include 'booru/navbar.html' %}
     <div class="container">
        <h1>Tag alias: {{object.from_tag}} → {{object.to_tag}}</h1> 
-        
+        <div class="row mt-4">
+        </div>
         <div class="row">
             <div id="table" class="col mt-3">
-                <table class="table">
+                <table class="table table-sm">
                     <tbody>
                         <tr>
-                            <td>From:</td>
+                            <td><strong>From:</strong></td>
                             <td>{{object.from_tag}}</td>
                         </tr>
                         <tr>
-                            <td>To:</td>
+                            <td><strong>To:</strong></td>
                             <td>{{object.to_tag}}</td>
                         </tr>
                         <tr>
-                            <td>Creator:</td>
+                            <td><strong>Creator:</strong></td>
                             <td>{{object.author}}</td>
                         </tr>
                         <tr>
-                            <td>Date:</td>
+                            <td><strong>Date:</strong></td>
                             <td>{{object.timestamp}}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Approver:</strong></td>
+                            <td>{{object.approver}}</td>
                         </tr>
                     </tbody>
                 </table>
