@@ -37,18 +37,18 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for implication in object_list %}
+                        {% for alias in object_list %}
                         <tr>
                             <th scope="row">{{ forloop.counter }}</th>
-                            <td>{{implication.from_tag}} {{implication.from_tag.get_count}}</td>
-                            <td>{{implication.to_tag}} {{implication.to_tag.get_count}}</td>
-                            <td>{{implication.approver}}</td>
-                            {% if implication.approved == True %}
+                            <td>{{alias.from_tag}} {{alias.from_tag.get_count}}</td>
+                            <td>{{alias.to_tag}} {{alias.to_tag.get_count}}</td>
+                            <td>{{alias.approver}}</td>
+                            {% if alias.approved == True %}
                             <td>Approved</td>
                             {% else %}
                             <td>Pending</td>
                             {% endif %}                            
-                            <td><a href="{% url 'booru:implication-detail' implication.id %}">Show</a></td>
+                            <td><a href="{% url 'booru:alias-detail' alias.id %}">Show</a></td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -56,7 +56,7 @@
 
                 <nav aria-label="..." class="mt-3">
                     <ul class="pagination">
-                        {% if page.has_previous %}
+                        {% if page_obj.has_previous %}
                             <li class="page-item">
                                 <a class="page-link" href="?page={{page_obj.previous_page_number}}" tabindex="-1">Previous</a>
                             </li>
@@ -65,18 +65,18 @@
                                 <a class="page-link" href="#" tabindex="-1">Previous</a>
                             </li>
                         {% endif %}
-                        {% for i in page.paginator.page_range %}
-                            {% if page.number == i %}
+                        {% for i in page_obj.paginator.page_range %}
+                            {% if page_obj.number == i %}
                             <li class="page-item active">
                                 <a class="page-link" href="{% url 'booru:tags_page_list' i %}">{{i}} <span class="sr-only">(current)</span></a>
                             </li>
-                            {% elif i > page.number|add:'-3' and i < page.number|add:'3' %}
+                            {% elif i > page_obj.number|add:'-3' and i < page_obj.number|add:'3' %}
                             <li class="page-item">
                                 <a class="page-link" href="{% url 'booru:tags_page_list' i %}">{{i}}</a>
                             </li>
                             {% endif %}
                         {% endfor %}
-                        {% if page.has_next %}
+                        {% if page_obj.has_next %}
                             <li class="page-item">
                                 <a class="page-link" href="?page={{page_obj.next_page_number}}">Next</a>
                             </li>
