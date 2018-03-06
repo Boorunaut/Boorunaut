@@ -1,12 +1,14 @@
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views import generic
 
-from .forms import CreatePostForm, EditPostForm, TagEditForm, TagListSearchForm
+from . import utils
+from .forms import (AliasCreateForm, CreatePostForm, EditPostForm,
+                    ImplicationCreateForm, TagEditForm, TagListSearchForm)
 from .models import Alias, Implication, Post, PostTag, TaggedPost
-from .utils import space_splitter
 
 
 def index(request):
@@ -38,7 +40,7 @@ def upload(request):
 
 def post_list_detail(request, page_number = 1):
     tags = request.GET.get("tags", "")
-    tags = space_splitter(tags)
+    tags = utils.space_splitter(tags)
 
     posts = Post.objects.all()
     if len(tags) > 0:
@@ -114,3 +116,77 @@ class AliasListView(generic.ListView):
 
 class AliasDetailView(generic.DetailView):
     model = Alias
+
+@login_required
+def alias_create(request):    
+    form = AliasCreateForm(data=request.POST)
+    
+    if form.is_valid():
+        from_tag_name = form.cleaned_data['from_tag']
+        to_tag_name = form.cleaned_data['to_tag']
+
+        from_tag, from_tag_created = PostTag.objects.get_or_create(name=from_tag_name)
+        to_tag, from_tag_created = PostTag.objects.get_or_create(name=to_tag_name)
+
+        alias, alias_created = Alias.objects.get_or_create(from_tag=from_tag, to_tag=to_tag)
+        alias.author = request.user
+        alias.save()
+        return redirect('booru:alias-detail', alias.id)
+
+    return render(request, 'booru/alias_create.html', { "form": form })
+
+@login_required
+def implication_create(request):    
+    form = ImplicationCreateForm(data=request.POST)
+    
+    if form.is_valid():
+        from_tag_name = form.cleaned_data['from_tag']
+        to_tag_name = form.cleaned_data['to_tag']
+
+        from_tag, from_tag_created = PostTag.objects.get_or_create(name=from_tag_name)
+        to_tag, from_tag_created = PostTag.objects.get_or_create(name=to_tag_name)
+
+        implication, implication_created = Implication.objects.get_or_create(from_tag=from_tag, to_tag=to_tag)
+        implication.author = request.user
+        implication.save()
+        return redirect('booru:implication-detail', implication.id)
+
+    return render(request, 'booru/implication_create.html', { "form": form })
+
+@staff_member_required
+def implication_approve(request, implication_id):
+    implication = Implication.objects.get(id=implication_id)
+
+    if implication.status == 0:
+        implication.status = 1
+        implication.approver = request.user
+        implication.save()
+    
+    utils.verify_and_perform_aliases_and_implications(implication.from_tag)
+    return redirect('booru:implication-detail', implication.id)
+
+@staff_member_required
+def alias_approve(request, alias_id):
+    alias = Alias.objects.get(id=alias_id)
+
+    if alias.status == 0:
+        alias.status = 1
+        alias.approver = request.user
+        alias.save()
+    
+    utils.verify_and_perform_aliases_and_implications(alias.from_tag)    
+    return redirect('booru:alias-detail', alias.id)
+
+@staff_member_required
+def implication_disapprove(request, implication_id):
+    implication = Implication.objects.get(id=implication_id)
+    implication.status = 2
+    implication.save()
+    return redirect('booru:implication-detail', implication.id)
+
+@staff_member_required
+def alias_disapprove(request, alias_id):
+    alias = Alias.objects.get(id=alias_id)
+    alias.status = 2
+    alias.save()    
+    return redirect('booru:alias-detail', alias.id)

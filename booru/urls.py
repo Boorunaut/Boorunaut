@@ -18,4 +18,12 @@ urlpatterns = [
     path('tag_implications/<int:pk>/', views.ImplicationDetailView.as_view(), name='implication-detail'),
     path('tag_aliases', views.AliasListView.as_view(), name='alias-list'),
     path('tag_aliases/<int:pk>/', views.AliasDetailView.as_view(), name='alias-detail'),
+
+    url(r'^tag_alias_request/$', views.alias_create, name='alias_create'),
+    url(r'^tag_implication_request/$', views.implication_create, name='implication_create'),
+
+    url(r'^tag_aliases/(?P<alias_id>[0-9]+)/approve/$', views.alias_approve, name='alias_approve'),
+    url(r'^tag_implications/(?P<implication_id>[0-9]+)/approve/$', views.implication_approve, name='implication_approve'),
+    url(r'^tag_aliases/(?P<alias_id>[0-9]+)/disapprove/$', views.alias_disapprove, name='alias_disapprove'),
+    url(r'^tag_implications/(?P<implication_id>[0-9]+)/disapprove/$', views.implication_disapprove, name='implication_disapprove'),
 ]

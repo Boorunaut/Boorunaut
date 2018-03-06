@@ -39,8 +39,18 @@
                             <td><strong>Approver:</strong></td>
                             <td>{{object.approver}}</td>
                         </tr>
+                        <tr>
+                            <td><strong>Status:</strong></td>
+                            <td>{{object.get_status_display}}</td>
+                        </tr>
                     </tbody>
                 </table>
+                {% if request.user.is_staff %}
+                <div class="row">
+                    <a href="{% url 'booru:alias_approve' object.id %}" class="btn btn-success btn-sm">Approve</a>
+                    <a href="{% url 'booru:alias_disapprove' object.id %}" class="btn btn-danger btn-sm">Dispprove</a>
+                </div>
+                {% endif %}
             </div>
         </div>
     </div>

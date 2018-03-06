@@ -43,11 +43,7 @@
                             <td>{{alias.from_tag}} {{alias.from_tag.get_count}}</td>
                             <td>{{alias.to_tag}} {{alias.to_tag.get_count}}</td>
                             <td>{{alias.approver}}</td>
-                            {% if alias.approved == True %}
-                            <td>Approved</td>
-                            {% else %}
-                            <td>Pending</td>
-                            {% endif %}                            
+                            <td>{{alias.get_status_display}}</td>      
                             <td><a href="{% url 'booru:alias-detail' alias.id %}">Show</a></td>
                         </tr>
                         {% endfor %}
