@@ -31,12 +31,13 @@ class EditPostForm(forms.ModelForm):
     class Meta:
         model = Post
         fields = ["rating", "parent", "source", "tags"]
-        widgets = {
-            'rating': forms.Select(attrs={'class': 'form-control'}),
-            'parent': forms.NumberInput(attrs={'class': 'form-control'}),
-            'source': forms.TextInput(attrs={'class': 'form-control'}),
-            'tags': TagWidget(attrs={'class': 'form-control'}),
-        }
+
+    def __init__(self, *args, **kwargs):
+        super(EditPostForm, self).__init__(*args, **kwargs)
+        self.fields['rating'].widget = forms.Select(attrs={'class': 'form-control'})
+        self.fields['parent'].widget = forms.NumberInput(attrs={'class': 'form-control'})
+        self.fields['source'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        self.fields['tags'].widget = TagWidget(attrs={'class': 'form-control'})
 
 class TagListSearchForm(forms.Form):
     '''Form for creating an post.'''
