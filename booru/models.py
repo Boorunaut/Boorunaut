@@ -107,7 +107,7 @@ class TaggedPost(GenericTaggedItemBase):
         utils.verify_and_perform_aliases_and_implications(tag_name)
 
 class Post(models.Model):
-    parent = models.IntegerField(null=True)
+    parent = models.IntegerField(null=True, blank=True)
     preview = models.ImageField(upload_to=get_file_path_preview, blank=True)
     sample = models.ImageField(upload_to=get_file_path_sample, blank=True)
     image = models.ImageField(upload_to=get_file_path_image, blank=True)

@@ -23,25 +23,35 @@ class CreatePostForm(forms.ModelForm):
 
 class EditPostForm(forms.ModelForm):
     '''Form for editing an post.'''    
-    rating = forms.ChoiceField(choices=Post.RATING_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
-    parent = forms.IntegerField(required=False, widget=forms.NumberInput(attrs={'class': 'form-control'}))
-    source = forms.URLField(widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
-    tags = TagField(widget=TagWidget(attrs={'class': 'form-control'}), required=False)
+    rating = forms.ChoiceField(choices=Post.RATING_CHOICES)
+    parent = forms.IntegerField(required=False)
+    source = forms.URLField(required=False)
+    tags = TagField(required=False)
 
     class Meta:
         model = Post
         fields = ["rating", "parent", "source", "tags"]
+        widgets = {
+            'rating': forms.Select(attrs={'class': 'form-control'}),
+            'parent': forms.NumberInput(attrs={'class': 'form-control'}),
+            'source': forms.TextInput(attrs={'class': 'form-control'}),
+            'tags': TagWidget(attrs={'class': 'form-control'}),
+        }
 
 class TagListSearchForm(forms.Form):
     '''Form for creating an post.'''
 
-    tags = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control form-control-sm'}), required=False)
+    tags = forms.CharField(required=False)
     category = forms.ModelChoiceField(queryset=Category.objects.all(),
                                     widget=forms.Select(attrs={'class': 'form-control form-control-sm'}),
                                     required=False, empty_label=None)
 
     class Meta:
         fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super(TagListSearchForm, self).__init__(*args, **kwargs)
+        self.fields['tags'].widget = forms.TextInput(attrs={'class': 'form-control form-control-sm'})
 
 class TagEditForm(forms.ModelForm):
     '''Form for creating an post.'''
@@ -55,15 +65,25 @@ class TagEditForm(forms.ModelForm):
         fields = ["category"]
 
 class AliasCreateForm(forms.Form):
-    from_tag = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), required=True)
-    to_tag = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), required=True)
+    from_tag = forms.CharField(required=True)
+    to_tag = forms.CharField(required=True)
 
     class Meta:
         fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super(AliasCreateForm, self).__init__(*args, **kwargs)
+        self.fields['from_tag'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        self.fields['to_tag'].widget = forms.TextInput(attrs={'class': 'form-control'})
 
 class ImplicationCreateForm(forms.Form):
-    from_tag = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), required=True)
-    to_tag = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), required=True)
+    from_tag = forms.CharField(required=True)
+    to_tag = forms.CharField(required=True)
 
     class Meta:
         fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super(ImplicationCreateForm, self).__init__(*args, **kwargs)
+        self.fields['from_tag'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        self.fields['to_tag'].widget = forms.TextInput(attrs={'class': 'form-control'})
