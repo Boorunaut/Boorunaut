@@ -9,20 +9,7 @@
 {% endblock %}
 
 {% block body %}
-    {% load static %}
-    {% include 'booru/navbar.html' %}
     <div class="container">
-        <form>
-            <div class="form-row mt-3 mb-3">
-                <div class="col">
-                    <input class="form-control form-control-sm" type="search" aria-label="Search" placeholder="Ex: super_mario_odyssey">
-                </div>
-                <div class="col-1">
-                    <button class="btn btn-sm btn-primary" type="submit">Search</button>
-                </div>
-            </div>
-        </form>
-
         <div class="row">
             <div id="sidebar" class="col-3">
                 {% for category, tags in ordered_tags.items %}
@@ -50,7 +37,7 @@
                     <div class="row col">Date: {{post.timestamp}}</div>
                     <div class="row col">Size: #TODO</div>
                     <div class="row col d-inline-block text-truncate">Source: {{post.source}}</div>
-                    <div class="row col">Rating: {{post.rating}}</div>
+                    <div class="row col">Rating: {{post.get_rating_display}}</div>
                     <div class="row col">Score: #TODO</div>
                     <div class="row col">Favorites: #TODO</div>
                     <div class="row col">Status: #TODO</div>

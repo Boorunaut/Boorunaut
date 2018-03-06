@@ -5,15 +5,21 @@ from taggit.forms import TagField, TagWidget
 class CreatePostForm(forms.ModelForm):
     '''Form for creating an post.'''
 
-    image = forms.ImageField(widget=forms.FileInput(attrs={'class': 'custom-file-input'}), required=True)
+    image = forms.ImageField(required=True)
     sample = forms.ImageField(required=False)
     preview = forms.ImageField(required=False)
-    tags = TagField(widget=forms.TextInput(attrs={'class': 'form-control'}), required=True)
-    source = forms.URLField(widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
+    tags = TagField(required=True)
+    source = forms.URLField(required=False)
 
     class Meta:
         model = Post
         fields = ["image", "sample", "preview", "source", "tags"]
+
+    def __init__(self, *args, **kwargs):
+        super(CreatePostForm, self).__init__(*args, **kwargs)
+        self.fields['image'].widget = forms.FileInput(attrs={'class': 'custom-file-input'})
+        self.fields['source'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        self.fields['tags'].widget = forms.TextInput(attrs={'class': 'form-control'})
 
 class EditPostForm(forms.ModelForm):
     '''Form for editing an post.'''    

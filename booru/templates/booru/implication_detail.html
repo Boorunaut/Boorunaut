@@ -9,10 +9,8 @@
 {% endblock %}
 
 {% block body %}
-    {% load static %}
-    {% include 'booru/navbar.html' %}
     <div class="container">
-        <div class="row mt-4">
+        <div class="row">
             <h1>Tag implication: {{object.from_tag}} → {{object.to_tag}}</h1>
         </div>
         <div class="row">

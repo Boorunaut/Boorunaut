@@ -1,20 +1,23 @@
-from django.utils.http import is_safe_url
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
-from django.contrib.auth import REDIRECT_FIELD_NAME, login as auth_login, logout as auth_logout, authenticate
+from django.contrib.auth import login as auth_login
+from django.contrib.auth import logout as auth_logout
+from django.contrib.auth import REDIRECT_FIELD_NAME, authenticate
+from django.http import HttpResponseRedirect
 from django.utils.decorators import method_decorator
+from django.utils.http import is_safe_url
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import FormView, RedirectView
-from django.shortcuts import render
-from .forms import UserRegisterForm
+
+from .forms import UserAuthenticationForm, UserRegisterForm
+
 
 class LoginView(FormView):
     """
     Provides the ability to login as a user with a username and password
     """
     success_url = '/post/list'
-    form_class = AuthenticationForm
+    form_class = UserAuthenticationForm
     redirect_field_name = REDIRECT_FIELD_NAME
     template_name = "account/login.html"
 
@@ -22,6 +25,9 @@ class LoginView(FormView):
     @method_decorator(csrf_protect)
     @method_decorator(never_cache)
     def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return HttpResponseRedirect('/post/list')
+        
         # Sets a test cookie to make sure the user has cookies enabled
         request.session.set_test_cookie()
 
@@ -55,7 +61,8 @@ class LogoutView(RedirectView):
 
 class RegisterView(FormView):
     """
-    Provides the ability to a visitor to register as new user with a username and password
+    Provides the ability to a visitor to register as new user 
+    with an username, an email and a password
     """
     success_url = '/post/list'
     form_class = UserRegisterForm
@@ -67,6 +74,9 @@ class RegisterView(FormView):
     @method_decorator(csrf_protect)
     @method_decorator(never_cache)
     def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return HttpResponseRedirect('/post/list')
+
         # Sets a test cookie to make sure the user has cookies enabled
         request.session.set_test_cookie()
 

@@ -9,21 +9,21 @@
 {% endblock %}
 
 {% block body %}
-    {% load static %}
-    {% include 'booru/navbar.html' %}
     <div class="container">
-        <div class="row mt-3 mb-3">
+        <div class="row">
             <div id="upload" class="col">
+                <h1>Upload</h1>
+                
                 <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
-                    {{ form.is_front_paged.errors }}
 
                     <div class="form-group row">
-                        <label for="{{ form.image.auto_id }}" class="col-1 col-form-label">{{ form.image.label }}</label>
+                        <label class="col-1 col-form-label">{{ form.image.label }}</label>
                         
                         <div class="col-4">
                             {{form.image}}
                             <span class="custom-file-control"></span>
+                            <label class="custom-file-label ml-3 mr-3" for="{{ form.image.auto_id }}">Choose file</label>
                         </div>
 
                         {% if form.image.errors %}
