@@ -48,7 +48,7 @@ def post_list_detail(request, page_number = 1):
             posts = posts.filter(tags__name__in=[tag])
 
     page_limit = 4
-    posts = Post.objects.all().order_by('id')
+    posts = posts.order_by('id')
     p = Paginator(posts, page_limit)
     page = p.page(page_number)
     post_list = page.object_list

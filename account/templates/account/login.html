@@ -9,16 +9,13 @@
 {% endblock %}
 
 {% block body %}
-    {% load static %}
-    {% include 'booru/navbar.html' %}
     <div class="container">
-        <div class="row mt-3 mb-3">
+        <div class="row">
             <div class="col">
                 <h1>Login</h1>
 
                 <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
-                    {{ form.is_front_paged.errors }}
 
                     <div class="form-group row">
                         <label for="{{ form.username.auto_id }}" class="col-1 col-form-label">{{ form.username.label }}</label>
@@ -43,9 +40,9 @@
                             <span class="custom-file-control"></span>
                         </div>
 
-                        {% if form.password.errors %}
+                        {% if not form.username.errors and form.errors %}
                         <div class="col-md-offset-2 col-8 has-errors text-danger small">
-                            {{form.password.errors}}
+                            The given password is incorrect.
                         </div>
                         {% endif %}
                     </div>
