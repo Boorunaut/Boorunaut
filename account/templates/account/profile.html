@@ -34,7 +34,7 @@
                     <tbody>
                         <tr>
                             <th scope="row">Joined</th>
-                            <td>{{account_data.date_joined|date:"m/d/y"}}</td>
+                            <td title="{{account_data.date_joined}}">{{account_data.date_joined|date:"Y-m-d"}}</td>
                         </tr>
                         <tr>
                             <th scope="row">Posts</th>
@@ -77,6 +77,21 @@
                 </div>
                 <div class="col">
                     <h3>Recent Uploads</h3>
+
+                    <table class="table table-sm mt-3">
+                        <tbody>
+                            {% for post in account_data.last_posts|slice:":5" %}
+                            <tr>
+                                <td><a href="{% url 'booru:post_detail' post.id %}"><img src='{{post.preview.url}}' style="width:100px;"></a></td>
+                                <td class="align-middle">Uploaded #<a href="{% url 'booru:post_detail' post.id %}">{{post.id}}</a> <span title="{{post.timestamp}}">{{post.timestamp|date:"Y/m/d f A"}}</span></td>
+                            </tr>
+                            {% endfor %}
+                            
+                        </tbody>
+                    </table>
+
+                    
+
                 </div>
             </div>
             <div class="col-4">

@@ -121,7 +121,8 @@ def profile(request, account_slug):
         'username' : account.username,
         'avatar_image' : account_image,
         'date_joined' : account.date_joined,
-        'post_count' : account.get_posts().count()
+        'post_count' : account.get_posts().count(),
+        'last_posts' : account.get_posts().order_by('-id')
     }
 
     return render(request, 'account/profile.html', { 'account_data' : account_data })
