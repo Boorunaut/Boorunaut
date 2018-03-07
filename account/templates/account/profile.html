@@ -1,0 +1,87 @@
+{% extends 'booru/base.html' %}
+
+{% block css %}
+    {% load staticfiles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'booru/css/index.css' %}"/>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <h1>Profile</h1>
+            </div>
+
+            <div class="col-2">
+                <div class="col text-center">
+                    <strong>{{account_data.username}}</strong>
+                </div>
+
+                <div class="col text-center">
+                    <span class="text-muted">(User role here)</span>
+                </div>
+
+                {% if account_data.avatar_image %}
+                <div class="col">
+                    <img class="mx-auto d-block" src='{{account_data.avatar_image.url}}'>
+                </div>
+                {% endif %}
+
+                <table class="table table-sm mt-3">
+                    <tbody>
+                        <tr>
+                            <th scope="row">Joined</th>
+                            <td>{{account_data.date_joined|date:"m/d/y"}}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Posts</th>
+                            <td>{{account_data.post_count}}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Deleted Posts</th>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Favorites</th>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Comments</th>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Tag Edits</th>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Note Edits</th>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Forum Posts</th>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Record +</th>
+                            <td>-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-6">
+                <div class="col">
+                    <h3>Recent Favorites</h3>
+                </div>
+                <div class="col">
+                    <h3>Recent Uploads</h3>
+                </div>
+            </div>
+            <div class="col-4">
+                <h3>About myself</h3>
+            </div>
+        </div>
+    </div>
+{% endblock %}

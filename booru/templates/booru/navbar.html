@@ -23,7 +23,7 @@
             <li class="nav-item active">
                 <a class="nav-link" href="#">Settings</a>
             </li>
-            {% if not request.user.is_authenticated %}
+            {% if not user.is_authenticated %}
             <li class="nav-item active">
                 <a class="nav-link" href="{% url 'account:register' %}">Register</a>
             </li>
@@ -31,6 +31,9 @@
                 <a class="nav-link" href="{% url 'account:login' %}">Login</a>
             </li>
             {% else %}
+            <li class="nav-item active">
+                <a class="nav-link" href="{{user.get_absolute_url}}">Profile</a>
+            </li>
             <li class="nav-item active">
                 <a class="nav-link" href="{% url 'account:logout' %}">Logout</a>
             </li>

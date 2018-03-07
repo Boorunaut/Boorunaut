@@ -2,12 +2,14 @@ from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth import REDIRECT_FIELD_NAME, authenticate
 from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render
 from django.utils.decorators import method_decorator
 from django.utils.http import is_safe_url
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import FormView, RedirectView
+from .models import Account
 
 from .forms import UserAuthenticationForm, UserRegisterForm
 
@@ -103,3 +105,23 @@ class RegisterView(FormView):
         if not is_safe_url(url=redirect_to, host=self.request.get_host()):
             redirect_to = self.success_url
         return redirect_to
+
+def profile(request, account_slug):
+    account = get_object_or_404(Account, slug=account_slug)
+
+    # TODO: I don't remember if I can safely pass account as 
+    # an parameter to the render.
+
+    if account.avatar:
+        account_image = account.avatar.preview
+    else:
+        account_image = None
+
+    account_data = {
+        'username' : account.username,
+        'avatar_image' : account_image,
+        'date_joined' : account.date_joined,
+        'post_count' : account.get_posts().count()
+    }
+
+    return render(request, 'account/profile.html', { 'account_data' : account_data })
