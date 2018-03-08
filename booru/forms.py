@@ -35,7 +35,7 @@ class CreatePostForm(forms.ModelForm):
 
 class EditPostForm(forms.ModelForm):
     '''Form for editing an post.'''    
-    rating = forms.ChoiceField()
+    rating = forms.IntegerField()
     parent = forms.IntegerField(required=False)
     source = forms.URLField(required=False)
     tags = TagField(required=False)
@@ -45,7 +45,7 @@ class EditPostForm(forms.ModelForm):
         fields = ["rating", "parent", "source", "tags"]
 
     def __init__(self, *args, **kwargs):
-        super(EditPostForm, self).__init__(*args, **kwargs)        
+        super(EditPostForm, self).__init__(*args, **kwargs)
         self.fields['rating'].widget = forms.Select(attrs={'class': 'form-control'},
                                                     choices=Post.RATING_CHOICES)
         self.fields['parent'].widget = forms.NumberInput(attrs={'class': 'form-control'})
