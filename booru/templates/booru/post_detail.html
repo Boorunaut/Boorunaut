@@ -33,7 +33,7 @@
                         <span class="font-weight-bold">Information</span>
                     </div>
                     <div class="row col">ID: {{post.id}}</div>
-                    <div class="row col">Uploader: {{post.uploader}}</div>
+                    <div class="row col">Uploader: <a href="{{post.uploader.get_absolute_url}}">{{post.uploader}}</a></div>
                     <div class="row col">Date: {{post.timestamp}}</div>
                     <div class="row col">Size: #TODO</div>
                     <div class="row col d-inline-block text-truncate">Source: {{post.source}}</div>

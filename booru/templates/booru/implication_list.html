@@ -40,7 +40,7 @@
                             <th scope="row">{{ forloop.counter }}</th>
                             <td>{{implication.from_tag}} {{implication.from_tag.get_count}}</td>
                             <td>{{implication.to_tag}} {{implication.to_tag.get_count}}</td>
-                            <td>{{implication.approver}}</td>                            
+                            <td><a href="{{implication.approver.get_absolute_url}}">{{implication.approver}}</a></td>                            
                             <td>{{implication.get_status_display}}</td>                      
                             <td><a href="{% url 'booru:implication-detail' implication.id %}">Show</a></td>
                         </tr>
