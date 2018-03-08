@@ -27,3 +27,6 @@ class Account(AbstractUser):
     def get_posts(self):
         Post = apps.get_model('booru', 'Post')
         return Post.objects.all().filter(uploader=self)
+
+    def get_favorites_count(self):
+        return self.favorite_set.count()

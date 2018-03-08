@@ -20,9 +20,14 @@ def post_detail(request, post_id):
 
     if request.method == "POST" and form.is_valid():
         post = form.save()
+        return redirect('booru:post_detail', post_id=post.id)
+
+    previous_post = Post.objects.filter(id=post.id - 1).first() or None
+    next_post = Post.objects.filter(id=post.id + 1).first() or None
 
     ordered_tags = post.get_ordered_tags()
-    return render(request, 'booru/post_detail.html', {"post": post, "ordered_tags": ordered_tags, "form": form})
+    return render(request, 'booru/post_detail.html', {"post": post, "ordered_tags": ordered_tags, "form": form,
+                                                      "previous_post": previous_post, "next_post": next_post})
 
 @login_required
 def upload(request):    

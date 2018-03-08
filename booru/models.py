@@ -176,8 +176,9 @@ class Post(models.Model):
 
     def get_ordered_tags(self):
         ordered_tags = {}
+        tags = self.tags.all().order_by('category')
         
-        for tag in self.tags.all():
+        for tag in tags:
             try:
                 ordered_tags[tag.category]
             except:
@@ -185,3 +186,24 @@ class Post(models.Model):
             ordered_tags[tag.category].append(tag)
         
         return ordered_tags
+
+    def get_score_count(self):
+        return self.scorevote_set.count()
+
+    def get_favorites_count(self):
+        return self.favorite_set.count()
+
+class Favorite(models.Model):
+    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('account', 'post',)
+
+class ScoreVote(models.Model):
+    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    point = models.IntegerField(default=1)
+
+    class Meta:
+        unique_together = ('account', 'post',)
