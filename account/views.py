@@ -111,18 +111,13 @@ def profile(request, account_slug):
 
     # TODO: I don't remember if I can safely pass account as 
     # an parameter to the render.
-
-    if account.avatar:
-        account_image = account.avatar.preview
-    else:
-        account_image = None
-
-    account_data = {
-        'username' : account.username,
-        'avatar_image' : account_image,
-        'date_joined' : account.date_joined,
-        'post_count' : account.get_posts().count(),
-        'last_posts' : account.get_posts().order_by('-id')
+    
+    context = {
+        'account' : account,
+        'user_role' : "(User role here)", #TODO: This
+        'recent_favorites' : [], #TODO: This
+        'recent_uploads' : account.get_posts().not_deleted().order_by('-id'),
+        'deleted_posts' : account.get_posts().deleted(),
     }
 
-    return render(request, 'account/profile.html', { 'account_data' : account_data })
+    return render(request, 'account/profile.html', context)

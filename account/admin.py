@@ -5,7 +5,7 @@ from .models import Account
 # Define a new User admin
 class UserAdmin(BaseUserAdmin):
     fieldsets = BaseUserAdmin.fieldsets + (
-            (None, {'fields': ('avatar', 'slug', 'email_activated', 'comments_locked')}),
+            (None, {'fields': ('avatar', 'slug', 'email_activated', 'comments_locked', 'about')}),
     )
 
 admin.site.register(Account, UserAdmin)

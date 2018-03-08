@@ -9,6 +9,7 @@ class Account(AbstractUser):
     slug            = models.SlugField(max_length=250, default="", blank=True)
     email_activated = models.BooleanField(default=False)
     comments_locked = models.BooleanField(default=False)
+    about           = models.CharField(max_length=2500, blank=True)
 
     def save(self, *args, **kwargs):
 
