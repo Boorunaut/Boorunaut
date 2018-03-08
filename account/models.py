@@ -6,3 +6,6 @@ class Account(AbstractUser):
     slug            = models.SlugField(max_length=250, default="", blank=True)
     email_activated = models.BooleanField(default=False)
     comments_locked = models.BooleanField(default=False)
+
+    def get_favorites_count(self):
+        return self.favorite_set.count()
