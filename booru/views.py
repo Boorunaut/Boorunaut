@@ -20,6 +20,7 @@ def post_detail(request, post_id):
 
     if request.method == "POST" and form.is_valid():
         post = form.save()
+        return redirect('booru:post_detail', post_id=post.id)
 
     previous_post = Post.objects.filter(id=post.id - 1).first() or None
     next_post = Post.objects.filter(id=post.id + 1).first() or None
