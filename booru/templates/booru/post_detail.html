@@ -136,35 +136,34 @@
                 <div class="row mb-3">
                     <img src="{{post.get_sample_url}}" alt="">
                 </div>                
-                <div class="row">
-                    <button id="show_edit_form" class="btn btn-primary btn-sm">Edit</button>
+                <div class="row mt-2 mb-4">
+                    <button id="show_edit_form" class="btn btn-primary btn">Edit</button>
+                </div>
+                <div id="edit" class="col-6" style="display: none;">
+                    <form method="post" action="." enctype="multipart/form-data">
+                        {% csrf_token %}
+        
+                        {% for field in form %}
+                        <div class="form-group">
+                            <label for="{{field.auto_id}}">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.errors %}
+                            <div class="invalid-feedback">
+                                {{field.errors}}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+        
+                        <div class="form-group">
+                            <div class="col">
+                                <button type="submit" id="send" class="btn btn-primary submit-media">Submit</button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>        
-
-        <div id="edit" class="col-6" style="display: none;">
-            <form method="post" action="." enctype="multipart/form-data">
-                {% csrf_token %}
-
-                {% for field in form %}
-                <div class="form-group">
-                    <label for="{{field.auto_id}}">{{ field.label }}</label>
-                    {{ field }}
-                    {% if field.errors %}
-                    <div class="invalid-feedback">
-                        {{field.errors}}
-                    </div>
-                    {% endif %}
-                </div>
-                {% endfor %}
-
-                <div class="form-group">
-                    <div class="col">
-                        <button type="submit" id="send" class="btn btn-primary submit-media">Submit</button>
-                    </div>
-                </div>
-            </form>
-        </div>
     </div>
 
 <script>

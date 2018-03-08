@@ -1,6 +1,18 @@
 from django import forms
-from .models import Post, Category, PostTag
+from django.contrib.admin.widgets import AdminTextareaWidget
+from django.utils import six
 from taggit.forms import TagField, TagWidget
+from taggit.utils import edit_string_for_tags
+
+from .models import Category, Post, PostTag
+
+
+class TaggitAdminTextareaWidget(AdminTextareaWidget):
+    # taken from taggit.forms.TagWidget
+    def render(self, name, value, attrs=None):
+        if value is not None and not isinstance(value, six.string_types):
+            value = edit_string_for_tags([o.tag for o in value.select_related("tag")])
+        return super(TaggitAdminTextareaWidget, self).render(name, value, attrs)
 
 class CreatePostForm(forms.ModelForm):
     '''Form for creating an post.'''
@@ -23,7 +35,7 @@ class CreatePostForm(forms.ModelForm):
 
 class EditPostForm(forms.ModelForm):
     '''Form for editing an post.'''    
-    rating = forms.ChoiceField(choices=Post.RATING_CHOICES)
+    rating = forms.ChoiceField()
     parent = forms.IntegerField(required=False)
     source = forms.URLField(required=False)
     tags = TagField(required=False)
@@ -33,11 +45,12 @@ class EditPostForm(forms.ModelForm):
         fields = ["rating", "parent", "source", "tags"]
 
     def __init__(self, *args, **kwargs):
-        super(EditPostForm, self).__init__(*args, **kwargs)
-        self.fields['rating'].widget = forms.Select(attrs={'class': 'form-control'})
+        super(EditPostForm, self).__init__(*args, **kwargs)        
+        self.fields['rating'].widget = forms.Select(attrs={'class': 'form-control'},
+                                                    choices=Post.RATING_CHOICES)
         self.fields['parent'].widget = forms.NumberInput(attrs={'class': 'form-control'})
         self.fields['source'].widget = forms.TextInput(attrs={'class': 'form-control'})
-        self.fields['tags'].widget = TagWidget(attrs={'class': 'form-control'})
+        self.fields['tags'].widget = TaggitAdminTextareaWidget(attrs={'class': 'form-control'})
 
 class TagListSearchForm(forms.Form):
     '''Form for creating an post.'''
