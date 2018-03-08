@@ -7,6 +7,7 @@ from taggit.managers import TaggableManager
 from taggit.models import TagBase, GenericTaggedItemBase
 from . import utils
 from django.urls import reverse
+from .managers import PostManager
 
 def get_file_path(instance, filename):
     ext = filename.split('.')[-1]
@@ -120,6 +121,8 @@ class Post(models.Model):
     identifier = models.UUIDField(default=uuid.uuid4, editable=False)
     locked = models.BooleanField(default=False)
     tags = TaggableManager(through=TaggedPost, related_name="posts")
+
+    objects = PostManager()
 
     NONE = 0
     SAFE = 1

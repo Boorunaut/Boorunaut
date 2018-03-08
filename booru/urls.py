@@ -1,5 +1,6 @@
 from django.urls import re_path, path
 
+import account.views
 from . import views
 
 app_name = "booru"
@@ -25,5 +26,5 @@ urlpatterns = [
     re_path(r'^tag_implications/(?P<implication_id>[0-9]+)/approve/$', views.implication_approve, name='implication_approve'),
     re_path(r'^tag_aliases/(?P<alias_id>[0-9]+)/disapprove/$', views.alias_disapprove, name='alias_disapprove'),
     re_path(r'^tag_implications/(?P<implication_id>[0-9]+)/disapprove/$', views.implication_disapprove, name='implication_disapprove'),
-    re_path(r'^profile/(?P<account_slug>[\w-]+)/$', account_views.profile, name='profile'),
+    re_path(r'^profile/(?P<account_slug>[\w-]+)/$', account.views.profile, name='profile'),
 ]

@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'booru.apps.BooruConfig',
     # Dependency apps
     'taggit',
+    'markdown_deux',
 ]
 
 MIDDLEWARE = [

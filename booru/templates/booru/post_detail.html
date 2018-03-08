@@ -86,6 +86,7 @@
                     <div class="row col">
                         <span class="font-weight-bold">Information</span>
                     </div>
+                  
                     <table class="table table-sm mt-2 borderless" style="table-layout: fixed;">
                         <tbody>
                             <tr>
@@ -94,7 +95,7 @@
                             </tr>
                             <tr>
                                 <th scope="row">Uploader</th>
-                                <td>{{post.uploader}}</td>
+                                <td><a href="{{post.uploader.get_absolute_url}}">{{post.uploader}}</a></td>
                             </tr>
                             <tr>
                                 <th scope="row">Date</th>
