@@ -7,8 +7,6 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
 
-    replaces = [('booru', '0008_auto_20180308_0048'), ('booru', '0009_auto_20180308_0049'), ('booru', '0010_auto_20180308_0109')]
-
     dependencies = [
         ('booru', '0007_auto_20180305_2004'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
@@ -52,6 +50,10 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name='favorite',
+            unique_together={('account', 'post')},
+        ),
+        migrations.AlterUniqueTogether(
+            name='scorevote',
             unique_together={('account', 'post')},
         ),
     ]
