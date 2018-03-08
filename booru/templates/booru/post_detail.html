@@ -9,6 +9,8 @@
 {% endblock %}
 
 {% block body %}
+    {% load humanize %}
+    {% load number_converter %}
     <div class="container">
         <div class="row">
             <div id="sidebar" class="col-md-3 col">
@@ -71,7 +73,7 @@
                                         <a style="color: #{{category.color}};" href="#">{{tag}}</a>
                                     </td>
                                     {% endif %}
-                                    <td class="tag-count">{{tag.get_count}}</td>
+                                    <td class="tag-count">{{tag.get_count|number_converter}}</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -98,7 +100,7 @@
                                 <th scope="row">Date</th>
                                 <td>
                                     <time datetime="{{post.timestamp|date:'c'}}" title="{{post.timestamp|date}}">
-                                        {{post.timestamp|timesince}} ago
+                                        {{post.timestamp|naturaltime}}
                                     </time>
                                 </td>
                             </tr>
