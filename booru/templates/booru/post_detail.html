@@ -12,6 +12,36 @@
     <div class="container">
         <div class="row">
             <div id="sidebar" class="col-3">
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination justify-content-center">
+                        {% if previous_post %}
+                        <li class="page-item">
+                            <a class="page-link" href="{% url 'booru:post_detail' previous_post.id %}">
+                                <i class="fas fa-chevron-left"></i> Previous
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1">
+                                <i class="fas fa-chevron-left"></i> Previous
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% if next_post %}
+                        <li class="page-item">
+                            <a class="page-link" href="{% url 'booru:post_detail' next_post.id %}">
+                                Next <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#">
+                                Next <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
                 {% for category, tags in ordered_tags.items %}
                 <div class="col mb-3">
                     <div class="row col">
@@ -32,21 +62,56 @@
                     <div class="row col">
                         <span class="font-weight-bold">Information</span>
                     </div>
-                    <div class="row col">ID: {{post.id}}</div>
-                    <div class="row col">Uploader: {{post.uploader}}</div>
-                    <div class="row col">Date: {{post.timestamp}}</div>
-                    <div class="row col">Size: #TODO</div>
-                    <div class="row col d-inline-block text-truncate">Source: {{post.source}}</div>
-                    <div class="row col">Rating: {{post.get_rating_display}}</div>
-                    <div class="row col">Score: #TODO</div>
-                    <div class="row col">Favorites: #TODO</div>
-                    <div class="row col">Status: #TODO</div>
+                    <table class="table table-sm mt-2" style="table-layout: fixed;">
+                        <tbody>
+                            <tr>
+                                <th scope="row">ID</th>
+                                <td>{{post.id}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Uploader</th>
+                                <td>{{post.uploader}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Date</th>
+                                <td>
+                                    <time datetime="{{post.timestamp|date:'c'}}" title="{{post.timestamp|date}}">
+                                        {{post.timestamp|timesince}} ago
+                                    </time>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Size</th>
+                                <td>#TODO</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Source</th>
+                                <td class="text-truncate"><a href="{{post.source}}">{{post.source}}</a></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Rating</th>
+                                <td>{{post.get_rating_display}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Score</th>
+                                <td>{{post.get_score_count}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Favorites</th>
+                                <td>{{post.get_favorites_count}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Status</th>
+                                <td>{{post.get_status_display}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
             <div id="post" class="col">
                 <div class="row mb-3">
                     <img src="{{post.get_sample_url}}" alt="">
-                </div>
+                </div>                
                 <div class="row">
                     <button id="show_edit_form" class="btn btn-primary btn-sm">Edit</button>
                 </div>
