@@ -200,3 +200,6 @@ class ScoreVote(models.Model):
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     point = models.IntegerField(default=1)
+
+    class Meta:
+        unique_together = ('account', 'post',)
