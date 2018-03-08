@@ -173,8 +173,9 @@ class Post(models.Model):
 
     def get_ordered_tags(self):
         ordered_tags = {}
+        tags = self.tags.all().order_by('category')
         
-        for tag in self.tags.all():
+        for tag in tags:
             try:
                 ordered_tags[tag.category]
             except:
