@@ -195,3 +195,7 @@ def alias_disapprove(request, alias_id):
     alias.status = 2
     alias.save()    
     return redirect('booru:alias-detail', alias.id)
+
+@staff_member_required
+def staff_page(request):
+    return render(request, 'booru/staff_page.html', {})
