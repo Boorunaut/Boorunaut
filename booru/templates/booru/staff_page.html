@@ -1,4 +1,4 @@
-{% extends 'booru/base.html' %}
+{% extends 'booru/base_admin.html' %}
 
 {% block css %}
     {% load staticfiles %}
@@ -8,16 +8,24 @@
 {% block scripts %}
 {% endblock %}
 
-{% block body %}
-<div class="container-fluid">
+{% block content %}
+<div class="col-12 text-white bg-primary">
+    <h1 class="h4 text-uppercase p-3 mb-0"><i class="fas fa-chart-line mr-3"></i>Statistics</h1>
+</div>
+
+<div class="col bg-white align-middle p-4">
     <div class="row">
-        <div class="col-2 bg-dark sidebar fixed-top fixed-bottom" style="z-index: -1;"></div>
-        <div class="col">
-            <div class="row">
-                <div id="sidebar-menu" class="col-2 text-white">Menu text</div>
-                <div id="content" class="col">Content text</div>
+        <div class="col-1 mr-2">
+            <i class="fas fa-users align-top" style="font-size: 4.6875rem;"></i>
+        </div>
+        <div class="col-1 text-center">
+            <div class="col" style="font-size: 2.8125rem; height: 3.09375rem;">
+                {{accounts_registered}}
+            </div>
+            <div class="col">
+                <small>Users</small>
             </div>
         </div>
-    </div>
+    </div>  
 </div>
 {% endblock %}

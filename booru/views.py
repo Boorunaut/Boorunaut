@@ -4,6 +4,7 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views import generic
+from django.apps import apps
 
 from . import utils
 from .forms import (AliasCreateForm, CreatePostForm, EditPostForm,
@@ -198,4 +199,11 @@ def alias_disapprove(request, alias_id):
 
 @staff_member_required
 def staff_page(request):
-    return render(request, 'booru/staff_page.html', {})
+    Account = apps.get_model('account', 'Account')
+    accounts_registered = Account.objects.count()
+
+    context = {
+        'accounts_registered': accounts_registered
+    }
+
+    return render(request, 'booru/staff_page.html', context)
