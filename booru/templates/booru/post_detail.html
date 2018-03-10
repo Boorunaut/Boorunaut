@@ -11,167 +11,165 @@
 {% block body %}
     {% load humanize %}
     {% load number_converter %}
-    <div class="container">
-        <div class="row">
-            <div id="sidebar" class="col-md-3 col">
-                <nav aria-label="Page navigation example">
-                    <ul class="pagination justify-content-center">
-                        {% if previous_post %}
-                        <li class="page-item">
-                            <a class="page-link" href="{% url 'booru:post_detail' previous_post.id %}">
-                                <i class="fas fa-chevron-left"></i> Previous
-                            </a>
-                        </li>
-                        {% else %}
-                        <li class="page-item disabled">
-                            <a class="page-link" href="#" tabindex="-1">
-                                <i class="fas fa-chevron-left"></i> Previous
-                            </a>
-                        </li>
-                        {% endif %}
-                        {% if next_post %}
-                        <li class="page-item">
-                            <a class="page-link" href="{% url 'booru:post_detail' next_post.id %}">
-                                Next <i class="fas fa-chevron-right"></i>
-                            </a>
-                        </li>
-                        {% else %}
-                        <li class="page-item disabled">
-                            <a class="page-link" href="#">
-                                Next <i class="fas fa-chevron-right"></i>
-                            </a>
-                        </li>
-                        {% endif %}
-                    </ul>
-                </nav>
-                <div id="tag-tables" class="col">
-                    {% for category, tags in ordered_tags.items %}
-                    <div id="tag-table-{{category.label}}" class="mb-3">
-                        <div class="row col">
-                            <span class="font-weight-bold">{{category}}</span>
-                        </div>
-                        <table class="tag-table table-sm table borderless">
-                            <tbody>
-                                {% for tag in tags %}
-                                <tr>
-                                    {% if category.label == "general" %}
-                                    <th class="tag-wiki-link" scope="row">
-                                        <a href="#">
-                                            ?
-                                        </a>
-                                    </th>
-                                    <td class="tag-label">
-                                        <a href="#">{{tag}}</a>
-                                    </td>
-                                    {% else %}
-                                    <th class="tag-wiki-link" scope="row">
-                                        <a style="color: #{{category.color}};" href="#">
-                                            ?
-                                        </a>
-                                    </th>
-                                    <td class="tag-label">
-                                        <a style="color: #{{category.color}};" href="#">{{tag}}</a>
-                                    </td>
-                                    {% endif %}
-                                    <td class="tag-count">{{tag.get_count|number_converter}}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    {% endfor %}
-                </div>
-
-                <div class="col mb-3">
+    <div class="row">
+        <div id="sidebar" class="col-md-3 col">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-center">
+                    {% if previous_post %}
+                    <li class="page-item">
+                        <a class="page-link" href="{% url 'booru:post_detail' previous_post.id %}">
+                            <i class="fas fa-chevron-left"></i> Previous
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1">
+                            <i class="fas fa-chevron-left"></i> Previous
+                        </a>
+                    </li>
+                    {% endif %}
+                    {% if next_post %}
+                    <li class="page-item">
+                        <a class="page-link" href="{% url 'booru:post_detail' next_post.id %}">
+                            Next <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#">
+                            Next <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            <div id="tag-tables" class="col">
+                {% for category, tags in ordered_tags.items %}
+                <div id="tag-table-{{category.label}}" class="mb-3">
                     <div class="row col">
-                        <span class="font-weight-bold">Information</span>
+                        <span class="font-weight-bold">{{category}}</span>
                     </div>
-                  
-                    <table class="table table-sm mt-2 borderless" style="table-layout: fixed;">
+                    <table class="tag-table table-sm table borderless">
                         <tbody>
+                            {% for tag in tags %}
                             <tr>
-                                <th scope="row">ID</th>
-                                <td class="">{{post.id}}</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Uploader</th>
-                                <td><a href="{{post.uploader.get_absolute_url}}">{{post.uploader}}</a></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Date</th>
-                                <td>
-                                    <time datetime="{{post.timestamp|date:'c'}}" title="{{post.timestamp|date}}">
-                                        {{post.timestamp|naturaltime}}
-                                    </time>
+                                {% if category.label == "general" %}
+                                <th class="tag-wiki-link" scope="row">
+                                    <a href="#">
+                                        ?
+                                    </a>
+                                </th>
+                                <td class="tag-label">
+                                    <a href="#">{{tag}}</a>
                                 </td>
+                                {% else %}
+                                <th class="tag-wiki-link" scope="row">
+                                    <a style="color: #{{category.color}};" href="#">
+                                        ?
+                                    </a>
+                                </th>
+                                <td class="tag-label">
+                                    <a style="color: #{{category.color}};" href="#">{{tag}}</a>
+                                </td>
+                                {% endif %}
+                                <td class="tag-count">{{tag.get_count|number_converter}}</td>
                             </tr>
-                            <tr>
-                                <th scope="row">Size</th>
-                                <td>#TODO</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Source</th>
-                                <td class="text-truncate"><a href="{{post.source}}">{{post.source}}</a></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Rating</th>
-                                <td>{{post.get_rating_display}}</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Score</th>
-                                <td>{{post.get_score_count}}</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Favorites</th>
-                                <td>{{post.get_favorites_count}}</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Status</th>
-                                <td>{{post.get_status_display}}</td>
-                            </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
+                {% endfor %}
             </div>
-            <div id="post" class="col">
-                <div class="row mb-3">
-                    <img src="{{post.get_sample_url}}" alt="">
-                </div>                
-                <div class="row mt-2 mb-4">
-                    <button id="show_edit_form" class="btn btn-primary btn">Edit</button>
+
+            <div class="col mb-3">
+                <div class="row col">
+                    <span class="font-weight-bold">Information</span>
                 </div>
-                <div id="edit" class="col-6" style="display: none;">
-                    <form method="post" action="." enctype="multipart/form-data">
-                        {% csrf_token %}
-        
-                        {% for field in form %}
-                        <div class="form-group">
-                            <label for="{{field.auto_id}}">{{ field.label }}</label>
-                            {{ field }}
-                            {% if field.errors %}
-                            <div class="invalid-feedback">
-                                {{field.errors}}
-                            </div>
-                            {% endif %}
-                        </div>
-                        {% endfor %}
-        
-                        <div class="form-group">
-                            <div class="col">
-                                <button type="submit" id="send" class="btn btn-primary submit-media">Submit</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
+                
+                <table class="table table-sm mt-2 borderless" style="table-layout: fixed;">
+                    <tbody>
+                        <tr>
+                            <th scope="row">ID</th>
+                            <td class="">{{post.id}}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Uploader</th>
+                            <td><a href="{{post.uploader.get_absolute_url}}">{{post.uploader}}</a></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Date</th>
+                            <td>
+                                <time datetime="{{post.timestamp|date:'c'}}" title="{{post.timestamp|date}}">
+                                    {{post.timestamp|naturaltime}}
+                                </time>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Size</th>
+                            <td>#TODO</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Source</th>
+                            <td class="text-truncate"><a href="{{post.source}}">{{post.source}}</a></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Rating</th>
+                            <td>{{post.get_rating_display}}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Score</th>
+                            <td>{{post.get_score_count}}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Favorites</th>
+                            <td>{{post.get_favorites_count}}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Status</th>
+                            <td>{{post.get_status_display}}</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-        </div>        
+        </div>
+        <div id="post" class="col">
+            <div class="row mb-3">
+                <img src="{{post.get_sample_url}}" alt="">
+            </div>                
+            <div class="row mt-2 mb-4">
+                <button id="show_edit_form" class="btn btn-primary btn">Edit</button>
+            </div>
+            <div id="edit" class="col-6" style="display: none;">
+                <form method="post" action="." enctype="multipart/form-data">
+                    {% csrf_token %}
+    
+                    {% for field in form %}
+                    <div class="form-group">
+                        <label for="{{field.auto_id}}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                        <div class="invalid-feedback">
+                            {{field.errors}}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+    
+                    <div class="form-group">
+                        <div class="col">
+                            <button type="submit" id="send" class="btn btn-primary submit-media">Submit</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 
-<script>
-    $( document ).ready(function() {
-        $( "#show_edit_form" ).click(function() {
-            $( "#edit" ).toggle();
-        });
-    });    
-</script>
+    <script>
+        $( document ).ready(function() {
+            $( "#show_edit_form" ).click(function() {
+                $( "#edit" ).toggle();
+            });
+        });    
+    </script>
 {% endblock %}

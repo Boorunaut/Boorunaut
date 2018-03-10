@@ -9,78 +9,76 @@
 {% endblock %}
 
 {% block body %}
-    <div class="container">
-        <form method="get">
-            {% for field in form %}
-            <div class="form-group">
-                <label for="{{field.auto_id}}">{{field.label}}</label>
-                {{field}}
-            </div>
-            {% endfor %}
-            <button type="submit" class="btn btn-sm btn-primary">Search</button>
-        </form>
+    <form method="get">
+        {% for field in form %}
+        <div class="form-group">
+            <label for="{{field.auto_id}}">{{field.label}}</label>
+            {{field}}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-sm btn-primary">Search</button>
+    </form>
 
-        <div class="row">            
-            <div id="table" class="col">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Count</th>
-                            <th scope="col">Name</th>
-                            {% if user.is_authenticated %}
-                            <th scope="col"></th>
-                            {% endif %}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for tag in tags %}
-                        <tr>
-                            <th scope="row">{{ forloop.counter }}</th>
-                            <td>{{tag.get_count}}</td>
-                            <td>? <a href="{% url 'booru:posts' %}?tags={{tag}}">{{tag.name}}</a></td>
-                            {% if user.is_authenticated %}
-                            <td scope="col"><a href="{% url 'booru:tag_edit' tag.id %}">Edit</a></td>
-                            {% endif %}
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+    <div class="row">            
+        <div id="table" class="col">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Count</th>
+                        <th scope="col">Name</th>
+                        {% if user.is_authenticated %}
+                        <th scope="col"></th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tag in tags %}
+                    <tr>
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td>{{tag.get_count}}</td>
+                        <td>? <a href="{% url 'booru:posts' %}?tags={{tag}}">{{tag.name}}</a></td>
+                        {% if user.is_authenticated %}
+                        <td scope="col"><a href="{% url 'booru:tag_edit' tag.id %}">Edit</a></td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
 
-                <nav aria-label="..." class="mt-5">
-                    <ul class="pagination">
-                        {% if page.has_previous %}
-                            <li class="page-item">
-                                <a class="page-link" href="{% url 'booru:tags_page_list' page.previous_page_number %}" tabindex="-1">Previous</a>
-                            </li>
-                        {% else %}
-                            <li class="page-item disabled">
-                                <a class="page-link" href="#" tabindex="-1">Previous</a>
-                            </li>
+            <nav aria-label="..." class="mt-5">
+                <ul class="pagination">
+                    {% if page.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="{% url 'booru:tags_page_list' page.previous_page_number %}" tabindex="-1">Previous</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1">Previous</a>
+                        </li>
+                    {% endif %}
+                    {% for i in page.paginator.page_range %}
+                        {% if page.number == i %}
+                        <li class="page-item active">
+                            <a class="page-link" href="{% url 'booru:tags_page_list' i %}">{{i}} <span class="sr-only">(current)</span></a>
+                        </li>
+                        {% elif i > page.number|add:'-3' and i < page.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="{% url 'booru:tags_page_list' i %}">{{i}}</a>
+                        </li>
                         {% endif %}
-                        {% for i in page.paginator.page_range %}
-                            {% if page.number == i %}
-                            <li class="page-item active">
-                                <a class="page-link" href="{% url 'booru:tags_page_list' i %}">{{i}} <span class="sr-only">(current)</span></a>
-                            </li>
-                            {% elif i > page.number|add:'-3' and i < page.number|add:'3' %}
-                            <li class="page-item">
-                                <a class="page-link" href="{% url 'booru:tags_page_list' i %}">{{i}}</a>
-                            </li>
-                            {% endif %}
-                        {% endfor %}
-                        {% if page.has_next %}
-                            <li class="page-item">
-                                <a class="page-link" href="{% url 'booru:tags_page_list' page.next_page_number %}">Next</a>
-                            </li>
-                        {% else %}                        
-                            <li class="page-item disabled">
-                                <a class="page-link" href="#">Next</a>
-                            </li>
-                        {% endif %}
-                    </ul>
-                </nav>
-            </div>
+                    {% endfor %}
+                    {% if page.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="{% url 'booru:tags_page_list' page.next_page_number %}">Next</a>
+                        </li>
+                    {% else %}                        
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#">Next</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
         </div>
     </div>
 {% endblock %}
