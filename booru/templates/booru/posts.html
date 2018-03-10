@@ -9,57 +9,55 @@
 {% endblock %}
 
 {% block body %}
-    <div class="container">
-        <div class="row">
-            <div id="sidebar" class="col-2">
-                <div class="row col">
-                    <p class="font-weight-bold">Tags: </p>
-                </div>
-                {% for tag in post.tags.all %}
-                <div class="row col">
-                    <a href="#">?</a> <a class="" href="#">{{tag}}</a> 0
-                </div>
-                {% endfor %}
+    <div class="row">
+        <div id="sidebar" class="col-2">
+            <div class="row col">
+                <p class="font-weight-bold">Tags: </p>
             </div>
-            <div id="post" class="col">
-                {% for post in posts %}
-                <a href="{{post.get_absolute_url}}"><img src="{{post.preview.url}}" alt=""></a>
-                {% endfor %}
+            {% for tag in post.tags.all %}
+            <div class="row col">
+                <a href="#">?</a> <a class="" href="#">{{tag}}</a> 0
+            </div>
+            {% endfor %}
+        </div>
+        <div id="post" class="col">
+            {% for post in posts %}
+            <a href="{{post.get_absolute_url}}"><img src="{{post.preview.url}}" alt=""></a>
+            {% endfor %}
 
-                <nav aria-label="..." class="mt-5">
-                    <ul class="pagination">
-                        {% if page.has_previous %}
-                            <li class="page-item">
-                                <a class="page-link" href="{% url 'booru:post_page_detail' page.previous_page_number %}" tabindex="-1">Previous</a>
-                            </li>
-                        {% else %}
-                            <li class="page-item disabled">
-                                <a class="page-link" href="#" tabindex="-1">Previous</a>
-                            </li>
+            <nav aria-label="..." class="mt-5">
+                <ul class="pagination">
+                    {% if page.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="{% url 'booru:post_page_detail' page.previous_page_number %}" tabindex="-1">Previous</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1">Previous</a>
+                        </li>
+                    {% endif %}
+                    {% for i in page.paginator.page_range %}
+                        {% if page.number == i %}
+                        <li class="page-item active">
+                            <a class="page-link" href="{% url 'booru:post_page_detail' i %}">{{i}} <span class="sr-only">(current)</span></a>
+                        </li>
+                        {% elif i > page.number|add:'-3' and i < page.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="{% url 'booru:post_page_detail' i %}">{{i}}</a>
+                        </li>
                         {% endif %}
-                        {% for i in page.paginator.page_range %}
-                            {% if page.number == i %}
-                            <li class="page-item active">
-                                <a class="page-link" href="{% url 'booru:post_page_detail' i %}">{{i}} <span class="sr-only">(current)</span></a>
-                            </li>
-                            {% elif i > page.number|add:'-3' and i < page.number|add:'3' %}
-                            <li class="page-item">
-                                <a class="page-link" href="{% url 'booru:post_page_detail' i %}">{{i}}</a>
-                            </li>
-                            {% endif %}
-                        {% endfor %}
-                        {% if page.has_next %}
-                            <li class="page-item">
-                                <a class="page-link" href="{% url 'booru:post_page_detail' page.next_page_number %}">Next</a>
-                            </li>
-                        {% else %}                        
-                            <li class="page-item disabled">
-                                <a class="page-link" href="#">Next</a>
-                            </li>
-                        {% endif %}
-                    </ul>
-                </nav>
-            </div>
+                    {% endfor %}
+                    {% if page.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="{% url 'booru:post_page_detail' page.next_page_number %}">Next</a>
+                        </li>
+                    {% else %}                        
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#">Next</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
         </div>
     </div>
 {% endblock %}

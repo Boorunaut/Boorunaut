@@ -9,47 +9,45 @@
 {% endblock %}
 
 {% block body %}
-    <div class="container">
-        <div class="row">
-            <div class="col">
-                <h1>Login</h1>
+    <div class="row">
+        <div class="col">
+            <h1>Login</h1>
 
-                <form method="post" enctype="multipart/form-data">
-                    {% csrf_token %}
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
 
-                    <div class="form-group row">
-                        <label for="{{ form.username.auto_id }}" class="col-1 col-form-label">{{ form.username.label }}</label>
-                        
-                        <div class="col-4">
-                            {{form.username}}
-                            <span class="custom-file-control"></span>
-                        </div>
-
-                        {% if form.username.errors %}
-                        <div class="col-md-offset-2 col-8 has-errors text-danger small">
-                            {{form.username.errors}}
-                        </div>
-                        {% endif %}
+                <div class="form-group row">
+                    <label for="{{ form.username.auto_id }}" class="col-1 col-form-label">{{ form.username.label }}</label>
+                    
+                    <div class="col-4">
+                        {{form.username}}
+                        <span class="custom-file-control"></span>
                     </div>
 
-                    <div class="form-group row">
-                        <label for="{{ form.password.auto_id }}" class="col-1 col-form-label">{{ form.password.label }}</label>
-                        
-                        <div class="col-4">
-                            {{form.password}}
-                            <span class="custom-file-control"></span>
-                        </div>
+                    {% if form.username.errors %}
+                    <div class="col-md-offset-2 col-8 has-errors text-danger small">
+                        {{form.username.errors}}
+                    </div>
+                    {% endif %}
+                </div>
 
-                        {% if not form.username.errors and form.errors %}
-                        <div class="col-md-offset-2 col-8 has-errors text-danger small">
-                            The given password is incorrect.
-                        </div>
-                        {% endif %}
+                <div class="form-group row">
+                    <label for="{{ form.password.auto_id }}" class="col-1 col-form-label">{{ form.password.label }}</label>
+                    
+                    <div class="col-4">
+                        {{form.password}}
+                        <span class="custom-file-control"></span>
                     </div>
 
-                    <button type="submit" class="btn btn-primary">Login</button>
-                </form>
-            </div>
+                    {% if not form.username.errors and form.errors %}
+                    <div class="col-md-offset-2 col-8 has-errors text-danger small">
+                        The given password is incorrect.
+                    </div>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="btn btn-primary">Login</button>
+            </form>
         </div>
     </div>
 {% endblock %}

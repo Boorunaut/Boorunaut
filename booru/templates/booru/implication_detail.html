@@ -9,47 +9,45 @@
 {% endblock %}
 
 {% block body %}
-    <div class="container">
-        <div class="row">
-            <h1>Tag implication: {{object.from_tag}} → {{object.to_tag}}</h1>
-        </div>
-        <div class="row">
-            <div id="table" class="col mt-3">
-                <table class="table table-sm">
-                    <tbody>
-                        <tr>
-                            <td><strong>From:</strong></td>
-                            <td>{{object.from_tag}}</td>
-                        </tr>
-                        <tr>
-                            <td><strong>To:</strong></td>
-                            <td>{{object.to_tag}}</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Creator:</strong></td>
-                            <td>{{object.author}}</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Date:</strong></td>
-                            <td>{{object.timestamp}}</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Approver:</strong></td>
-                            <td><a href="{{object.approver.get_absolute_url}}">{{object.approver}}</a></td>
-                        </tr>
-                        <tr>
-                            <td><strong>Status:</strong></td>
-                            <td>{{object.get_status_display}}</td>
-                        </tr>
-                    </tbody>
-                </table>
-                {% if request.user.is_staff %}
-                <div class="row">
-                    <a href="{% url 'booru:implication_approve' object.id %}" class="btn btn-success btn-sm">Approve</a>
-                    <a href="{% url 'booru:implication_disapprove' object.id %}" class="btn btn-danger btn-sm">Dispprove</a>
-                </div>
-                {% endif %}
+    <div class="row">
+        <h1>Tag implication: {{object.from_tag}} → {{object.to_tag}}</h1>
+    </div>
+    <div class="row">
+        <div id="table" class="col mt-3">
+            <table class="table table-sm">
+                <tbody>
+                    <tr>
+                        <td><strong>From:</strong></td>
+                        <td>{{object.from_tag}}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>To:</strong></td>
+                        <td>{{object.to_tag}}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Creator:</strong></td>
+                        <td>{{object.author}}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Date:</strong></td>
+                        <td>{{object.timestamp}}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Approver:</strong></td>
+                        <td><a href="{{object.approver.get_absolute_url}}">{{object.approver}}</a></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Status:</strong></td>
+                        <td>{{object.get_status_display}}</td>
+                    </tr>
+                </tbody>
+            </table>
+            {% if request.user.is_staff %}
+            <div class="row">
+                <a href="{% url 'booru:implication_approve' object.id %}" class="btn btn-success btn-sm">Approve</a>
+                <a href="{% url 'booru:implication_disapprove' object.id %}" class="btn btn-danger btn-sm">Dispprove</a>
             </div>
+            {% endif %}
         </div>
     </div>
 {% endblock %}

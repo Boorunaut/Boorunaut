@@ -9,117 +9,115 @@
 {% endblock %}
 
 {% block body %}
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-12">
-                <h1>Profile</h1>
+    <div class="row">
+        <div class="col-12">
+            <h1>Profile</h1>
+        </div>
+
+        <div class="col-2">
+            <div class="col text-center">
+                <h4 class="mb-0">{{account.username}}</h4>
             </div>
 
-            <div class="col-2">
-                <div class="col text-center">
-                    <h4 class="mb-0">{{account.username}}</h4>
-                </div>
+            <div class="col text-center">
+                <span class="text-muted">{{user_role}}</span>
+            </div>
 
-                <div class="col text-center">
-                    <span class="text-muted">{{user_role}}</span>
-                </div>
+            {% if account.avatar %}
+            <div class="col">
+                <a href="{% url 'booru:post_detail' account.avatar.id %}"><img class="mx-auto d-block" src='{{account.avatar.preview.url}}'></a>
+            </div>
+            {% endif %}
 
-                {% if account.avatar %}
-                <div class="col">
-                    <a href="{% url 'booru:post_detail' account.avatar.id %}"><img class="mx-auto d-block" src='{{account.avatar.preview.url}}'></a>
-                </div>
-                {% endif %}
+            <table class="table table-sm mt-3">
+                <tbody>
+                    <tr>
+                        <th scope="row">Joined</th>
+                        <td title="{{account.date_joined}}">{{account.date_joined|date:"Y-m-d"}}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Posts</th>
+                        <td>{{recent_uploads.count}}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Deleted Posts</th>
+                        <td>{{deleted_posts.count}}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Favorites</th>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Comments</th>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Tag Edits</th>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Note Edits</th>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Forum Posts</th>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Record +</th>
+                        <td>-</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-6">
+            <div class="col">
+                <h3>Recent Favorites</h3>
 
+                {% if recent_favorites %}
                 <table class="table table-sm mt-3">
                     <tbody>
+                        {% for post in recent_favorites|slice:":5" %}
                         <tr>
-                            <th scope="row">Joined</th>
-                            <td title="{{account.date_joined}}">{{account.date_joined|date:"Y-m-d"}}</td>
+                            <td><a href="{% url 'booru:post_detail' post.id %}"><img src='{{post.preview.url}}' style="width:100px;"></a></td>
+                            <td class="align-middle">Added favorite #<a href="{% url 'booru:post_detail' post.id %}">{{post.id}}</a> <span title="{{post.timestamp}}">{{post.timestamp|date:"Y/m/d f A"}}</span></td>
                         </tr>
-                        <tr>
-                            <th scope="row">Posts</th>
-                            <td>{{recent_uploads.count}}</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">Deleted Posts</th>
-                            <td>{{deleted_posts.count}}</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">Favorites</th>
-                            <td>-</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">Comments</th>
-                            <td>-</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">Tag Edits</th>
-                            <td>-</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">Note Edits</th>
-                            <td>-</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">Forum Posts</th>
-                            <td>-</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">Record +</th>
-                            <td>-</td>
-                        </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
-            </div>
-            <div class="col-6">
-                <div class="col">
-                    <h3>Recent Favorites</h3>
-
-                    {% if recent_favorites %}
-                    <table class="table table-sm mt-3">
-                        <tbody>
-                            {% for post in recent_favorites|slice:":5" %}
-                            <tr>
-                                <td><a href="{% url 'booru:post_detail' post.id %}"><img src='{{post.preview.url}}' style="width:100px;"></a></td>
-                                <td class="align-middle">Added favorite #<a href="{% url 'booru:post_detail' post.id %}">{{post.id}}</a> <span title="{{post.timestamp}}">{{post.timestamp|date:"Y/m/d f A"}}</span></td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                    {% else %}
-                    <p class="text-muted">No favorites have been added by this user yet!</p>
-                    {% endif %}
-                </div>
-                <div class="col mt-4">
-                    <h3>Recent Uploads</h3>
-
-                    {% if recent_uploads %}
-                    <table class="table table-sm mt-3">
-                        <tbody>
-                            {% for post in recent_uploads|slice:":5" %}
-                            <tr>
-                                <td><a href="{% url 'booru:post_detail' post.id %}"><img src='{{post.preview.url}}' style="width:100px;"></a></td>
-                                <td class="align-middle">Uploaded #<a href="{% url 'booru:post_detail' post.id %}">{{post.id}}</a> <span title="{{post.timestamp}}">{{post.timestamp|date:"Y/m/d f A"}}</span></td>
-                            </tr>
-                            {% endfor %}
-                            
-                        </tbody>
-                    </table>
-                    {% else %}
-                    <p class="text-muted">No posts have been added by this user yet!</p>
-                    {% endif %}
-                </div>
-            </div>
-            <div class="col-4">
-                <h3>About myself</h3>
-                {% load markdown_deux_tags %}
-                {{account.about|markdown}}
-
-                {% if account.about %}
                 {% else %}
-                <p class="text-muted">This user have not written nothing about themselves yet!</p>
+                <p class="text-muted">No favorites have been added by this user yet!</p>
                 {% endif %}
             </div>
+            <div class="col mt-4">
+                <h3>Recent Uploads</h3>
+
+                {% if recent_uploads %}
+                <table class="table table-sm mt-3">
+                    <tbody>
+                        {% for post in recent_uploads|slice:":5" %}
+                        <tr>
+                            <td><a href="{% url 'booru:post_detail' post.id %}"><img src='{{post.preview.url}}' style="width:100px;"></a></td>
+                            <td class="align-middle">Uploaded #<a href="{% url 'booru:post_detail' post.id %}">{{post.id}}</a> <span title="{{post.timestamp}}">{{post.timestamp|date:"Y/m/d f A"}}</span></td>
+                        </tr>
+                        {% endfor %}
+                        
+                    </tbody>
+                </table>
+                {% else %}
+                <p class="text-muted">No posts have been added by this user yet!</p>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-4">
+            <h3>About myself</h3>
+            {% load markdown_deux_tags %}
+            {{account.about|markdown}}
+
+            {% if account.about %}
+            {% else %}
+            <p class="text-muted">This user have not written nothing about themselves yet!</p>
+            {% endif %}
         </div>
     </div>
 {% endblock %}

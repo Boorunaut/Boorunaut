@@ -9,58 +9,56 @@
 {% endblock %}
 
 {% block body %}
-    <div class="container">
-        <div class="row">
+    <div class="row">
+        <div class="col">
+            <h1 class="text-center site-title"><a href="#">Boorunaut</a></h1>
+        </div>            
+    </div>
+    <div class="row text-center">
+        <div class="col">                    
+            <a href="{% url 'booru:posts' %}" class="col-1 font-weight-bold" title="A paginated list of every post">Posts</a>
+            <a href="#" class="col-1" title="All comments listing">Comments</a>
+            <a href="#" class="col-1" title="Forum listing">Forum</a>
+            <a href="#" class="col-1" title="Wiki pages with database documentation">Wiki</a>
+            <a href="#" class="col-1" title="Account options">My Account</a>
+            <a href="#" class="col-1" title="Help page and tools">»</a>
+        </div>
+    </div>
+    <form>
+        <div class="form-row mt-3 mb-3">
             <div class="col">
-                <h1 class="text-center site-title"><a href="#">Boorunaut</a></h1>
-            </div>            
-        </div>
-        <div class="row text-center">
-            <div class="col">                    
-                <a href="{% url 'booru:posts' %}" class="col-1 font-weight-bold" title="A paginated list of every post">Posts</a>
-                <a href="#" class="col-1" title="All comments listing">Comments</a>
-                <a href="#" class="col-1" title="Forum listing">Forum</a>
-                <a href="#" class="col-1" title="Wiki pages with database documentation">Wiki</a>
-                <a href="#" class="col-1" title="Account options">My Account</a>
-                <a href="#" class="col-1" title="Help page and tools">»</a>
+                <input class="form-control form-control-sm" type="search" aria-label="Search" placeholder="Ex: super_mario_odyssey">
+            </div>
+            <div class="col-1">
+                <button class="btn btn-sm btn-primary" type="submit">Search</button>
             </div>
         </div>
-        <form>
-            <div class="form-row mt-3 mb-3">
-                <div class="col">
-                    <input class="form-control form-control-sm" type="search" aria-label="Search" placeholder="Ex: super_mario_odyssey">
-                </div>
-                <div class="col-1">
-                    <button class="btn btn-sm btn-primary" type="submit">Search</button>
-                </div>
-            </div>
-        </form>
+    </form>
 
-        <div class="row">
-            <div class="col text-center">
-                <a href="#">Terms of service</a> - Total number of visitors so far: ?
-            </div>
+    <div class="row">
+        <div class="col text-center">
+            <a href="#">Terms of service</a> - Total number of visitors so far: ?
         </div>
-        <div class="row">
-            <div class="col text-center">
-                Running Boorunaut Alpha 0.0.1
-            </div>
+    </div>
+    <div class="row">
+        <div class="col text-center">
+            Running Boorunaut Alpha 0.0.1
         </div>
+    </div>
 
-        <div class="row">
-            <div class="index-separator col pt-5 pb-4">
-            </div>
+    <div class="row">
+        <div class="index-separator col pt-5 pb-4">
         </div>
+    </div>
 
-        <div class="row">
-            <div class="col text-center">
-                Have you first tried disabling your <a href="#">AdBlock</a>?
-            </div>
+    <div class="row">
+        <div class="col text-center">
+            Have you first tried disabling your <a href="#">AdBlock</a>?
         </div>
-        <div class="row">
-            <div class="col text-center">
-                <small>Original concept by <a href="http://danbooru.donmai.us">Danbooru</a></small>
-            </div>
+    </div>
+    <div class="row">
+        <div class="col text-center">
+            <small>Original concept by <a href="http://danbooru.donmai.us">Danbooru</a></small>
         </div>
     </div>
 {% endblock %}
