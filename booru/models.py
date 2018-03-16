@@ -1,13 +1,17 @@
 import os
 import uuid
 
-from account.models import Account
+import reversion
 from django.db import models
-from taggit.managers import TaggableManager
-from taggit.models import TagBase, GenericTaggedItemBase
-from . import utils
 from django.urls import reverse
+from taggit.managers import TaggableManager
+from taggit.models import GenericTaggedItemBase, TagBase
+
+from account.models import Account
+
+from . import utils
 from .managers import PostManager
+
 
 def get_file_path(instance, filename):
     ext = filename.split('.')[-1]
@@ -88,8 +92,15 @@ class Category(models.Model):
     class Meta:
         verbose_name_plural = 'Categories'
 
+@reversion.register()
 class PostTag(TagBase):
     category = models.ForeignKey(Category, default=1, on_delete=models.SET_DEFAULT)
+    description = models.CharField(max_length=100, blank=True)
+    associated_link = models.CharField(max_length=100, blank=True)
+    associated_user = models.ForeignKey(Account, null=True, blank=True,
+                                                 on_delete=models.SET_NULL, related_name="associated_tags")
+    author = models.ForeignKey(Account, null=True, on_delete=models.SET_NULL, related_name="authored_tags")
+    timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
 
     class Meta:
         verbose_name = ("Tag")

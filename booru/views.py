@@ -1,9 +1,14 @@
+import reversion
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Q
+from django.forms.models import model_to_dict
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views import generic
+from reversion.models import Version
+
+from account.models import Account
 
 from . import utils
 from .forms import (AliasCreateForm, CreatePostForm, EditPostForm,
@@ -85,10 +90,23 @@ def tags_list(request, page_number = 1):
 @login_required
 def tag_edit(request, tag_id):
     tag = get_object_or_404(PostTag, pk=tag_id)
-    form = TagEditForm(request.POST or None, instance=tag)
 
+    versions = Version.objects.get_for_object(tag)
+    tag_dict = model_to_dict(tag)
+
+    if len(versions) > 0:
+        associated_user = get_object_or_404(Account, id=versions[0].field_dict["associated_user_id"])
+        tag_dict['associated_user_name'] = associated_user.slug
+
+    form = TagEditForm(request.POST or None, instance=tag, initial=tag_dict)
     if form.is_valid() and request.POST:
-        tag = form.save()
+        with reversion.create_revision():
+            associated_user = get_object_or_404(Account, slug=form.cleaned_data['associated_user_name'])
+            tag = form.save(commit=False)
+            tag.author = request.user
+            tag.associated_user = associated_user
+            tag.save()
+            reversion.set_user(request.user)
         
     return render(request, 'booru/tag_edit.html', {"tag": tag, "form": form})
 
