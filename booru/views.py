@@ -110,6 +110,11 @@ def tag_edit(request, tag_id):
         
     return render(request, 'booru/tag_edit.html', {"tag": tag, "form": form})
 
+def tag_detail(request, tag_id):
+    tag = get_object_or_404(PostTag, pk=tag_id)
+    last_posts = Post.objects.filter(tags__name__in=[tag.name])[:6]
+    return render(request, 'booru/tag_detail.html', {"tag": tag, "last_post": last_posts})
+
 class ImplicationListView(generic.ListView):
     model = Implication
     paginate_by = 20
