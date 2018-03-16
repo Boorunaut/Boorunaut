@@ -12,6 +12,7 @@ urlpatterns = [
     re_path(r'^post/list/$', views.post_list_detail, name='posts'),
     re_path(r'^post/list/(?P<page_number>[0-9]+)/$', views.post_list_detail, name='post_page_detail'),
     re_path(r'^tags/$', views.tags_list, name='tags_list'),
+    re_path(r'^tags/(?P<tag_id>[0-9]+)/$', views.tag_detail, name='tag_detail'),
     re_path(r'^tags/list/(?P<page_number>[0-9]+)/$', views.tags_list, name='tags_page_list'),
     re_path(r'^tags/(?P<tag_id>[0-9]+)/edit/$', views.tag_edit, name='tag_edit'),
     path('tag_implications', views.ImplicationListView.as_view(), name='implication-list'),
