@@ -115,6 +115,16 @@ def tag_detail(request, tag_id):
     last_posts = Post.objects.filter(tags__name__in=[tag.name])[:6]
     return render(request, 'booru/tag_detail.html', {"tag": tag, "last_post": last_posts})
 
+def tag_history(request, tag_id, page_number = 1):
+    tag = get_object_or_404(PostTag, pk=tag_id)
+    page_limit = 2
+
+    versions = Version.objects.get_for_object(tag)
+    p = Paginator(versions, page_limit)
+    page = p.page(page_number)
+
+    return render(request, 'booru/tag_history.html', {"versions": versions, "page": page, 'tag': tag})
+
 class ImplicationListView(generic.ListView):
     model = Implication
     paginate_by = 20
