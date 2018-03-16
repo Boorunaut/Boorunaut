@@ -19,7 +19,7 @@
 
     <div class="row">            
         <div id="table" class="col">
-            <table class="table table-striped table-hover">
+            <table class="table table-striped table-hover text-center">
                 <thead class="thead-light">
                     <tr>
                         <th scope="col">#</th>
@@ -37,8 +37,14 @@
                     {% for alias in object_list %}
                     <tr>
                         <th scope="row">{{ forloop.counter }}</th>
-                        <td>{{alias.from_tag}} {{alias.from_tag.get_count}}</td>
-                        <td>{{alias.to_tag}} {{alias.to_tag.get_count}}</td>
+                        <td>
+                            <a href="{% url 'booru:posts' %}?tags={{alias.from_tag}}" style="color: #{{alias.from_tag.category.color}};">{{alias.from_tag}}</a> 
+                            <span class="text-muted">{{alias.from_tag.get_count}}</span>
+                        </td>
+                        <td>
+                            <a href="{% url 'booru:posts' %}?tags={{alias.to_tag}}" style="color: #{{alias.to_tag.category.color}};">{{alias.to_tag}}</a> 
+                            <span class="text-muted">{{alias.to_tag.get_count}}</span>
+                        </td>
                         <td><a href="{{alias.approver.get_absolute_url}}">{{alias.approver}}</a></td>
                         <td>{{alias.get_status_display}}</td>      
                         <td><a href="{% url 'booru:alias-detail' alias.id %}">Show</a></td>
