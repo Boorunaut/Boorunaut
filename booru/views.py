@@ -94,16 +94,17 @@ def tag_edit(request, tag_id):
     versions = Version.objects.get_for_object(tag)
     tag_dict = model_to_dict(tag)
 
-    if len(versions) > 0:
+    if len(versions) > 0 and versions[0].field_dict["associated_user_id"]:
         associated_user = get_object_or_404(Account, id=versions[0].field_dict["associated_user_id"])
         tag_dict['associated_user_name'] = associated_user.slug
 
     form = TagEditForm(request.POST or None, instance=tag, initial=tag_dict)
     if form.is_valid() and request.POST:
         with reversion.create_revision():
-            associated_user = get_object_or_404(Account, slug=form.cleaned_data['associated_user_name'])
             tag = form.save(commit=False)
             tag.author = request.user
+            if form.cleaned_data['associated_user_name']:
+                associated_user = get_object_or_404(Account, slug=form.cleaned_data['associated_user_name'])
             tag.associated_user = associated_user
             tag.save()
             reversion.set_user(request.user)
