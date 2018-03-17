@@ -14,6 +14,7 @@
         <div class="row">
             <h1>Tag: <a href="{% url 'booru:posts' %}?tags={{tag}}">{{tag}}</a></h1>
             <span>[<a href="{% url 'booru:tag_edit' tag.id %}">edit</a>]</span>
+            <span>[<a href="{% url 'booru:tag_history' tag.id %}">history</a>]</span>
         </div>
         <div class="row">
             <div id="table" class="col mt-3">

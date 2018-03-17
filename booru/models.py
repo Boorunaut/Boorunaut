@@ -106,6 +106,9 @@ class PostTag(TagBase):
         verbose_name = ("Tag")
         verbose_name_plural = ("Tags")
 
+    def get_absolute_url(self):
+        return reverse('booru:tag_detail', kwargs={'tag_id': self.id})
+
     def get_count(self):
         return TaggedPost.objects.filter(tag=self).count()
 

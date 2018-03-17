@@ -1,3 +1,4 @@
+import diff_match_patch as dmp_module
 import reversion
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
@@ -105,7 +106,7 @@ def tag_edit(request, tag_id):
             tag.author = request.user
             if form.cleaned_data['associated_user_name']:
                 associated_user = get_object_or_404(Account, slug=form.cleaned_data['associated_user_name'])
-            tag.associated_user = associated_user
+                tag.associated_user = associated_user
             tag.save()
             reversion.set_user(request.user)
         
@@ -118,13 +119,32 @@ def tag_detail(request, tag_id):
 
 def tag_history(request, tag_id, page_number = 1):
     tag = get_object_or_404(PostTag, pk=tag_id)
-    page_limit = 2
+    page_limit = 20
 
     versions = Version.objects.get_for_object(tag)
     p = Paginator(versions, page_limit)
     page = p.page(page_number)
 
     return render(request, 'booru/tag_history.html', {"versions": versions, "page": page, 'tag': tag})
+
+def tag_revision_diff(request, tag_id):
+    tag = get_object_or_404(PostTag, pk=tag_id)
+    old_revision_id = request.GET.get('oldRevision')
+    new_revision_id = request.GET.get('newRevision')
+
+    old_revision = get_object_or_404(Version, pk=old_revision_id)
+    old_revision_description = old_revision.field_dict["description"]
+    new_revision = get_object_or_404(Version, pk=new_revision_id)
+    new_revision_description = new_revision.field_dict["description"]
+
+    dmp = dmp_module.diff_match_patch()
+    diff = dmp.diff_main(old_revision_description, new_revision_description)
+    dmp.diff_cleanupSemantic(diff)
+    diff_html = dmp.diff_prettyHtml(diff).replace('&para;', '')
+
+    context = {"tag": tag, "diff_html": diff_html, "old_revision": old_revision, "new_revision": new_revision}
+    
+    return render(request, 'booru/tag_revision_diff.html', context)
 
 class ImplicationListView(generic.ListView):
     model = Implication

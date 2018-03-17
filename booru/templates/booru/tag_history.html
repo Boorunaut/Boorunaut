@@ -13,14 +13,15 @@
         <div class="row">
             <h1>Tag: <a href="{% url 'booru:tag_detail' tag.id %}">{{tag}}</a></h1>
         </div>
-        <div class="row">            
-            <form method="get" action="{% url 'booru:tag_revision_diff' tag.id %}" enctype="multipart/form-data">
-                <div id="table" class="col">
+
+        <div class="row mt-3 mb-3">            
+            <form class="col" method="get" action="{% url 'booru:tag_revision_diff' tag.id %}" enctype="multipart/form-data">
+                <div id="table">
                     <table class="table table-striped">
                         <thead>
                             <tr>
                                 <th scope="col"> </th>
-                                <th scope="col">Title</th>
+                                <th scope="col">Version</th>
                                 <th scope="col">Last edited</th>
                             </tr>
                         </thead>
@@ -32,7 +33,12 @@
                                     <input class="" type="radio" name="oldRevision" id="oldRevisionOption{{version.id}}" value="{{version.id}}" checked>
                                     <input class="" type="radio" name="newRevision" id="newRevisionOption{{version.id}}" value="{{version.id}}" checked>
                                 </th>
-                                <td><a href="{% url 'booru:posts' %}">{{version}}</a></td>
+                                <td>
+                                    <a href="{% url 'booru:tag_revision_diff' tag.id %}?oldRevision={{version.id}}&newRevision={{version.id}}">
+                                        {{version}}
+                                    </a>
+                                </td>
+                                <!--<td><a href="{{tag.get_absolute_url}}">{{version}}</a></td>-->
                                 <td>{{version.revision.date_created}} by
                                     <a href="{% url 'booru:profile' version.revision.user %}">{{version.revision.user}}</a>
                                 </td>
@@ -41,7 +47,7 @@
                         </tbody>
                     </table>
                 </div>
-                <button type="submit" class="btn btn-primary">See differences</button>                
+                <button type="submit" class="btn btn-primary">See differences</button>
             </form>
         </div>
 
@@ -49,7 +55,7 @@
             <ul class="pagination">
                 {% if page.has_previous %}
                     <li class="page-item">
-                        <a class="page-link" href="{% url 'booru:tags_page_list' page.previous_page_number %}" tabindex="-1">Previous</a>
+                        <a class="page-link" href="{% url 'booru:tag_history' tag.id page.previous_page_number %}" tabindex="-1">Previous</a>
                     </li>
                 {% else %}
                     <li class="page-item disabled">
@@ -59,17 +65,17 @@
                 {% for i in page.paginator.page_range %}
                     {% if page.number == i %}
                     <li class="page-item active">
-                        <a class="page-link" href="{% url 'booru:tags_page_list' i %}">{{i}} <span class="sr-only">(current)</span></a>
+                        <a class="page-link" href="{% url 'booru:tag_history' tag.id i %}">{{i}} <span class="sr-only">(current)</span></a>
                     </li>
                     {% elif i > page.number|add:'-3' and i < page.number|add:'3' %}
                     <li class="page-item">
-                        <a class="page-link" href="{% url 'booru:tags_page_list' i %}">{{i}}</a>
+                        <a class="page-link" href="{% url 'booru:tag_history' tag.id i %}">{{i}}</a>
                     </li>
                     {% endif %}
                 {% endfor %}
                 {% if page.has_next %}
                     <li class="page-item">
-                        <a class="page-link" href="{% url 'booru:tags_page_list' page.next_page_number %}">Next</a>
+                        <a class="page-link" href="{% url 'booru:tag_history' tag.id page.next_page_number %}">Next</a>
                     </li>
                 {% else %}                        
                     <li class="page-item disabled">

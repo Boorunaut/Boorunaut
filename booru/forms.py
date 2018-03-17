@@ -77,9 +77,9 @@ class TagEditForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(TagEditForm, self).__init__(*args, **kwargs)
-        self.fields['description'].widget = forms.TextInput(attrs={'class': 'form-control'})
-        self.fields['associated_link'].widget = forms.TextInput(attrs={'class': 'form-control'})
-        self.fields['associated_user_name'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        self.fields['description'].widget = forms.Textarea(attrs={'class': 'form-control'})
+        self.fields['associated_link'].widget = forms.Textarea(attrs={'class': 'form-control'})
+        self.fields['associated_user_name'].widget = forms.Textarea(attrs={'class': 'form-control'})
 
     class Meta:
         model = PostTag
