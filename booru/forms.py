@@ -4,7 +4,7 @@ from django.utils import six
 from taggit.forms import TagField, TagWidget
 from taggit.utils import edit_string_for_tags
 
-from .models import Category, Post, PostTag
+from .models import Category, Post, PostTag, Pool
 
 
 class TaggitAdminTextareaWidget(AdminTextareaWidget):
@@ -101,3 +101,20 @@ class ImplicationCreateForm(forms.Form):
         super(ImplicationCreateForm, self).__init__(*args, **kwargs)
         self.fields['from_tag'].widget = forms.TextInput(attrs={'class': 'form-control'})
         self.fields['to_tag'].widget = forms.TextInput(attrs={'class': 'form-control'})
+
+class CreatePoolForm(forms.ModelForm):
+    '''Form for creating an pool.'''
+
+    name = forms.CharField(required=True)
+    description = forms.CharField(required=True)
+    posts_ids = forms.CharField(required=True)
+
+    class Meta:
+        model = Pool
+        fields = ["name", "description"]
+
+    def __init__(self, *args, **kwargs):
+        super(CreatePoolForm, self).__init__(*args, **kwargs)
+        self.fields['name'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        self.fields['description'].widget = forms.Textarea(attrs={'class': 'form-control'})
+        self.fields['posts_ids'].widget = forms.Textarea(attrs={'class': 'form-control'})

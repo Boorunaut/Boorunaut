@@ -7,8 +7,8 @@ from django.views import generic
 
 from . import utils
 from .forms import (AliasCreateForm, CreatePostForm, EditPostForm,
-                    ImplicationCreateForm, TagEditForm, TagListSearchForm)
-from .models import Alias, Implication, Post, PostTag, TaggedPost
+                    ImplicationCreateForm, TagEditForm, TagListSearchForm, CreatePoolForm)
+from .models import Alias, Implication, Post, PostTag, TaggedPost, Pool
 
 
 def index(request):
@@ -195,3 +195,31 @@ def alias_disapprove(request, alias_id):
     alias.status = 2
     alias.save()    
     return redirect('booru:alias-detail', alias.id)
+
+@login_required
+def pool_create(request):    
+    form = CreatePoolForm(request.POST or None, request.FILES or None)
+    
+    if form.is_valid():
+        posts_text = form.cleaned_data['posts_ids']
+        posts_ids = posts_text.splitlines()
+        
+        pool = form.save(commit=False)
+        pool.save()
+        posts = Post.objects.filter(id__in=posts_ids)
+        pool.posts.add(*posts)
+        form.save_m2m()
+        return redirect('booru:pool_detail', pool_id=pool.id)
+    return render(request, 'booru/pool_create.html', {"form": form})
+
+def pool_detail(request, pool_id):
+    page_number = int(request.GET.get('page', '1'))
+    page_limit = 20
+
+    pool = Pool.objects.get(id=pool_id)
+    posts = pool.posts.all()
+
+    p = Paginator(posts, page_limit)
+    page = p.page(page_number)
+
+    return render(request, 'booru/pool_detail.html', {"pool": pool, "page": page})
