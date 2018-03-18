@@ -107,6 +107,15 @@ class TaggedPost(GenericTaggedItemBase):
         tag_name = self.tag
         utils.verify_and_perform_aliases_and_implications(tag_name)
 
+class Pool(models.Model):
+    name = models.CharField(max_length=100, blank=True)
+    description = models.CharField(max_length=1000, blank=True)
+    posts = models.ManyToManyField('booru.Post')
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return "{}".format(self.name)
+
 class Post(models.Model):
     parent = models.IntegerField(null=True, blank=True)
     preview = models.ImageField(upload_to=get_file_path_preview, blank=True)
