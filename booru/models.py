@@ -115,6 +115,9 @@ class Pool(models.Model):
 
     def __str__(self):
         return "{}".format(self.name)
+    
+    def get_absolute_url(self):
+        return reverse('booru:pool_detail', kwargs={'pool_id': self.id})
 
 class Post(models.Model):
     parent = models.IntegerField(null=True, blank=True)

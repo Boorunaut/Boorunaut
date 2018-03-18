@@ -30,4 +30,5 @@ urlpatterns = [
 
     re_path(r'^pool/new/$', views.pool_create, name='pool_create'),    
     re_path(r'^pool/(?P<pool_id>[0-9]+)/$', views.pool_detail, name='pool_detail'),
+    re_path(r'^pool/(?P<pool_id>[0-9]+)/edit$', views.pool_edit, name='pool_edit'),
 ]

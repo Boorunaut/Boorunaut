@@ -15,7 +15,7 @@
         </div>
         <div class="row mb-2">
             <a href="{% url 'booru:posts' %}?tags=pool:{{pool.id}}" class="btn btn-primary btn-sm">Search</a>
-            <a href="#" class="btn btn-primary btn-sm ml-1">Edit</a>
+            <a href="{% url 'booru:pool_edit' pool.id %}" class="btn btn-primary btn-sm ml-1">Edit</a>
             <a href="#" class="btn btn-primary btn-sm ml-1">Import</a>
             <a href="#" class="btn btn-primary btn-sm ml-1">History</a>
         </div>

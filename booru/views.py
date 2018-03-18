@@ -2,13 +2,15 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Q
+from django.forms.models import model_to_dict
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views import generic
 
 from . import utils
 from .forms import (AliasCreateForm, CreatePostForm, EditPostForm,
-                    ImplicationCreateForm, TagEditForm, TagListSearchForm, CreatePoolForm)
-from .models import Alias, Implication, Post, PostTag, TaggedPost, Pool
+                    ImplicationCreateForm, PoolCreateForm, PoolEditForm,
+                    TagEditForm, TagListSearchForm)
+from .models import Alias, Implication, Pool, Post, PostTag, TaggedPost
 
 
 def index(request):
@@ -198,7 +200,7 @@ def alias_disapprove(request, alias_id):
 
 @login_required
 def pool_create(request):    
-    form = CreatePoolForm(request.POST or None, request.FILES or None)
+    form = PoolCreateForm(request.POST or None, request.FILES or None)
     
     if form.is_valid():
         posts_text = form.cleaned_data['posts_ids']
@@ -223,3 +225,22 @@ def pool_detail(request, pool_id):
     page = p.page(page_number)
 
     return render(request, 'booru/pool_detail.html', {"pool": pool, "page": page})
+
+@login_required
+def pool_edit(request, pool_id):
+    pool = get_object_or_404(Pool, pk=pool_id)
+
+    pool_dict = model_to_dict(pool)
+    pool_dict['posts_ids'] = '\n'.join([str(post_id['id']) for post_id in pool.posts.values('id')])
+    form = PoolEditForm(request.POST or None, instance=pool, initial=pool_dict)
+
+    if form.is_valid():
+        posts_ids = form.cleaned_data['posts_ids'].splitlines()
+        pool = form.save(commit=False)
+        pool.posts.clear()
+        pool.save()
+        posts = Post.objects.filter(id__in=posts_ids)
+        pool.posts.add(*posts)
+        form.save_m2m()
+        return redirect('booru:pool_detail', pool_id=pool.id)
+    return render(request, 'booru/pool_edit.html', {"form": form, "pool": pool})
