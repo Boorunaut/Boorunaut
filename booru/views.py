@@ -8,9 +8,9 @@ from django.views import generic
 
 from . import utils
 from .forms import (AliasCreateForm, CreatePostForm, EditPostForm,
-                    ImplicationCreateForm, PoolCreateForm, PoolEditForm,
+                    ImplicationCreateForm, GalleryCreateForm, GalleryEditForm,
                     TagEditForm, TagListSearchForm)
-from .models import Alias, Implication, Pool, Post, PostTag, TaggedPost
+from .models import Alias, Implication, Gallery, Post, PostTag, TaggedPost
 
 
 def index(request):
@@ -199,48 +199,48 @@ def alias_disapprove(request, alias_id):
     return redirect('booru:alias-detail', alias.id)
 
 @login_required
-def pool_create(request):    
-    form = PoolCreateForm(request.POST or None, request.FILES or None)
+def gallery_create(request):    
+    form = GalleryCreateForm(request.POST or None, request.FILES or None)
     
     if form.is_valid():
         posts_text = form.cleaned_data['posts_ids']
         posts_ids = posts_text.splitlines()
         
-        pool = form.save(commit=False)
-        pool.save()
+        gallery = form.save(commit=False)
+        gallery.save()
         posts = Post.objects.filter(id__in=posts_ids)
-        pool.posts.add(*posts)
+        gallery.posts.add(*posts)
         form.save_m2m()
-        return redirect('booru:pool_detail', pool_id=pool.id)
-    return render(request, 'booru/pool_create.html', {"form": form})
+        return redirect('booru:gallery_detail', gallery_id=gallery.id)
+    return render(request, 'booru/gallery_create.html', {"form": form})
 
-def pool_detail(request, pool_id):
+def gallery_detail(request, gallery_id):
     page_number = int(request.GET.get('page', '1'))
     page_limit = 20
 
-    pool = Pool.objects.get(id=pool_id)
-    posts = pool.posts.all()
+    gallery = Gallery.objects.get(id=gallery_id)
+    posts = gallery.posts.all()
 
     p = Paginator(posts, page_limit)
     page = p.page(page_number)
 
-    return render(request, 'booru/pool_detail.html', {"pool": pool, "page": page})
+    return render(request, 'booru/gallery_detail.html', {"gallery": gallery, "page": page})
 
 @login_required
-def pool_edit(request, pool_id):
-    pool = get_object_or_404(Pool, pk=pool_id)
+def gallery_edit(request, gallery_id):
+    gallery = get_object_or_404(Gallery, pk=gallery_id)
 
-    pool_dict = model_to_dict(pool)
-    pool_dict['posts_ids'] = '\n'.join([str(post_id['id']) for post_id in pool.posts.values('id')])
-    form = PoolEditForm(request.POST or None, instance=pool, initial=pool_dict)
+    gallery_dict = model_to_dict(gallery)
+    gallery_dict['posts_ids'] = '\n'.join([str(post_id['id']) for post_id in gallery.posts.values('id')])
+    form = GalleryEditForm(request.POST or None, instance=gallery, initial=gallery_dict)
 
     if form.is_valid():
         posts_ids = form.cleaned_data['posts_ids'].splitlines()
-        pool = form.save(commit=False)
-        pool.posts.clear()
-        pool.save()
+        gallery = form.save(commit=False)
+        gallery.posts.clear()
+        gallery.save()
         posts = Post.objects.filter(id__in=posts_ids)
-        pool.posts.add(*posts)
+        gallery.posts.add(*posts)
         form.save_m2m()
-        return redirect('booru:pool_detail', pool_id=pool.id)
-    return render(request, 'booru/pool_edit.html', {"form": form, "pool": pool})
+        return redirect('booru:gallery_detail', gallery_id=gallery.id)
+    return render(request, 'booru/gallery_edit.html', {"form": form, "gallery": gallery})

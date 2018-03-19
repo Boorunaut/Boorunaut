@@ -107,7 +107,7 @@ class TaggedPost(GenericTaggedItemBase):
         tag_name = self.tag
         utils.verify_and_perform_aliases_and_implications(tag_name)
 
-class Pool(models.Model):
+class Gallery(models.Model):
     name = models.CharField(max_length=100, blank=True)
     description = models.CharField(max_length=1000, blank=True)
     posts = models.ManyToManyField('booru.Post')
@@ -117,7 +117,7 @@ class Pool(models.Model):
         return "{}".format(self.name)
     
     def get_absolute_url(self):
-        return reverse('booru:pool_detail', kwargs={'pool_id': self.id})
+        return reverse('booru:gallery_detail', kwargs={'gallery_id': self.id})
 
 class Post(models.Model):
     parent = models.IntegerField(null=True, blank=True)

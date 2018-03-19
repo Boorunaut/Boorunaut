@@ -28,7 +28,7 @@ urlpatterns = [
     re_path(r'^tag_implications/(?P<implication_id>[0-9]+)/disapprove/$', views.implication_disapprove, name='implication_disapprove'),
     re_path(r'^profile/(?P<account_slug>[\w-]+)/$', account.views.profile, name='profile'),
 
-    re_path(r'^pool/new/$', views.pool_create, name='pool_create'),    
-    re_path(r'^pool/(?P<pool_id>[0-9]+)/$', views.pool_detail, name='pool_detail'),
-    re_path(r'^pool/(?P<pool_id>[0-9]+)/edit$', views.pool_edit, name='pool_edit'),
+    re_path(r'^gallery/new/$', views.gallery_create, name='gallery_create'),    
+    re_path(r'^gallery/(?P<gallery_id>[0-9]+)/$', views.gallery_detail, name='gallery_detail'),
+    re_path(r'^gallery/(?P<gallery_id>[0-9]+)/edit$', views.gallery_edit, name='gallery_edit'),
 ]
