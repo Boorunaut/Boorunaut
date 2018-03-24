@@ -12,7 +12,6 @@ from account.models import Account
 from . import utils
 from .managers import PostManager
 
-
 def get_file_path(instance, filename):
     ext = filename.split('.')[-1]
     filename = "%s.%s" % (uuid.uuid4(), ext)
@@ -112,6 +111,7 @@ class PostTag(TagBase):
     def get_count(self):
         return TaggedPost.objects.filter(tag=self).count()
 
+#@reversion.register()
 class TaggedPost(GenericTaggedItemBase):
     tag = models.ForeignKey(PostTag, related_name="%(app_label)s_%(class)s_items", on_delete=models.CASCADE)
 
@@ -121,6 +121,7 @@ class TaggedPost(GenericTaggedItemBase):
         tag_name = self.tag
         utils.verify_and_perform_aliases_and_implications(tag_name)
 
+@reversion.register()
 class Post(models.Model):
     parent = models.IntegerField(null=True, blank=True)
     preview = models.ImageField(upload_to=get_file_path_preview, blank=True)
