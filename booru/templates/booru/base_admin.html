@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en" prefix="og: http://ogp.me/ns#">
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">        
+
+        {% load staticfiles %}
+        <link rel="stylesheet" type="text/css" href="{% static 'booru/css/custom_cosmo.css' %}"/>
+        <link rel="stylesheet" type="text/css" href="{% static 'booru/css/base.css' %}"/>
+        {% block css %}
+        {% endblock %}
+        
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script defer src="https://use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+        {% block scripts %}
+        {% endblock %}
+
+        <title>
+            {% block title %}Boorunaut | Imageboard{% endblock %}
+        </title>
+    </head>
+    <body class="bg-light">
+        <div class="container-fluid">
+            {% with sidebar_size=2 %}
+            <div class="row">
+                <div class="col-{{sidebar_size}} bg-dark fixed-top fixed-bottom" style="z-index: -1;">
+                </div>
+            </div>
+            <div class="row">
+                <div id="sidebar-menu" class="col-{{sidebar_size}} pl-0 pr-0 text-white">
+                    <div class="col sticky-top pl-0 pr-0">
+                        <a class="navbar-brand col text-white text-center mt-4 mb-4" href="/post/list/">Boorunaut</a>
+
+                        <a type="button" href="{% url 'booru:staff_page' %}" class="btn btn-dark col text-left">
+                            <i class="fas fa-chart-line"></i> Statistics
+                        </a>
+    
+                        <a type="button" href="#" class="btn btn-dark col text-left">
+                            <i class="fas fa-box"></i> Extension Manager
+                        </a>
+    
+                        <div class="btn-group dropright col pl-0 pr-0">
+                            <button type="button" class="btn btn-dark dropdown-toggle text-left col" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-cogs"></i> Board Configuration
+                            </button>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="#">Normal</a>
+                                <a class="dropdown-item" href="#">Advanced </a>
+                            </div>
+                        </div>
+    
+                        <a type="button" href="#" class="btn btn-dark col text-left">
+                            <i class="fas fa-exchange-alt"></i> Alias Editor
+                        </a>
+                    </div>
+                    <div class="col-{{sidebar_size}} fixed-bottom">
+                        <div class="row pl-0 pr-0">
+                            <a href="{{user.get_absolute_url}}" class="btn btn-dark col">
+                                {{user}}
+                            </a>
+                        </div>
+                        <div class="row pl-0 pr-0">
+                            <a href="{% url 'account:logout' %}" class="btn btn-dark col">
+                                Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div id="content" class="col pl-0 pr-0">
+                    {% block content %}
+                    {% endblock %}
+                </div>
+            </div>
+            {% endwith %}
+        </div>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    </body>
+</html>
