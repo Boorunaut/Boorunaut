@@ -135,6 +135,7 @@ class Post(models.Model):
     identifier = models.UUIDField(default=uuid.uuid4, editable=False)
     locked = models.BooleanField(default=False)
     tags = TaggableManager(through=TaggedPost, related_name="posts")
+    tags_mirror = models.CharField(max_length=1000, blank=True)
 
     objects = PostManager()
 
@@ -166,6 +167,9 @@ class Post(models.Model):
         default=PENDING,
     )
 
+    def __str__(self):
+        return "#{}".format(self.id)
+
     def save(self, *args, **kwargs):
         pil_image = utils.get_pil_image_if_valid(self.image)
 
@@ -177,6 +181,9 @@ class Post(models.Model):
                 self.sample.save(".jpg", sample, save=False)
 
             self.preview.save(".jpg", preview, save=False)
+
+        if self.id:
+            self.mirror_tags()
         super(Post, self).save(*args, **kwargs)
 
     def get_sample_url(self):
@@ -206,6 +213,9 @@ class Post(models.Model):
 
     def get_favorites_count(self):
         return self.favorite_set.count()
+
+    def mirror_tags(self):
+        self.tags_mirror = " ".join(self.tags.names())
 
 class Favorite(models.Model):
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
