@@ -20,12 +20,37 @@
         </div>
         <div class="col-1 text-center">
             <div class="col" style="font-size: 2.8125rem; height: 3.09375rem;">
-                {{accounts_registered}}
+                {{accounts.count}}
             </div>
             <div class="col">
                 <small>Users</small>
             </div>
         </div>
-    </div>  
+    </div>
+</div>
+
+<div class="col bg-white align-middle mt-3 pl-4 pt-3 pb-3 pr-4">
+    <h1>Registered Users</h1>
+
+    <div class="row mt-4">
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">Username</th>
+                    <th scope="col">Register Date</th>
+                    <th scope="col">Last Login</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for account in accounts %}
+                <tr>
+                    <th scope="row">{{account.username}}</th>
+                    <td>{{account.date_joined}}</td>
+                    <td>{{account.last_login}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 {% endblock %}

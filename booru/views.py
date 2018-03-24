@@ -200,10 +200,10 @@ def alias_disapprove(request, alias_id):
 @staff_member_required
 def staff_page(request):
     Account = apps.get_model('account', 'Account')
-    accounts_registered = Account.objects.count()
+    accounts = Account.objects.all().order_by("-id")
 
     context = {
-        'accounts_registered': accounts_registered
+        'accounts': accounts
     }
 
     return render(request, 'booru/staff_page.html', context)
