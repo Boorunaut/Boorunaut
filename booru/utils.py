@@ -1,5 +1,6 @@
 from io import BytesIO
 
+import diff_match_patch as dmp_module
 from django.apps import apps
 from django.core.files.base import ContentFile
 from PIL import Image as ImagePIL
@@ -125,4 +126,16 @@ def verify_and_perform_aliases_and_implications(tag_name):
             if implications.count() > 0:
                 for implication in implications:
                     post.tags.add(implication.to_tag)
+
+def get_diff(field_name, old_revision, new_revision):
+    old_revision_field = old_revision.field_dict[field_name]
+    new_revision_field = new_revision.field_dict[field_name]
+
+    dmp = dmp_module.diff_match_patch()
+    diff_field = dmp.diff_main(old_revision_field, new_revision_field)
+    dmp.diff_cleanupSemantic(diff_field)
+    diff_html = dmp.diff_prettyHtml(diff_field).replace('&para;', '') # Removes paragraph character 
+                                                                      # added by the library.
+
+    return diff_html
 

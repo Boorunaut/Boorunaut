@@ -130,27 +130,14 @@ def tag_history(request, tag_id, page_number = 1):
 
 def tag_revision_diff(request, tag_id):
     tag = get_object_or_404(PostTag, pk=tag_id)
-    old_revision_id = request.GET.get('oldRevision')
-    new_revision_id = request.GET.get('newRevision')
+    
+    old_revision = get_object_or_404(Version, pk=request.GET.get('oldRevision'))
+    new_revision = get_object_or_404(Version, pk=request.GET.get('newRevision'))
 
-    old_revision = get_object_or_404(Version, pk=old_revision_id)
-    old_revision_description = old_revision.field_dict["description"]
-    old_revision_associated_links = old_revision.field_dict["associated_link"]
+    description_diff        = utils.get_diff("description", old_revision, new_revision)
+    associated_link_diff    = utils.get_diff("associated_link", old_revision, new_revision)
 
-    new_revision = get_object_or_404(Version, pk=new_revision_id)
-    new_revision_description = new_revision.field_dict["description"]
-    new_revision_associated_links = new_revision.field_dict["associated_link"]
-
-    dmp = dmp_module.diff_match_patch()
-    diff = dmp.diff_main(old_revision_description, new_revision_description)
-    dmp.diff_cleanupSemantic(diff)
-    diff_html = dmp.diff_prettyHtml(diff).replace('&para;', '')
-
-    diff = dmp.diff_main(old_revision_associated_links, new_revision_associated_links)
-    dmp.diff_cleanupSemantic(diff)
-    diff_associated_links = dmp.diff_prettyHtml(diff).replace('&para;', '')
-
-    context = {"tag": tag, "diff_html": diff_html, "diff_associated_links": diff_associated_links,
+    context = {"tag": tag, "description_diff": description_diff, "associated_link_diff": associated_link_diff,
                "old_revision": old_revision, "new_revision": new_revision}
     
     return render(request, 'booru/tag_revision_diff.html', context)
