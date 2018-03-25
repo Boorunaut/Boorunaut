@@ -1,8 +1,11 @@
 from io import BytesIO
 
+import diff_match_patch as dmp_module
 from django.apps import apps
 from django.core.files.base import ContentFile
+from django.shortcuts import get_object_or_404
 from PIL import Image as ImagePIL
+from reversion.models import Version
 
 sample_max_resolution = (850, None)
 preview_max_resolution = (150, 150)
@@ -126,3 +129,32 @@ def verify_and_perform_aliases_and_implications(tag_name):
                 for implication in implications:
                     post.tags.add(implication.to_tag)
 
+def get_diff(field_name, old_revision, new_revision):
+    old_revision_field = old_revision.field_dict[field_name]
+    new_revision_field = new_revision.field_dict[field_name]
+
+    dmp = dmp_module.diff_match_patch()
+    diff_field = dmp.diff_main(old_revision_field, new_revision_field)
+    dmp.diff_cleanupSemantic(diff_field)
+    diff_html = dmp.diff_prettyHtml(diff_field).replace('&para;', '') # Removes paragraph character 
+                                                                      # added by the library.
+
+    return diff_html
+
+def compare_strings(old_string, new_string):
+    """Splits a string by spaces, and compares the lists. Then, returns a dictionary containing the following results:
+
+    `equal` is a list of words in common.
+
+    `removed` is a list of words that ARE in old_string, but ARE NOT in new_string.
+
+    `added` is a list of words that ARE NOT in old_string, but ARE in new_string.
+    """
+    old_string = old_string.split(" ")
+    new_string = new_string.split(" ")
+
+    equal_words = list(set(old_string).intersection(new_string))
+    removed_words = list(set(old_string) - set(new_string))
+    added_words = list(set(new_string) - set(old_string))
+
+    return {"equal": equal_words, "removed": removed_words, "added": added_words}

@@ -25,9 +25,18 @@ def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     form = EditPostForm(request.POST or None, request.FILES or None, instance=post)
 
+    # Post editting (post_edit)
     if request.method == "POST" and form.is_valid():
-        post = form.save()
-        return redirect('booru:post_detail', post_id=post.id)
+        if not request.user.is_authenticated:
+            return redirect('account:login')
+        with reversion.create_revision():
+            post = form.save(commit=False)
+            post.save()
+            form.save_m2m()
+            
+            reversion.set_user(request.user)
+            reversion.set_comment("Created revision" + str(post.id))
+            return redirect('booru:post_detail', post_id=post.id)
 
     previous_post = Post.objects.filter(id=post.id - 1).first() or None
     next_post = Post.objects.filter(id=post.id + 1).first() or None
@@ -35,6 +44,22 @@ def post_detail(request, post_id):
     ordered_tags = post.get_ordered_tags()
     return render(request, 'booru/post_detail.html', {"post": post, "ordered_tags": ordered_tags, "form": form,
                                                       "previous_post": previous_post, "next_post": next_post})
+
+def post_history(request, post_id, page_number = 1):
+    post = get_object_or_404(Post, id=post_id)
+    page_limit = 20
+
+    versions = Version.objects.get_for_object(post)
+    p = Paginator(versions, page_limit)
+    page = p.page(page_number)
+
+    object_enum = enumerate(page.object_list)
+
+    for key, page_object in object_enum:
+        if key <= len(page.object_list):
+            page_object.previous_version = key + 1
+
+    return render(request, 'booru/post_history.html', {"versions": versions, "page": page, "post": post})
 
 @login_required
 def upload(request):    
@@ -131,27 +156,14 @@ def tag_history(request, tag_id, page_number = 1):
 
 def tag_revision_diff(request, tag_id):
     tag = get_object_or_404(PostTag, pk=tag_id)
-    old_revision_id = request.GET.get('oldRevision')
-    new_revision_id = request.GET.get('newRevision')
+    
+    old_revision = get_object_or_404(Version, pk=request.GET.get('oldRevision'))
+    new_revision = get_object_or_404(Version, pk=request.GET.get('newRevision'))
 
-    old_revision = get_object_or_404(Version, pk=old_revision_id)
-    old_revision_description = old_revision.field_dict["description"]
-    old_revision_associated_links = old_revision.field_dict["associated_link"]
+    description_diff        = utils.get_diff("description", old_revision, new_revision)
+    associated_link_diff    = utils.get_diff("associated_link", old_revision, new_revision)
 
-    new_revision = get_object_or_404(Version, pk=new_revision_id)
-    new_revision_description = new_revision.field_dict["description"]
-    new_revision_associated_links = new_revision.field_dict["associated_link"]
-
-    dmp = dmp_module.diff_match_patch()
-    diff = dmp.diff_main(old_revision_description, new_revision_description)
-    dmp.diff_cleanupSemantic(diff)
-    diff_html = dmp.diff_prettyHtml(diff).replace('&para;', '')
-
-    diff = dmp.diff_main(old_revision_associated_links, new_revision_associated_links)
-    dmp.diff_cleanupSemantic(diff)
-    diff_associated_links = dmp.diff_prettyHtml(diff).replace('&para;', '')
-
-    context = {"tag": tag, "diff_html": diff_html, "diff_associated_links": diff_associated_links,
+    context = {"tag": tag, "description_diff": description_diff, "associated_link_diff": associated_link_diff,
                "old_revision": old_revision, "new_revision": new_revision}
     
     return render(request, 'booru/tag_revision_diff.html', context)

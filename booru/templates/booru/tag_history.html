@@ -38,8 +38,8 @@
                                         {{version}}
                                     </a>
                                 </td>
-                                <!--<td><a href="{{tag.get_absolute_url}}">{{version}}</a></td>-->
-                                <td>{{version.revision.date_created}} by
+                                <td>
+                                    {{version.revision.date_created}} by
                                     <a href="{% url 'booru:profile' version.revision.user %}">{{version.revision.user}}</a>
                                 </td>
                             </tr>

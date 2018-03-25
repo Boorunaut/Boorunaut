@@ -1,0 +1,9 @@
+{% for word in value.added %}
+    <span class="text-success">+{{word}}</span>
+{% endfor %}
+{% for word in value.removed %}
+    <span class="text-danger">-{{word}}</span>
+{% endfor %}
+{% for word in value.equal %}
+    <span>{{word}}</span>
+{% endfor %}
