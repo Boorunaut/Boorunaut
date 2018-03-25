@@ -21,7 +21,7 @@
 
     <div class="row">            
         <div id="table" class="col">
-            <table class="table table-striped">
+            <table class="table table-striped text-center">
                 <thead>
                     <tr>
                         <th scope="col">#</th>
@@ -37,7 +37,10 @@
                     <tr>
                         <th scope="row">{{ forloop.counter }}</th>
                         <td>{{tag.get_count}}</td>
-                        <td>? <a href="{% url 'booru:posts' %}?tags={{tag}}">{{tag.name}}</a></td>
+                        <td>
+                            <strong><a href="{% url 'booru:tag_detail' tag.id %}">?</a></strong>
+                            <a href="{% url 'booru:posts' %}?tags={{tag}}">{{tag.name}}</a>
+                        </td>
                         {% if user.is_authenticated %}
                         <td scope="col"><a href="{% url 'booru:tag_edit' tag.id %}">Edit</a></td>
                         {% endif %}

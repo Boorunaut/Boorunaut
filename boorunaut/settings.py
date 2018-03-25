@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     # Dependency apps
     'taggit',
     'markdown_deux',
+    'reversion',
 ]
 
 MIDDLEWARE = [

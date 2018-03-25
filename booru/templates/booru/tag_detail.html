@@ -1,0 +1,70 @@
+{% extends 'booru/base.html' %}
+
+{% block css %}
+    {% load staticfiles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'booru/css/index.css' %}"/>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block body %}
+    {% load markdown_deux_tags %}
+    <div class="container">
+        <div class="row">
+            <h1>Tag: <a href="{% url 'booru:posts' %}?tags={{tag}}">{{tag}}</a></h1>
+            <span>[<a href="{% url 'booru:tag_edit' tag.id %}">edit</a>]</span>
+            <span>[<a href="{% url 'booru:tag_history' tag.id %}">history</a>]</span>
+        </div>
+        <div class="row">
+            <div id="table" class="col mt-3">
+                <table class="table table-sm">
+                    <tbody>                        
+                        {% if tag.description %}
+                        <tr>
+                            <td><strong>Description:</strong></td>
+                            <td>{{tag.description|markdown}}</td>
+                        </tr>
+                        {% endif %}
+                        <tr>
+                            <td><strong>Category:</strong></td>
+                            <td>{{tag.category}}</td>
+                        </tr>
+                        {% if tag.associated_link %}
+                        <tr>
+                            <td><strong>Associated links:</strong></td>
+                            <td>{{tag.associated_link}}</td>
+                        </tr>
+                        {% endif %}
+                        {% if tag.associated_user %}
+                        <tr>
+                            <td><strong>Associated user:</strong></td>
+                            <td><a href="{% url 'booru:profile' tag.associated_user %}">
+                                    {{tag.associated_user}}
+                                </a>
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% if tag.timestamp %}
+                        <tr>
+                            <td><strong>Date:</strong></td>
+                            <td>{{tag.timestamp}}</td>
+                        </tr>
+                        {% endif %}
+                        {% if tag.author %}
+                        <tr>
+                            <td><strong>Author:</strong></td>
+                            <td><a href="{{tag.author.get_absolute_url}}">{{tag.author}}</a></td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            {% for post in last_post %}
+            <a href="{{post.get_absolute_url}}"><img src="{{post.preview.url}}" alt=""></a>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

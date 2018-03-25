@@ -55,7 +55,7 @@
                             <tr>
                                 {% if category.label == "general" %}
                                 <th class="tag-wiki-link" scope="row">
-                                    <a href="#">
+                                    <a href="{% url 'booru:tag_detail' tag.id %}">
                                         ?
                                     </a>
                                 </th>

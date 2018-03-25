@@ -71,12 +71,19 @@ class TagEditForm(forms.ModelForm):
     '''Form for creating an post.'''
 
     category = forms.ModelChoiceField(queryset=Category.objects.all(),
-                                    widget=forms.Select(attrs={'class': 'form-control'}),
-                                    required=False, empty_label=None)
+                                      widget=forms.Select(attrs={'class': 'form-control'}),
+                                      required=False, empty_label=None)
+    associated_user_name = forms.CharField(required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(TagEditForm, self).__init__(*args, **kwargs)
+        self.fields['description'].widget = forms.Textarea(attrs={'class': 'form-control'})
+        self.fields['associated_link'].widget = forms.Textarea(attrs={'class': 'form-control'})
+        self.fields['associated_user_name'].widget = forms.Textarea(attrs={'class': 'form-control'})
 
     class Meta:
         model = PostTag
-        fields = ["category"]
+        fields = ["category", "description", "associated_link", "associated_user_name"]
 
 class AliasCreateForm(forms.Form):
     from_tag = forms.CharField(required=True)

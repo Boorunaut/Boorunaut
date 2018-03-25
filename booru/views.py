@@ -1,10 +1,16 @@
+import diff_match_patch as dmp_module
+import reversion
+from django.apps import apps
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Q
+from django.forms.models import model_to_dict
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views import generic
-from django.apps import apps
+from reversion.models import Version
+
+from account.models import Account
 
 from . import utils
 from .forms import (AliasCreateForm, CreatePostForm, EditPostForm,
@@ -86,12 +92,69 @@ def tags_list(request, page_number = 1):
 @login_required
 def tag_edit(request, tag_id):
     tag = get_object_or_404(PostTag, pk=tag_id)
-    form = TagEditForm(request.POST or None, instance=tag)
 
+    versions = Version.objects.get_for_object(tag)
+    tag_dict = model_to_dict(tag)
+
+    if len(versions) > 0 and versions[0].field_dict["associated_user_id"]:
+        associated_user = get_object_or_404(Account, id=versions[0].field_dict["associated_user_id"])
+        tag_dict['associated_user_name'] = associated_user.slug
+
+    form = TagEditForm(request.POST or None, instance=tag, initial=tag_dict)
     if form.is_valid() and request.POST:
-        tag = form.save()
+        with reversion.create_revision():
+            tag = form.save(commit=False)
+            tag.author = request.user
+            if form.cleaned_data['associated_user_name']:
+                associated_user = get_object_or_404(Account, slug=form.cleaned_data['associated_user_name'])
+                tag.associated_user = associated_user
+            tag.save()
+            reversion.set_user(request.user)
+        return redirect('booru:tag_detail', tag.id)
         
     return render(request, 'booru/tag_edit.html', {"tag": tag, "form": form})
+
+def tag_detail(request, tag_id):
+    tag = get_object_or_404(PostTag, pk=tag_id)
+    last_posts = Post.objects.filter(tags__name__in=[tag.name])[:6]
+    return render(request, 'booru/tag_detail.html', {"tag": tag, "last_post": last_posts})
+
+def tag_history(request, tag_id, page_number = 1):
+    tag = get_object_or_404(PostTag, pk=tag_id)
+    page_limit = 20
+
+    versions = Version.objects.get_for_object(tag)
+    p = Paginator(versions, page_limit)
+    page = p.page(page_number)
+
+    return render(request, 'booru/tag_history.html', {"versions": versions, "page": page, "tag": tag})
+
+def tag_revision_diff(request, tag_id):
+    tag = get_object_or_404(PostTag, pk=tag_id)
+    old_revision_id = request.GET.get('oldRevision')
+    new_revision_id = request.GET.get('newRevision')
+
+    old_revision = get_object_or_404(Version, pk=old_revision_id)
+    old_revision_description = old_revision.field_dict["description"]
+    old_revision_associated_links = old_revision.field_dict["associated_link"]
+
+    new_revision = get_object_or_404(Version, pk=new_revision_id)
+    new_revision_description = new_revision.field_dict["description"]
+    new_revision_associated_links = new_revision.field_dict["associated_link"]
+
+    dmp = dmp_module.diff_match_patch()
+    diff = dmp.diff_main(old_revision_description, new_revision_description)
+    dmp.diff_cleanupSemantic(diff)
+    diff_html = dmp.diff_prettyHtml(diff).replace('&para;', '')
+
+    diff = dmp.diff_main(old_revision_associated_links, new_revision_associated_links)
+    dmp.diff_cleanupSemantic(diff)
+    diff_associated_links = dmp.diff_prettyHtml(diff).replace('&para;', '')
+
+    context = {"tag": tag, "diff_html": diff_html, "diff_associated_links": diff_associated_links,
+               "old_revision": old_revision, "new_revision": new_revision}
+    
+    return render(request, 'booru/tag_revision_diff.html', context)
 
 class ImplicationListView(generic.ListView):
     model = Implication
