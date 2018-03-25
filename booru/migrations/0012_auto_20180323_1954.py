@@ -8,13 +8,13 @@ def create_types(apps, schema_editor):
     Category.objects.using(db_alias).create(label="general", title_singular="General",
                                             title_plural="General", color="")
     Category.objects.using(db_alias).create(label="artist", title_singular="Artist",
-                                            title_plural="Artists", color="#BB6666")
+                                            title_plural="Artists", color="BB6666")
     Category.objects.using(db_alias).create(label="copyright", title_singular="Copyright",
-                                            title_plural="Copyrights", color="#AA00AA")
+                                            title_plural="Copyrights", color="AA00AA")
     Category.objects.using(db_alias).create(label="character", title_singular="Character",
-                                            title_plural="Characters", color="#66BB66"),
+                                            title_plural="Characters", color="66BB66"),
     Category.objects.using(db_alias).create(label="meta", title_singular="Meta",
-                                            title_plural="Meta", color="#FF8800")
+                                            title_plural="Meta", color="FF8800")
 
 class Migration(migrations.Migration):
 
