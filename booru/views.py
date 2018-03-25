@@ -1,5 +1,6 @@
 import diff_match_patch as dmp_module
 import reversion
+from django.apps import apps
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
@@ -270,3 +271,14 @@ def alias_disapprove(request, alias_id):
     alias.status = 2
     alias.save()    
     return redirect('booru:alias-detail', alias.id)
+
+@staff_member_required
+def staff_page(request):
+    Account = apps.get_model('account', 'Account')
+    accounts = Account.objects.all().order_by("-id")
+
+    context = {
+        'accounts': accounts
+    }
+
+    return render(request, 'booru/staff_page.html', context)
