@@ -232,3 +232,26 @@ class ScoreVote(models.Model):
 
     class Meta:
         unique_together = ('account', 'post',)
+
+class Comment(models.Model):
+    author = models.ForeignKey(Account, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    content = models.CharField(max_length=1000, blank=True)
+    timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
+    update_timestamp = models.DateTimeField(auto_now=True, auto_now_add=False)
+
+    def get_vote_count(self):
+        return self.commentvote_set.count()
+    
+    def get_score(self):
+        upvotes = self.commentvote_set.filter(point=1).count()
+        downvotes = self.commentvote_set.filter(point=-1).count()
+        return upvotes - downvotes
+
+class CommentVote(models.Model):
+    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE)
+    point = models.IntegerField(default=1)
+
+    class Meta:
+        unique_together = ('account', 'comment',)
