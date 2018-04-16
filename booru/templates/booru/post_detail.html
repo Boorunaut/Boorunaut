@@ -134,33 +134,92 @@
         </div>
         <div id="post" class="col">
             <div class="row mb-3">
-                <img src="{{post.get_sample_url}}" alt="">
-            </div>                
-            <div class="row mt-2 mb-4">
-                <button id="show_edit_form" class="btn btn-primary btn">Edit</button>
+                <div class="col">
+                    <img src="{{post.get_sample_url}}" alt="">
+                </div>
             </div>
-            <div id="edit" class="col-6" style="display: none;">
-                <form method="post" action="." enctype="multipart/form-data">
-                    {% csrf_token %}
-    
-                    {% for field in form %}
-                    <div class="form-group">
-                        <label for="{{field.auto_id}}">{{ field.label }}</label>
-                        {{ field }}
-                        {% if field.errors %}
-                        <div class="invalid-feedback">
-                            {{field.errors}}
+            <div class="row mt-2 mb-4">
+                <button id="show_comments" class="btn btn-primary btn mr-1">Comments</button>
+                <button id="show_edit_form" class="btn btn-outline-primary btn">Edit</button>
+            </div>            
+            <div class="row">
+                <div id="edit" class="col-10" style="display: none;">
+                    <form method="post" action="." enctype="multipart/form-data">
+                        {% csrf_token %}
+        
+                        {% for field in form %}
+                        <div class="form-group">
+                            <label for="{{field.auto_id}}">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.errors %}
+                            <div class="invalid-feedback">
+                                {{field.errors}}
+                            </div>
+                            {% endif %}
                         </div>
-                        {% endif %}
+                        {% endfor %}
+        
+                        <div class="form-group">
+                            <div class="col">
+                                <button type="submit" id="send" class="btn btn-primary submit-media">Submit</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div id="comment-section" class="mb-3">
+                <div id="comments" class="row">
+                    {% for comment in post.comment_set.all %}
+                    <div id="comment-{{comment.id}}" class="comment col-10 border comment-border pt-3 pb-3 mb-2">
+                        <div class="row">
+                            <div class="comment col">
+                                <div class="row">
+                                    <span class="col">
+                                        <h5><a href="{{comment.author.get_absolute_url}}">{{comment.author}}</a></h5>
+                                    </span>
+                                </div>
+                                <div class="row">
+                                    <span class="col text-muted">
+                                        {{comment.timestamp|naturaltime}}
+                                    </span>
+                                </div>
+                                <div class="row">
+                                    <span class="col">
+                                        <small>Score: {{comment.get_score}}</small>
+                                        <button type="input" id="upvoteComment" class="btn btn-sm btn-success"><i class="fas fa-angle-up"></i></button>
+                                        <button type="input" id="downvoteComment" class="btn btn-sm btn-danger"><i class="fas fa-angle-down"></i></button>
+                                    </span>
+                                </div>                            
+                            </div>
+                            <div class="comment col-9">
+                                {% load markdown_deux_tags %}
+                                {{comment.content|markdown}}
+                            </div>
+                        </div>
                     </div>
                     {% endfor %}
-    
-                    <div class="form-group">
-                        <div class="col">
-                            <button type="submit" id="send" class="btn btn-primary submit-media">Submit</button>
-                        </div>
-                    </div>
-                </form>
+                </div>
+                <div id="comment-create-form" class="row mt-3">
+                    <form class="col-10" method="post" action="." enctype="multipart/form-data">
+                        {% if not user.is_authenticated %}
+                        <fieldset disabled>
+                        {% endif %}
+
+                            {% csrf_token %}
+                            <div class="form-group">
+                                {% if not user.is_authenticated %}
+                                <label for="newCommentTextarea" class="text-muted">Comment (Login to comment)</label>
+                                {% else %}
+                                <label for="newCommentTextarea">Comment</label>
+                                {% endif %}
+                                <textarea class="form-control" id="newCommentTextarea" name="newCommentTextarea" rows="3"></textarea>
+                            </div>
+                            <button type="submit" id="send" class="btn btn-sm btn-primary">Create comment</button>
+                        {% if not user.is_authenticated %}
+                        </fieldset>
+                        {% endif %}
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -168,8 +227,18 @@
     <script>
         $( document ).ready(function() {
             $( "#show_edit_form" ).click(function() {
+                $("#show_comments").removeClass("btn-primary").addClass("btn-outline-primary");
+                $("#show_edit_form").toggleClass("btn-primary btn-outline-primary");
                 $( "#edit" ).toggle();
+                $( "#comment-section" ).hide();
             });
-        });    
+
+            $( "#show_comments" ).click(function() {
+                $("#show_edit_form").removeClass("btn-primary").addClass("btn-outline-primary");
+                $("#show_comments").toggleClass("btn-primary btn-outline-primary");
+                $( "#edit" ).hide();
+                $( "#comment-section" ).toggle();
+            });
+        });
     </script>
 {% endblock %}
