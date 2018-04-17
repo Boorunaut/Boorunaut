@@ -137,13 +137,19 @@ def verify_and_substitute_alias(tag_string):
     Alias = apps.get_model('booru', 'Alias')
     verified_tags = []
 
-    dmp = dmp_module.diff_match_patch()
-    diff_field = dmp.diff_main(old_revision_field, new_revision_field)
-    dmp.diff_cleanupSemantic(diff_field)
-    diff_html = dmp.diff_prettyHtml(diff_field).replace('&para;', '') # Removes paragraph character 
-                                                                      # added by the library.
+    for tag in space_splitter(tag_string):
+        raw_tag, operator = separate_tag_from_operator(tag)
 
-    return diff_html
+        tag_alias = Alias.objects.filter(from_tag__slug=raw_tag)
+
+        if tag_alias.exists():
+            verified_tag = tag_alias.first().to_tag.slug
+        else:
+            verified_tag = raw_tag
+
+        verified_tags.append(join_tag_and_operator(verified_tag, operator))
+    
+    return verified_tags
 
 def compare_strings(old_string, new_string):
     """Splits a string by spaces, and compares the lists. Then, returns a dictionary containing the following results:
@@ -162,20 +168,6 @@ def compare_strings(old_string, new_string):
     added_words = list(set(new_string) - set(old_string))
 
     return {"equal": equal_words, "removed": removed_words, "added": added_words}
-
-    for tag in space_splitter(tag_string):
-        raw_tag, operator = separate_tag_from_operator(tag)
-
-        tag_alias = Alias.objects.filter(from_tag__slug=raw_tag)
-
-        if tag_alias.exists():
-            verified_tag = tag_alias.first().to_tag.slug
-        else:
-            verified_tag = raw_tag
-
-        verified_tags.append(join_tag_and_operator(verified_tag, operator))
-    
-    return verified_tags
 
 '''def get_posts_from_tag_list(tag_list):
     Post = apps.get_model('booru', 'Post')
