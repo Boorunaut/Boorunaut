@@ -9,8 +9,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser, User
 from django.test import Client, RequestFactory, TestCase
 from django.test.utils import override_settings
-from booru.utils import space_splitter, space_joiner
-from booru.utils import compare_strings
+from booru.utils import space_splitter, space_joiner, compare_strings
 
 class UtilitiesTests(TestCase):
     fixtures = []
