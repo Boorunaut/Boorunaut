@@ -41,7 +41,7 @@ def post_detail(request, post_id):
             return redirect('account:login')
         
         comment_content = request.POST.get("newCommentTextarea")
-        comment = Comment.objects.create(content=comment_content, author=request.user, post=post)
+        comment = Comment.objects.create(content=comment_content, author=request.user, content_object=post)
         return redirect('booru:post_detail', post_id=post.id)
 
     previous_post = Post.objects.filter(id=post.id - 1).first() or None

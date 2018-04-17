@@ -169,7 +169,7 @@
             </div>
             <div id="comment-section" class="mb-3">
                 <div id="comments" class="row">
-                    {% for comment in post.comment_set.all %}
+                    {% for comment in post.comments.all %}
                     <div id="comment-{{comment.id}}" class="comment col-10 border comment-border pt-3 pb-3 mb-2">
                         <div class="row">
                             <div class="comment col">
@@ -224,11 +224,20 @@
 
     <script>
         $( document ).ready(function() {
+            var $root = $('html, body');
+
             $( "#show_edit_form" ).click(function() {
                 $("#show_comments").removeClass("btn-primary").addClass("btn-outline-primary");
                 $("#show_edit_form").toggleClass("btn-primary btn-outline-primary");
                 $( "#edit" ).toggle();
                 $( "#comment-section" ).hide();
+
+                if ($('#edit').is(':visible')){
+                    $root.animate({
+                        scrollTop: $("#edit").offset().top},
+                        'slow'
+                    );
+                }
             });
 
             $( "#show_comments" ).click(function() {
@@ -236,6 +245,13 @@
                 $("#show_comments").toggleClass("btn-primary btn-outline-primary");
                 $( "#edit" ).hide();
                 $( "#comment-section" ).toggle();
+
+                if ($('#comment-section').is(':visible')){
+                        $root.animate({
+                        scrollTop: $("#comment-section").offset().top},
+                        'slow'
+                    );
+                }
             });
         });
     </script>
