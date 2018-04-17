@@ -6,6 +6,7 @@ from django.core.files.base import ContentFile
 from django.shortcuts import get_object_or_404
 from PIL import Image as ImagePIL
 from reversion.models import Version
+from django.db.models import Q
 
 sample_max_resolution = (850, None)
 preview_max_resolution = (150, 150)
@@ -132,6 +133,9 @@ def verify_and_perform_aliases_and_implications(tag_name):
 def get_diff(field_name, old_revision, new_revision):
     old_revision_field = old_revision.field_dict[field_name]
     new_revision_field = new_revision.field_dict[field_name]
+def verify_and_substitute_alias(tag_string):
+    Alias = apps.get_model('booru', 'Alias')
+    verified_tags = []
 
     dmp = dmp_module.diff_match_patch()
     diff_field = dmp.diff_main(old_revision_field, new_revision_field)
@@ -158,3 +162,73 @@ def compare_strings(old_string, new_string):
     added_words = list(set(new_string) - set(old_string))
 
     return {"equal": equal_words, "removed": removed_words, "added": added_words}
+
+    for tag in space_splitter(tag_string):
+        raw_tag, operator = separate_tag_from_operator(tag)
+
+        tag_alias = Alias.objects.filter(from_tag__slug=raw_tag)
+
+        if tag_alias.exists():
+            verified_tag = tag_alias.first().to_tag.slug
+        else:
+            verified_tag = raw_tag
+
+        verified_tags.append(join_tag_and_operator(verified_tag, operator))
+    
+    return verified_tags
+
+'''def get_posts_from_tag_list(tag_list):
+    Post = apps.get_model('booru', 'Post')
+
+    queryset = Post.objects.all()
+
+    for tag in tag_list:
+        raw_tag, operator = separate_tag_from_operator(tag)
+
+        queryset = queryset.filter(tags__slug__in=[tag])
+
+    return queryset'''
+
+def get_posts_from_tag_list(tag_list):
+    Post = apps.get_model('booru', 'Post')
+
+    queryset = Post.objects.all()
+
+    q_object_and_or = Q()
+    q_object_not = Q()
+
+    for tag in tag_list:
+        raw_tag, operator = separate_tag_from_operator(tag)
+
+        q_template = Q(**{"tags__slug" : raw_tag})
+
+        if operator == "":
+            q_object_and_or.add(q_template, Q.AND)
+        if operator == "~":
+            q_object_and_or.add(q_template, Q.OR)
+        if operator == "-":
+            q_object_not.add(q_template, Q.OR)
+
+    return queryset.filter(q_object_and_or).exclude(q_object_not)
+
+'''def get_posts_with_any_tag_in_list(tag_list):
+    Post = apps.get_model('booru', 'Post')
+
+    for tag in tag_list:
+        if PostTag.objects.filter(tags__slug__in=[tag]) == []:
+            return Post.objects.none()
+
+    return Post.objects.filter(tags__slug__in=tag_list)'''
+
+def separate_tag_from_operator(tag):
+    if tag[0] == "~" or tag[0] == "-" or tag[0] == "*":
+        operator = tag[0]
+        tag = tag[1:]
+    else:
+        operator = ''
+
+    return tag, operator
+
+def join_tag_and_operator(tag, operator):
+    return operator + tag
+    

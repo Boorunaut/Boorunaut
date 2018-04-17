@@ -9,8 +9,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser, User
 from django.test import Client, RequestFactory, TestCase
 from django.test.utils import override_settings
-from booru.utils import space_splitter
-from booru.utils import space_joiner
+from booru.utils import space_splitter, space_joiner
 from booru.utils import compare_strings
 
 class UtilitiesTests(TestCase):
@@ -26,6 +25,12 @@ class UtilitiesTests(TestCase):
 
     def test_space_splitter_generates_tags_from_string(self):
         tag_string = "test1 test2 test:test_3 test_4"
+        generated_tags = space_splitter(tag_string)
+        expected_generated_tags = ["test1", "test2", "test:test_3", "test_4"]
+        self.assertEqual(generated_tags, expected_generated_tags)
+
+    def test_space_splitter_generates_tags_trimming_from_string(self):
+        tag_string = " test1 test2 test:test_3 test_4 "
         generated_tags = space_splitter(tag_string)
         expected_generated_tags = ["test1", "test2", "test:test_3", "test_4"]
         self.assertEqual(generated_tags, expected_generated_tags)
