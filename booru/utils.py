@@ -133,6 +133,7 @@ def verify_and_perform_aliases_and_implications(tag_name):
 def get_diff(field_name, old_revision, new_revision):
     old_revision_field = old_revision.field_dict[field_name]
     new_revision_field = new_revision.field_dict[field_name]
+    
 def verify_and_substitute_alias(tag_string):
     Alias = apps.get_model('booru', 'Alias')
     verified_tags = []
