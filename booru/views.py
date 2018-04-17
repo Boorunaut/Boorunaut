@@ -25,24 +25,25 @@ def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     form = EditPostForm(request.POST or None, request.FILES or None, instance=post)
     
-    if request.method == "POST" and form.is_valid(): # Post editting (post_edit)
-        if not request.user.is_authenticated:
-            return redirect('account:login')
-        with reversion.create_revision():
-            post = form.save(commit=False)
-            post.save()
-            form.save_m2m()
-            
-            reversion.set_user(request.user)
-            reversion.set_comment("Created revision" + str(post.id))
-            return redirect('booru:post_detail', post_id=post.id)
-    elif request.method == "POST" and request.POST.get("newCommentTextarea"): # Comment creating
+    if request.method == "POST":
         if not request.user.is_authenticated:
             return redirect('account:login')
         
-        comment_content = request.POST.get("newCommentTextarea")
-        comment = Comment.objects.create(content=comment_content, author=request.user, content_object=post)
-        return redirect('booru:post_detail', post_id=post.id)
+        newCommentTextarea = request.POST.get("newCommentTextarea")
+
+        if form.is_valid(): # Post editting (post_edit)
+            with reversion.create_revision():
+                post = form.save(commit=False)
+                post.save()
+                form.save_m2m()
+                
+                reversion.set_user(request.user)
+                reversion.set_comment("Created revision" + str(post.id))
+                return redirect('booru:post_detail', post_id=post.id)
+        elif newCommentTextarea: # Comment creating
+            comment_content = newCommentTextarea
+            comment = Comment.objects.create(content=comment_content, author=request.user, content_object=post)
+            return redirect('booru:post_detail', post_id=post.id)
 
     previous_post = Post.objects.filter(id=post.id - 1).first() or None
     next_post = Post.objects.filter(id=post.id + 1).first() or None
