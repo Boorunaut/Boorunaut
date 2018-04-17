@@ -158,6 +158,7 @@ class Post(models.Model):
     identifier = models.UUIDField(default=uuid.uuid4, editable=False)
     locked = models.BooleanField(default=False)
     tags = TaggableManager(through=TaggedPost, related_name="posts")
+    tags_mirror = models.CharField(max_length=1000, blank=True)
     comments = GenericRelation(Comment)
 
     objects = PostManager()
