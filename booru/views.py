@@ -42,7 +42,7 @@ def post_detail(request, post_id):
                 return redirect('booru:post_detail', post_id=post.id)
         elif newCommentTextarea: # Comment creating
             comment_content = newCommentTextarea
-            comment = Comment.objects.create(content=comment_content, author=request.user, content_object=post)
+            Comment.objects.create(content=comment_content, author=request.user, content_object=post)
             return redirect('booru:post_detail', post_id=post.id)
 
     previous_post = Post.objects.filter(id=post.id - 1).first() or None
