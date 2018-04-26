@@ -77,12 +77,7 @@ def upload(request):
 
 def post_list_detail(request, page_number = 1):
     tags = request.GET.get("tags", "")
-    tags = utils.space_splitter(tags)
-
-    posts = Post.objects.all()
-    if len(tags) > 0:
-        for tag in tags:
-            posts = posts.filter(tags__name__in=[tag])
+    posts = utils.search_posts_from_tag_list(tags)
 
     page_limit = 4
     posts = posts.order_by('id')

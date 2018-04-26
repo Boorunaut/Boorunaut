@@ -24,10 +24,10 @@
             <a href="#" class="col-1" title="Help page and tools">»</a>
         </div>
     </div>
-    <form>
+    <form action="{% url 'booru:posts' %}">
         <div class="form-row mt-3 mb-3">
             <div class="col">
-                <input class="form-control form-control-sm" type="search" aria-label="Search" placeholder="Ex: super_mario_odyssey">
+                <input name="tags" class="form-control form-control-sm" type="search" aria-label="Search" placeholder="Ex: super_mario_odyssey">
             </div>
             <div class="col-1">
                 <button class="btn btn-sm btn-primary" type="submit">Search</button>
