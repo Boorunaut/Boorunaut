@@ -174,6 +174,7 @@ def compare_strings(old_string, new_string):
     return {"equal": equal_words, "removed": removed_words, "added": added_words}
 
 def search_posts_from_tag_list(tag_list):
+    tag_list = verify_and_substitute_alias(tag_list)
     Post = apps.get_model('booru', 'Post')
 
     original_queryset = Post.objects.all()
