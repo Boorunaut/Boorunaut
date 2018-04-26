@@ -135,6 +135,9 @@ def get_diff(field_name, old_revision, new_revision):
     new_revision_field = new_revision.field_dict[field_name]
     
 def verify_and_substitute_alias(tag_string):
+    """
+    Verifies if any tag in `tag_string` is actually an alias, and substitutes it to the target tag intented.
+    """
     Alias = apps.get_model('booru', 'Alias')
     verified_tags = []
 
@@ -170,48 +173,23 @@ def compare_strings(old_string, new_string):
 
     return {"equal": equal_words, "removed": removed_words, "added": added_words}
 
-'''def get_posts_from_tag_list(tag_list):
+def search_posts_from_tag_list(tag_list):
     Post = apps.get_model('booru', 'Post')
 
+    original_queryset = Post.objects.all()
     queryset = Post.objects.all()
 
     for tag in tag_list:
         raw_tag, operator = separate_tag_from_operator(tag)
-
-        queryset = queryset.filter(tags__slug__in=[tag])
-
-    return queryset'''
-
-def get_posts_from_tag_list(tag_list):
-    Post = apps.get_model('booru', 'Post')
-
-    queryset = Post.objects.all()
-
-    q_object_and_or = Q()
-    q_object_not = Q()
-
-    for tag in tag_list:
-        raw_tag, operator = separate_tag_from_operator(tag)
-
-        q_template = Q(**{"tags__slug" : raw_tag})
 
         if operator == "":
-            q_object_and_or.add(q_template, Q.AND)
+            queryset = queryset.filter(tags__slug=raw_tag)
         if operator == "~":
-            q_object_and_or.add(q_template, Q.OR)
+            queryset = queryset | original_queryset.filter(tags__slug=raw_tag)
         if operator == "-":
-            q_object_not.add(q_template, Q.OR)
-
-    return queryset.filter(q_object_and_or).exclude(q_object_not)
-
-'''def get_posts_with_any_tag_in_list(tag_list):
-    Post = apps.get_model('booru', 'Post')
-
-    for tag in tag_list:
-        if PostTag.objects.filter(tags__slug__in=[tag]) == []:
-            return Post.objects.none()
-
-    return Post.objects.filter(tags__slug__in=tag_list)'''
+            queryset = queryset.exclude(tags__slug=raw_tag)
+    
+    return queryset.distinct()
 
 def separate_tag_from_operator(tag):
     if tag[0] == "~" or tag[0] == "-" or tag[0] == "*":
