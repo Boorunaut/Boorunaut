@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import django
 from django.test import TestCase
-from booru.utils import verify_and_substitute_alias, get_posts_from_tag_list
+from booru.utils import verify_and_substitute_alias, search_posts_from_tag_list
 from booru.models import PostTag, Alias, Post
 from django.db.models import Q
 
@@ -53,7 +53,7 @@ class SearchTests(TestCase):
 
         expected_post = Post.objects.filter(pk=1)
 
-        generated_tags_post = get_posts_from_tag_list(generated_tags)
+        generated_tags_post = search_posts_from_tag_list(generated_tags)
 
         self.assertEqual(list(generated_tags_post), list(expected_post))
 
@@ -65,7 +65,7 @@ class SearchTests(TestCase):
         expected_post = Post.objects.filter(Q(pk=1)
                                         |   Q(pk=2))
 
-        generated_tags_post = get_posts_from_tag_list(generated_tags)
+        generated_tags_post = search_posts_from_tag_list(generated_tags)
 
         self.assertEqual(list(generated_tags_post), list(expected_post))
 
@@ -76,7 +76,7 @@ class SearchTests(TestCase):
 
         expected_post = Post.objects.none()
 
-        generated_tags_post = get_posts_from_tag_list(generated_tags)
+        generated_tags_post = search_posts_from_tag_list(generated_tags)
 
         self.assertEqual(list(generated_tags_post), list(expected_post))
 
@@ -87,7 +87,7 @@ class SearchTests(TestCase):
 
         expected_post = Post.objects.filter(Q(pk=1))
 
-        generated_tags_post = get_posts_from_tag_list(generated_tags)
+        generated_tags_post = search_posts_from_tag_list(generated_tags)
 
         self.assertEqual(list(generated_tags_post), list(expected_post))
 
@@ -98,7 +98,7 @@ class SearchTests(TestCase):
 
         expected_post = Post.objects.none()
 
-        generated_tags_post = get_posts_from_tag_list(generated_tags)
+        generated_tags_post = search_posts_from_tag_list(generated_tags)
 
         self.assertEqual(list(generated_tags_post), list(expected_post))
 
@@ -111,7 +111,7 @@ class SearchTests(TestCase):
                                         |   Q(pk=2)
                                         |   Q(pk=3))
 
-        generated_tags_post = get_posts_from_tag_list(generated_tags)
+        generated_tags_post = search_posts_from_tag_list(generated_tags)
 
         self.assertEqual(list(generated_tags_post), list(expected_post))
 
@@ -119,12 +119,7 @@ class SearchTests(TestCase):
         tag_string = "test1 testtwo"
 
         generated_tags = verify_and_substitute_alias(tag_string)
-
         expected_post = Post.objects.filter(Q(pk=2))
-
-        generated_tags_post = get_posts_from_tag_list(generated_tags)
-
-        print(Post.objects.filter(tags__slug__in=["test1"]).filter(tags__slug__in=["test_two"]))
-        print(Post.objects.filter(Q(tags__slug__in=["test1"]) & Q(tags__slug__in=["test_two"])))
-
+        generated_tags_post = search_posts_from_tag_list(generated_tags)
+        
         self.assertEqual(list(generated_tags_post), list(expected_post))
