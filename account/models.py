@@ -3,13 +3,15 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.template.defaultfilters import slugify
 from django.urls import reverse
-
+from django.contrib.contenttypes.fields import (GenericForeignKey,
+                                                GenericRelation)
 class Account(AbstractUser):
     avatar          = models.ForeignKey('booru.Post', null=True, blank=True, on_delete=models.SET_NULL)
     slug            = models.SlugField(max_length=250, default="", blank=True)
     email_activated = models.BooleanField(default=False)
     comments_locked = models.BooleanField(default=False)
     about           = models.CharField(max_length=2500, blank=True)
+    comments        = GenericRelation('booru.Comment')
 
     def save(self, *args, **kwargs):
 

@@ -2,6 +2,9 @@ import os
 import uuid
 
 import reversion
+from django.contrib.contenttypes.fields import (GenericForeignKey,
+                                                GenericRelation)
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.urls import reverse
 from taggit.managers import TaggableManager
@@ -11,6 +14,7 @@ from account.models import Account
 
 from . import utils
 from .managers import PostManager
+
 
 def get_file_path(instance, filename):
     ext = filename.split('.')[-1]
@@ -28,6 +32,24 @@ def get_file_path_sample(instance, filename):
 def get_file_path_image(instance, filename):
     name = get_file_path(instance, filename)
     return os.path.join('data/image/', name)
+
+class Comment(models.Model):
+    author = models.ForeignKey(Account, on_delete=models.CASCADE)
+    content = models.CharField(max_length=1000, blank=True)
+    timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
+    update_timestamp = models.DateTimeField(auto_now=True, auto_now_add=False)
+
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
+
+    def get_vote_count(self):
+        return self.commentvote_set.count()
+    
+    def get_score(self):
+        upvotes = self.commentvote_set.filter(point=1).count()
+        downvotes = self.commentvote_set.filter(point=-1).count()
+        return upvotes - downvotes
 
 class Implication(models.Model):
     from_tag = models.ForeignKey('booru.PostTag', blank=True, null=True, default=None, on_delete=models.CASCADE, related_name="from_implications")    
@@ -137,6 +159,7 @@ class Post(models.Model):
     locked = models.BooleanField(default=False)
     tags = TaggableManager(through=TaggedPost, related_name="posts")
     tags_mirror = models.CharField(max_length=1000, blank=True)
+    comments = GenericRelation(Comment)
 
     objects = PostManager()
 
@@ -232,3 +255,11 @@ class ScoreVote(models.Model):
 
     class Meta:
         unique_together = ('account', 'post',)
+
+class CommentVote(models.Model):
+    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE)
+    point = models.IntegerField(default=1)
+
+    class Meta:
+        unique_together = ('account', 'comment',)
