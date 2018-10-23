@@ -85,18 +85,6 @@ class TagEditForm(forms.ModelForm):
         model = PostTag
         fields = ["category", "description", "associated_link", "associated_user_name"]
 
-class AliasCreateForm(forms.Form):
-    from_tag = forms.CharField(required=True)
-    to_tag = forms.CharField(required=True)
-
-    class Meta:
-        fields = "__all__"
-
-    def __init__(self, *args, **kwargs):
-        super(AliasCreateForm, self).__init__(*args, **kwargs)
-        self.fields['from_tag'].widget = forms.TextInput(attrs={'class': 'form-control'})
-        self.fields['to_tag'].widget = forms.TextInput(attrs={'class': 'form-control'})
-
 class ImplicationCreateForm(forms.Form):
     from_tag = forms.CharField(required=True)
     to_tag = forms.CharField(required=True)
