@@ -9,10 +9,10 @@ from .models import Category, Post, PostTag
 
 class TaggitAdminTextareaWidget(AdminTextareaWidget):
     # taken from taggit.forms.TagWidget
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         if value is not None and not isinstance(value, six.string_types):
             value = edit_string_for_tags([o.tag for o in value.select_related("tag")])
-        return super(TaggitAdminTextareaWidget, self).render(name, value, attrs)
+        return super(TaggitAdminTextareaWidget, self).render(name, value, attrs, renderer)
 
 class CreatePostForm(forms.ModelForm):
     '''Form for creating an post.'''
