@@ -1,3 +1,5 @@
+import json
+
 import diff_match_patch as dmp_module
 import reversion
 from django.apps import apps
@@ -6,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.forms.models import model_to_dict
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views import generic
 from reversion.models import Version
@@ -13,9 +16,9 @@ from reversion.models import Version
 from account.models import Account
 
 from . import utils
-from .forms import (CreatePostForm, EditPostForm,
-                    ImplicationCreateForm, TagEditForm, TagListSearchForm)
-from .models import Implication, Post, PostTag, TaggedPost, Comment
+from .forms import (CreatePostForm, EditPostForm, ImplicationCreateForm,
+                    TagEditForm, TagListSearchForm)
+from .models import Comment, Implication, Post, PostTag, TaggedPost
 
 
 def index(request):
@@ -239,3 +242,12 @@ def staff_page(request):
     }
 
     return render(request, 'booru/staff_page.html', context)
+
+def tag_search(request):
+    term = request.GET.get("term", "")
+    tag_results = PostTag.objects.filter(Q(name__startswith=term) | Q(aliases__name__in=[term])).distinct()
+
+    results = []
+    for tag in tag_results:
+        results.append({'id': tag.pk, 'label': tag.name, 'value': tag.name})        
+    return HttpResponse(json.dumps(results), content_type='application/json')

@@ -33,4 +33,5 @@ urlpatterns = [
     re_path(r'^profile/(?P<account_slug>[\w-]+)/$', account.views.profile, name='profile'),
     
     re_path(r'^staff_page/$', views.staff_page, name='staff_page'),
+    re_path(r'^tag_search/$', views.tag_search, name='tag_search'),
 ]
