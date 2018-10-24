@@ -96,6 +96,7 @@ class PostTag(TagBase):
                                                  on_delete=models.SET_NULL, related_name="associated_tags")
     author = models.ForeignKey(Account, null=True, on_delete=models.SET_NULL, related_name="authored_tags")
     timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
+    aliases = TaggableManager()
 
     class Meta:
         verbose_name = ("Tag")
