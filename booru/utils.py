@@ -111,20 +111,15 @@ def convert_to_rgb(pil_image):
         return pil_image
 
 
-def verify_and_perform_aliases_and_implications(tag_name):
+def verify_and_perform_implications(tag_name):
     Post = apps.get_model('booru', 'Post')
     Implication = apps.get_model('booru', 'Implication')
-    Alias = apps.get_model('booru', 'Alias')
     posts = Post.objects.filter(tags__name__in=[tag_name])
     
     implications = Implication.objects.filter(from_tag__name=tag_name, status=1)    
-    alias = Alias.objects.filter(from_tag__name=tag_name, status=1).first()
 
-    if alias != None or implications.count() > 0:        
-        for post in posts:
-            if alias != None:
-                post.tags.remove(alias.from_tag)
-                post.tags.add(alias.to_tag)
+    if implications.count() > 0:        
+        for post in posts:            
             if implications.count() > 0:
                 for implication in implications:
                     post.tags.add(implication.to_tag)

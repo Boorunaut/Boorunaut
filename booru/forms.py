@@ -9,10 +9,10 @@ from .models import Category, Post, PostTag
 
 class TaggitAdminTextareaWidget(AdminTextareaWidget):
     # taken from taggit.forms.TagWidget
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         if value is not None and not isinstance(value, six.string_types):
             value = edit_string_for_tags([o.tag for o in value.select_related("tag")])
-        return super(TaggitAdminTextareaWidget, self).render(name, value, attrs)
+        return super(TaggitAdminTextareaWidget, self).render(name, value, attrs, renderer)
 
 class CreatePostForm(forms.ModelForm):
     '''Form for creating an post.'''
@@ -74,28 +74,19 @@ class TagEditForm(forms.ModelForm):
                                       widget=forms.Select(attrs={'class': 'form-control'}),
                                       required=False, empty_label=None)
     associated_user_name = forms.CharField(required=False)
+    aliases = TagField(required=False)
 
     def __init__(self, *args, **kwargs):
         super(TagEditForm, self).__init__(*args, **kwargs)
         self.fields['description'].widget = forms.Textarea(attrs={'class': 'form-control'})
         self.fields['associated_link'].widget = forms.Textarea(attrs={'class': 'form-control'})
         self.fields['associated_user_name'].widget = forms.Textarea(attrs={'class': 'form-control'})
+        self.fields['aliases'].widget = TaggitAdminTextareaWidget(attrs={'class': 'form-control',
+                                                                        'data-role': 'tagsinput'})
 
     class Meta:
         model = PostTag
-        fields = ["category", "description", "associated_link", "associated_user_name"]
-
-class AliasCreateForm(forms.Form):
-    from_tag = forms.CharField(required=True)
-    to_tag = forms.CharField(required=True)
-
-    class Meta:
-        fields = "__all__"
-
-    def __init__(self, *args, **kwargs):
-        super(AliasCreateForm, self).__init__(*args, **kwargs)
-        self.fields['from_tag'].widget = forms.TextInput(attrs={'class': 'form-control'})
-        self.fields['to_tag'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        fields = ["category", "description", "associated_link", "associated_user_name", "aliases"]
 
 class ImplicationCreateForm(forms.Form):
     from_tag = forms.CharField(required=True)

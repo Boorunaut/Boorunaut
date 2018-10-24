@@ -13,7 +13,7 @@ from django.test import Client, RequestFactory, TestCase
 from PIL import Image
 
 from booru.models import Category
-from booru.forms import CreatePostForm, EditPostForm, TagListSearchForm, AliasCreateForm, ImplicationCreateForm
+from booru.forms import CreatePostForm, EditPostForm, TagListSearchForm, ImplicationCreateForm
 
 
 class CreateBooruFormTests(TestCase):
@@ -84,14 +84,6 @@ class CreateBooruFormTests(TestCase):
         self.assertTrue(form.is_valid())
         self.assertEqual('test5 test6', form.cleaned_data['tags'])
         self.assertEqual(category, form.cleaned_data['category'])
-
-    def test_alias_create_form(self):
-        form_data = {'from_tag': 'test1', 'to_tag': 'test2'}
-        form = AliasCreateForm(form_data)
-        
-        self.assertTrue(form.is_valid())
-        self.assertEqual('test1', form.cleaned_data['from_tag'])
-        self.assertEqual('test2', form.cleaned_data['to_tag'])
 
     def test_implication_create_form(self):
         form_data = {'from_tag': 'test3', 'to_tag': 'test4'}

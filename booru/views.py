@@ -1,3 +1,5 @@
+import json
+
 import diff_match_patch as dmp_module
 import reversion
 from django.apps import apps
@@ -6,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.forms.models import model_to_dict
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views import generic
 from reversion.models import Version
@@ -13,13 +16,14 @@ from reversion.models import Version
 from account.models import Account
 
 from . import utils
-from .forms import (AliasCreateForm, CreatePostForm, EditPostForm,
-                    ImplicationCreateForm, TagEditForm, TagListSearchForm)
-from .models import Alias, Implication, Post, PostTag, TaggedPost, Comment
+from .forms import (CreatePostForm, EditPostForm, ImplicationCreateForm,
+                    TagEditForm, TagListSearchForm)
+from .models import Comment, Implication, Post, PostTag, TaggedPost
 
 
 def index(request):
     return render(request, 'booru/index.html', {})
+
 
 def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
@@ -49,8 +53,9 @@ def post_detail(request, post_id):
     next_post = Post.objects.filter(id=post.id + 1).first() or None
 
     ordered_tags = post.get_ordered_tags()
-    return render(request, 'booru/post_detail.html', {"post": post, "ordered_tags": ordered_tags, "form": form,
-                                                      "previous_post": previous_post, "next_post": next_post})
+    return render(request=request, template_name='booru/post_detail.html',
+                context={"post": post, "ordered_tags": ordered_tags, "form": form,
+                        "previous_post": previous_post, "next_post": next_post})
 
 def post_history(request, post_id, page_number = 1):
     post = get_object_or_404(Post, id=post_id)
@@ -141,6 +146,7 @@ def tag_edit(request, tag_id):
                 associated_user = get_object_or_404(Account, slug=form.cleaned_data['associated_user_name'])
                 tag.associated_user = associated_user
             tag.save()
+            form.save_m2m()
             reversion.set_user(request.user)
         return redirect('booru:tag_detail', tag.id)
         
@@ -190,39 +196,6 @@ class ImplicationListView(generic.ListView):
 class ImplicationDetailView(generic.DetailView):
     model = Implication
 
-class AliasListView(generic.ListView):
-    model = Alias
-    paginate_by = 20
-
-    def get_queryset(self):
-        queryset = Alias.objects.all()
-
-        if self.request.GET.get('name'):
-            queryset = queryset.filter(Q(from_tag__name=self.request.GET.get('name'))|
-                                        Q(to_tag__name=self.request.GET.get('name')))
-        return queryset
-
-class AliasDetailView(generic.DetailView):
-    model = Alias
-
-@login_required
-def alias_create(request):    
-    form = AliasCreateForm(data=request.POST)
-    
-    if form.is_valid():
-        from_tag_name = form.cleaned_data['from_tag']
-        to_tag_name = form.cleaned_data['to_tag']
-
-        from_tag, from_tag_created = PostTag.objects.get_or_create(name=from_tag_name)
-        to_tag, from_tag_created = PostTag.objects.get_or_create(name=to_tag_name)
-
-        alias, alias_created = Alias.objects.get_or_create(from_tag=from_tag, to_tag=to_tag)
-        alias.author = request.user
-        alias.save()
-        return redirect('booru:alias-detail', alias.id)
-
-    return render(request, 'booru/alias_create.html', { "form": form })
-
 @login_required
 def implication_create(request):    
     form = ImplicationCreateForm(data=request.POST)
@@ -250,20 +223,8 @@ def implication_approve(request, implication_id):
         implication.approver = request.user
         implication.save()
     
-    utils.verify_and_perform_aliases_and_implications(implication.from_tag)
+    utils.verify_and_perform_implications(implication.from_tag)
     return redirect('booru:implication-detail', implication.id)
-
-@staff_member_required
-def alias_approve(request, alias_id):
-    alias = Alias.objects.get(id=alias_id)
-
-    if alias.status == 0:
-        alias.status = 1
-        alias.approver = request.user
-        alias.save()
-    
-    utils.verify_and_perform_aliases_and_implications(alias.from_tag)    
-    return redirect('booru:alias-detail', alias.id)
 
 @staff_member_required
 def implication_disapprove(request, implication_id):
@@ -271,13 +232,6 @@ def implication_disapprove(request, implication_id):
     implication.status = 2
     implication.save()
     return redirect('booru:implication-detail', implication.id)
-
-@staff_member_required
-def alias_disapprove(request, alias_id):
-    alias = Alias.objects.get(id=alias_id)
-    alias.status = 2
-    alias.save()    
-    return redirect('booru:alias-detail', alias.id)
 
 @staff_member_required
 def staff_page(request):
@@ -289,3 +243,15 @@ def staff_page(request):
     }
 
     return render(request, 'booru/staff_page.html', context)
+
+def tag_search(request):
+    term = request.GET.get("term", "")
+    tag_results = PostTag.objects.filter(Q(name__istartswith=term) | Q(aliases__name__istartswith=term)).distinct()
+
+    results = []
+    for tag in tag_results:
+        if tag.name.startswith(term):
+            results.append({'id': tag.pk, 'label': tag.name, 'value': tag.name})
+        else:
+            results.append({'id': tag.pk, 'label': "{} ({})".format(tag.name, term), 'value': tag.name})
+    return HttpResponse(json.dumps(results), content_type='application/json')

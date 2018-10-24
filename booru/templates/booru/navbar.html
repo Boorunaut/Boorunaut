@@ -11,7 +11,7 @@
         </li>
         </ul>
         <form class="form-inline my-2 my-lg-0 col-4" action="{% url 'booru:posts' %}">
-            <input id="tags" name="tags" class="form-control col-9" type="search" placeholder="Ex: super_mario_odyssey" aria-label="Search">
+            <input id="tags" name="tags" class="tag-search form-control col-9" type="search" placeholder="lorem_ipsum dolor_sit" aria-label="Search" data-role="tagsinput" hidden>
             <div class="input-group-append">
                 <button class="btn btn-outline-light my-2 my-sm-0" type="submit">Search</button>
             </div>
@@ -85,7 +85,6 @@
         </a>
         <div class="dropdown-menu">
             <a class="dropdown-item" href="{% url 'booru:tags_list' %}">List</a>
-            <a class="dropdown-item" href="{% url 'booru:alias-list' %}">Aliased</a>
             <a class="dropdown-item" href="{% url 'booru:implication-list' %}">Implied</a>
         </div>
     </li>
@@ -94,7 +93,6 @@
             Request
         </a>
         <div class="dropdown-menu">
-            <a class="dropdown-item" href="{% url 'booru:alias_create' %}">New alias</a>
             <a class="dropdown-item" href="{% url 'booru:implication_create' %}">New implication</a>
         </div>
     </li>
