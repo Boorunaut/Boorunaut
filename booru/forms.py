@@ -74,16 +74,18 @@ class TagEditForm(forms.ModelForm):
                                       widget=forms.Select(attrs={'class': 'form-control'}),
                                       required=False, empty_label=None)
     associated_user_name = forms.CharField(required=False)
+    aliases = TagField(required=False)
 
     def __init__(self, *args, **kwargs):
         super(TagEditForm, self).__init__(*args, **kwargs)
         self.fields['description'].widget = forms.Textarea(attrs={'class': 'form-control'})
         self.fields['associated_link'].widget = forms.Textarea(attrs={'class': 'form-control'})
         self.fields['associated_user_name'].widget = forms.Textarea(attrs={'class': 'form-control'})
+        self.fields['aliases'].widget = TaggitAdminTextareaWidget(attrs={'class': 'form-control'})
 
     class Meta:
         model = PostTag
-        fields = ["category", "description", "associated_link", "associated_user_name"]
+        fields = ["category", "description", "associated_link", "associated_user_name", "aliases"]
 
 class ImplicationCreateForm(forms.Form):
     from_tag = forms.CharField(required=True)

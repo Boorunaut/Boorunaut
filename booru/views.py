@@ -21,6 +21,7 @@ from .models import Implication, Post, PostTag, TaggedPost, Comment
 def index(request):
     return render(request, 'booru/index.html', {})
 
+
 def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     form = EditPostForm(request.POST or None, request.FILES or None, instance=post)
@@ -49,8 +50,9 @@ def post_detail(request, post_id):
     next_post = Post.objects.filter(id=post.id + 1).first() or None
 
     ordered_tags = post.get_ordered_tags()
-    return render(request, 'booru/post_detail.html', {"post": post, "ordered_tags": ordered_tags, "form": form,
-                                                      "previous_post": previous_post, "next_post": next_post})
+    return render(request=request, template_name='booru/post_detail.html',
+                context={"post": post, "ordered_tags": ordered_tags, "form": form,
+                        "previous_post": previous_post, "next_post": next_post})
 
 def post_history(request, post_id, page_number = 1):
     post = get_object_or_404(Post, id=post_id)

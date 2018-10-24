@@ -57,6 +57,16 @@
                             <td><a href="{{tag.author.get_absolute_url}}">{{tag.author}}</a></td>
                         </tr>
                         {% endif %}
+                        {% if tag.aliases %}
+                        <tr>
+                            <td><strong>Aliases:</strong></td>
+                            <td>
+                                {% for alias in tag.aliases.all %}
+                                {{ alias }}<br/>
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        {% endif %}
                     </tbody>
                 </table>
             </div>
