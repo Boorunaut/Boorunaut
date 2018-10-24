@@ -19,6 +19,7 @@
         <script src="{% static 'booru/js/tag_search_autocomplete.js' %}"></script>
         <script>
             var tag_search_url = "{% url 'booru:tag_search' %}";
+            var tags = "{{tags}}";
         </script>
         {% block scripts %}
         {% endblock %}
