@@ -146,6 +146,7 @@ def tag_edit(request, tag_id):
                 associated_user = get_object_or_404(Account, slug=form.cleaned_data['associated_user_name'])
                 tag.associated_user = associated_user
             tag.save()
+            form.save_m2m()
             reversion.set_user(request.user)
         return redirect('booru:tag_detail', tag.id)
         

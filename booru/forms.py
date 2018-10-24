@@ -81,7 +81,8 @@ class TagEditForm(forms.ModelForm):
         self.fields['description'].widget = forms.Textarea(attrs={'class': 'form-control'})
         self.fields['associated_link'].widget = forms.Textarea(attrs={'class': 'form-control'})
         self.fields['associated_user_name'].widget = forms.Textarea(attrs={'class': 'form-control'})
-        self.fields['aliases'].widget = TaggitAdminTextareaWidget(attrs={'class': 'form-control'})
+        self.fields['aliases'].widget = TaggitAdminTextareaWidget(attrs={'class': 'form-control',
+                                                                        'data-role': 'tagsinput'})
 
     class Meta:
         model = PostTag
