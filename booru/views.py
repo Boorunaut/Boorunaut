@@ -94,7 +94,7 @@ def post_list_detail(request, page_number = 1):
     posts = Post.objects.all()
     if len(tags) > 0:
         for tag in tags:
-            posts = posts.filter(tags__name__in=[tag])
+            posts = posts.filter(tags__name__istartswith=tag)
 
     page_limit = 4
     posts = posts.order_by('id')
