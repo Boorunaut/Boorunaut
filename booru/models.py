@@ -216,6 +216,12 @@ class Post(models.Model):
     def mirror_tags(self):
         self.tags_mirror = " ".join(self.tags.names())
 
+    class Meta:
+        permissions = (
+            ("change_status", "Can change the status of posts"),
+        )
+
+
 class Favorite(models.Model):
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
