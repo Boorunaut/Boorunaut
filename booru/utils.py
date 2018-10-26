@@ -160,7 +160,7 @@ def parse_tags(tag_string):
     tag_info = {'~': [], '' : [], '-' : []}
 
     for tag in splitted_tags:
-        if tag[0] == '~' or tag[0] == '-':
+        if tag.startswith('~') or tag.startswith('-'):
             tag_info[tag[0]].append(tag[1:])
         else:
             tag_info[''].append(tag)

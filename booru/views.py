@@ -243,14 +243,23 @@ def staff_page(request):
 
 def tag_search(request):
     term = request.GET.get("term", "")
-    tag_results = PostTag.objects.filter(Q(name__istartswith=term) | Q(aliases__name__istartswith=term)).distinct()
+    operator = ""
+    value = term
+
+    if term.startswith("-") or term.startswith("~"):
+        operator = term[0]
+        value = term[1:]
+
+    tag_results = PostTag.objects.filter(Q(name__istartswith=value) | Q(aliases__name__istartswith=value)).distinct()
+    tag_results = tag_results[:10]
 
     results = []
     for tag in tag_results:
-        if tag.name.startswith(term):
-            results.append({'id': tag.pk, 'label': tag.name, 'value': tag.name})
+        name = operator + tag.name
+        if tag.name.startswith(value):
+            results.append({'id': tag.pk, 'label': name, 'value': name})
         else:
-            results.append({'id': tag.pk, 'label': "{} ({})".format(tag.name, term), 'value': tag.name})
+            results.append({'id': tag.pk, 'label': "{} ({})".format(name, term), 'value': name})
     return HttpResponse(json.dumps(results), content_type='application/json')
 
 def post_approve(request, post_id):
