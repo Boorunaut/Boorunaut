@@ -155,10 +155,11 @@ def compare_strings(old_string, new_string):
     return {"equal": equal_words, "removed": removed_words, "added": added_words}
 
 def parse_tags(tag_string):
-    splitted = tag_string.split(" ")
+    splitted_tags = space_splitter(tag_string)
+
     tag_info = {'~': [], '' : [], '-' : []}
 
-    for tag in splitted:
+    for tag in splitted_tags:
         if tag[0] == '~' or tag[0] == '-':
             tag_info[tag[0]].append(tag[1:])
         else:
@@ -185,7 +186,7 @@ def filter_posts(tag_list):
     for tag in tag_list['-']:
         filtered_posts = filtered_posts.exclude(Q(tags__name__in=[tag]))
 
-    return filtered_posts
+    return filtered_posts.distinct()
 
 def parse_and_filter_tags(tags):
     return filter_posts(parse_tags(tags))
