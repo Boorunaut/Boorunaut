@@ -155,10 +155,12 @@ class Post(models.Model):
 
     PENDING = 0
     APPROVED = 1
-    DELETED = 2
+    HIDDEN = 2
+    DELETED = 3
     STATUS_CHOICES = (
         (PENDING, 'Pending'),
         (APPROVED, 'Approved'),
+        (HIDDEN, 'Hidden'),
         (DELETED, 'Deleted')
     )
     status = models.IntegerField(
@@ -215,6 +217,12 @@ class Post(models.Model):
 
     def mirror_tags(self):
         self.tags_mirror = " ".join(self.tags.names())
+
+    class Meta:
+        permissions = (
+            ("change_status", "Can change the status of posts"),
+        )
+
 
 class Favorite(models.Model):
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
