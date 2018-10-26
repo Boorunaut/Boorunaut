@@ -153,3 +153,39 @@ def compare_strings(old_string, new_string):
     added_words = list(set(new_string) - set(old_string))
 
     return {"equal": equal_words, "removed": removed_words, "added": added_words}
+
+def parse_tags(tag_string):
+    splitted = tag_string.split(" ")
+    tag_info = {'~': [], '' : [], '-' : []}
+
+    for tag in splitted:
+        if tag[0] == '~' or tag[0] == '-':
+            tag_info[tag[0]].append(tag[1:])
+        else:
+            tag_info[''].append(tag)
+
+    return tag_info
+
+def filter_posts(tag_list):
+    from booru.models import Post
+    from django.db.models import Q
+
+    filtered_posts = Post.objects.all()
+
+    query = Q()
+
+    for tag in tag_list['~']:
+        query = query | Q(tags__name__in=[tag])
+    
+    filtered_posts = filtered_posts.filter(query)
+
+    for tag in tag_list['']:
+        filtered_posts = filtered_posts.filter(Q(tags__name__in=[tag]))
+
+    for tag in tag_list['-']:
+        filtered_posts = filtered_posts.exclude(Q(tags__name__in=[tag]))
+
+    return filtered_posts
+
+def parse_and_filter_tags(tags):
+    return filter_posts(parse_tags(tags))
