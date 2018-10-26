@@ -49,8 +49,8 @@ def post_detail(request, post_id):
             Comment.objects.create(content=comment_content, author=request.user, content_object=post)
             return redirect('booru:post_detail', post_id=post.id)
 
-    previous_post = Post.objects.filter(id=post.id - 1).first() or None
-    next_post = Post.objects.filter(id=post.id + 1).first() or None
+    previous_post = Post.objects.filter(id__lt=post.id).exclude(status=2).exclude(status=3).last() or None
+    next_post = Post.objects.filter(id__gt=post.id).exclude(status=2).exclude(status=3).first() or None
 
     ordered_tags = post.get_ordered_tags()
     return render(request=request, template_name='booru/post_detail.html',
@@ -94,7 +94,9 @@ def post_list_detail(request, page_number = 1):
     posts = Post.objects.all()
     if len(tags) > 0:
         for tag in tags:
-            posts = posts.filter(tags__name__in=[tag])
+            posts = posts.filter(tags__name__istartswith=tag)
+
+    posts = posts.exclude(status=2).exclude(status=3)
 
     page_limit = 4
     posts = posts.order_by('id')
@@ -255,3 +257,36 @@ def tag_search(request):
         else:
             results.append({'id': tag.pk, 'label': "{} ({})".format(tag.name, term), 'value': tag.name})
     return HttpResponse(json.dumps(results), content_type='application/json')
+
+def post_approve(request, post_id):
+    post = Post.objects.get(id=post_id)
+
+    if request.user.has_perm("booru.change_status") and post.status != 1:
+        with reversion.create_revision():
+            post.status = 1
+            post.save()            
+            reversion.set_user(request.user)
+            reversion.set_comment("Approved post #{}".format(post.id))
+    return redirect('booru:post_detail', post_id=post.id)
+
+def post_hide(request, post_id):
+    post = Post.objects.get(id=post_id)
+
+    if request.user.has_perm("booru.change_status") and post.status != 2:
+        with reversion.create_revision():
+            post.status = 2
+            post.save()            
+            reversion.set_user(request.user)
+            reversion.set_comment("Hid post #{}".format(post.id))
+    return redirect('booru:post_detail', post_id=post.id)
+
+def post_delete(request, post_id):
+    post = Post.objects.get(id=post_id)
+
+    if request.user.has_perm("booru.change_status") and post.status != 3:
+        with reversion.create_revision():
+            post.status = 3
+            post.save()            
+            reversion.set_user(request.user)
+            reversion.set_comment("Deleted post #{}".format(post.id))
+    return redirect('booru:post_detail', post_id=post.id)
