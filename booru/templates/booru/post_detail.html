@@ -133,17 +133,29 @@
             </div>
         </div>
         <div id="post" class="col">
+            {% if post.status == 2 %}
+            <div class="alert alert-warning text-center" role="alert">
+                This post was hid by a staff member.
+            </div>
+            {% elif post.status == 3 %}
+            <div class="alert alert-danger text-center" role="alert">
+                This post was deleted by a staff member.
+            </div>
+            {% endif %}
             <div class="row mb-3">
-                <div class="col">
+                <div class="col">                    
+                    {% if perms.booru.change_status or not post.status == 3 %}
                     <img src="{{post.get_sample_url}}" alt="">
+                    {% endif %}
                 </div>
             </div>
             <div class="row mt-2 mb-4">
                 <button id="show_comments" class="btn btn-primary btn mr-1">Comments</button>
                 <button id="show_edit_form" class="btn btn-outline-primary btn mr-3">Edit</button>
-                {% if perms.change_status %}
-                <button id="approve_post" class="btn btn-success btn mr-1">Approve</button>
-                <button id="delete_post" class="btn btn-danger btn">Delete</button>
+                {% if perms.booru.change_status == True %}
+                <a id="approve_post" href="{% url 'booru:post_approve' post.id %}" class="btn btn-success btn mr-1">Approve</a>
+                <a id="hide_post" href="{% url 'booru:post_hide' post.id %}" class="btn btn-warning btn mr-1">Hide</a>
+                <a id="delete_post" href="{% url 'booru:post_delete' post.id %}" class="btn btn-danger btn">Delete</a>
                 {% endif %}
             </div>            
             <div class="row">
