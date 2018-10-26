@@ -6,7 +6,7 @@ $(function() {
         'height': '45px',
     });
 
-    $('#tags_tagsinput').addClass("col-9");
+    $('#tags_tagsinput').addClass("col-md-9");
 
     $('#id_tags').tagsInput({
         'autocomplete_url': tag_search_url,

@@ -49,7 +49,7 @@ class LoginView(FormView):
 
     def get_success_url(self):
         redirect_to = self.request.GET.get(self.redirect_field_name)
-        if not is_safe_url(url=redirect_to, host=self.request.get_host()):
+        if not is_safe_url(url=redirect_to, allowed_hosts=self.request.get_host()):
             redirect_to = self.success_url
         return redirect_to
 
@@ -104,7 +104,7 @@ class RegisterView(FormView):
 
     def get_success_url(self):
         redirect_to = self.request.GET.get(self.redirect_field_name)
-        if not is_safe_url(url=redirect_to, host=self.request.get_host()):
+        if not is_safe_url(url=redirect_to, allowed_hosts=self.request.get_host()):
             redirect_to = self.success_url
         return redirect_to
 
