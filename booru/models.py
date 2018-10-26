@@ -155,10 +155,12 @@ class Post(models.Model):
 
     PENDING = 0
     APPROVED = 1
-    DELETED = 2
+    HIDDEN = 2
+    DELETED = 3
     STATUS_CHOICES = (
         (PENDING, 'Pending'),
         (APPROVED, 'Approved'),
+        (HIDDEN, 'Hidden'),
         (DELETED, 'Deleted')
     )
     status = models.IntegerField(
