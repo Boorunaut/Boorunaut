@@ -91,3 +91,8 @@ class UtilitiesTests(TestCase):
 
         self.assertEqual(list(posts), [self.post_three])
 
+    def test_tag_search_no_tags(self):
+        posts = parse_and_filter_tags('')
+
+        self.assertEqual(list(posts), [self.post_one, self.post_two, self.post_three])
+
