@@ -198,7 +198,7 @@ class Post(models.Model):
 
     def get_ordered_tags(self):
         ordered_tags = {}
-        tags = self.tags.all().order_by('category')
+        tags = self.tags.all().order_by('category', 'name')
         
         for tag in tags:
             try:
@@ -221,6 +221,7 @@ class Post(models.Model):
     class Meta:
         permissions = (
             ("change_status", "Can change the status of posts"),
+            ("mass_rename", "Can mass rename posts"),
         )
 
 
