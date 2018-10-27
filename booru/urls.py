@@ -15,6 +15,7 @@ urlpatterns = [
     re_path(r'^post/view/(?P<post_id>[0-9]+)/approve$', views.post_approve, name='post_approve'),
     re_path(r'^post/view/(?P<post_id>[0-9]+)/hide$', views.post_hide, name='post_hide'),
     re_path(r'^post/view/(?P<post_id>[0-9]+)/delete$', views.post_delete, name='post_delete'),
+    re_path(r'^post/view/(?P<post_id>[0-9]+)/favorite$', views.post_favorite, name='post_favorite'),
 
     re_path(r'^post/list/$', views.post_list_detail, name='posts'),
     re_path(r'^post/list/(?P<page_number>[0-9]+)/$', views.post_list_detail, name='post_page_detail'),

@@ -18,7 +18,7 @@ from account.models import Account
 from . import utils
 from .forms import (CreatePostForm, EditPostForm, ImplicationCreateForm,
                     TagEditForm, TagListSearchForm)
-from .models import Comment, Implication, Post, PostTag, TaggedPost
+from .models import Comment, Implication, Post, PostTag, TaggedPost, Favorite
 
 
 def index(request):
@@ -28,6 +28,8 @@ def index(request):
 def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     form = EditPostForm(request.POST or None, request.FILES or None, instance=post)
+
+    is_favorited = Favorite.objects.filter(account=request.user, post=post).exists()
     
     if request.method == "POST":
         if not request.user.is_authenticated:
@@ -55,7 +57,8 @@ def post_detail(request, post_id):
     ordered_tags = post.get_ordered_tags()
     return render(request=request, template_name='booru/post_detail.html',
                 context={"post": post, "ordered_tags": ordered_tags, "form": form,
-                        "previous_post": previous_post, "next_post": next_post})
+                        "previous_post": previous_post, "next_post": next_post,
+                        "is_favorited":is_favorited})
 
 def post_history(request, post_id, page_number = 1):
     post = get_object_or_404(Post, id=post_id)
@@ -293,4 +296,15 @@ def post_delete(request, post_id):
             post.save()            
             reversion.set_user(request.user)
             reversion.set_comment("Deleted post #{}".format(post.id))
+    return redirect('booru:post_detail', post_id=post.id)
+
+def post_favorite(request, post_id):
+    post = Post.objects.get(id=post_id)
+    favorite = Favorite.objects.filter(post=post, account=request.user).first()
+
+    if favorite:
+        favorite.delete()
+    else:
+        Favorite.objects.create(post=post, account=request.user)
+    
     return redirect('booru:post_detail', post_id=post.id)

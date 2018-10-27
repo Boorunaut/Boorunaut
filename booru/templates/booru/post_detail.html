@@ -6,6 +6,35 @@
 {% endblock %}
 
 {% block scripts %}
+<script>
+    var is_favorited = {{is_favorited|yesno:'true,false'}};
+    var favorite_url = "{% url 'booru:post_favorite' post.id %}";
+    
+    $(document).ready(function() {
+        if (is_favorited){
+            $("#btn_favorited").toggleClass("btn-primary btn-outline-primary");
+        }
+
+        $("#btn_favorited").click(function(){
+            $("#btn_favorited").toggleClass("btn-primary btn-outline-primary");
+            is_favorited = !is_favorited;
+            
+            $.get(favorite_url, function(data, status){
+                var fav_count = parseInt($("#favorite_count").text(), 10);
+
+                if (is_favorited === true){
+                    fav_count += 1;
+                }
+                else{
+                    fav_count -= 1;
+                }
+
+                $("#favorite_count").text(fav_count);
+            });
+        });
+
+    });
+</script>
 {% endblock %}
 
 {% block body %}
@@ -122,7 +151,7 @@
                         </tr>
                         <tr>
                             <th scope="row">Favorites</th>
-                            <td>{{post.get_favorites_count}}</td>
+                            <td id="favorite_count">{{post.get_favorites_count}}</td>
                         </tr>
                         <tr>
                             <th scope="row">Status</th>
@@ -130,6 +159,17 @@
                         </tr>
                     </tbody>
                 </table>
+                <div class="row text-center">
+                    <span class="col-2 offset-3">
+                        <button id="btn_favorited" type="button" class="btn btn-primary"><i class="fas fa-star"></i></button>
+                    </span>
+                    <span class="col-2">
+                        <button type="button" class="btn btn-primary"><i class="fas fa-thumbs-up"></i></button>
+                    </span>
+                    <span class="col-2">
+                        <button type="button" class="btn btn-primary"><i class="fas fa-thumbs-down"></i></button>
+                    </span>
+                </div>
             </div>
         </div>
         <div id="post" class="col">
