@@ -10,7 +10,7 @@ class UniqueUserEmailField(forms.EmailField):
     """
 
     def validate(self, value):
-        super(forms.EmailField, self).validate(value)
+        super().validate(value)
         try:
             Account.objects.get(email=value)
             raise forms.ValidationError("A user with that email already exists.")
@@ -26,9 +26,9 @@ class UsernameExistsField(UsernameField):
     """
 
     def validate(self, value):
-        super(UsernameField, self).validate(value)
+        super().validate(value)
         try:
-            Account.objects.get(Q(username=value) & Q(slug=slugify(value)))
+            Account.objects.get(username__iexact=value)
         except Account.DoesNotExist:
             raise forms.ValidationError("There's no user registered with that username.")
 
@@ -40,7 +40,7 @@ class UniqueUsernameField(UsernameField):
     """
 
     def validate(self, value):
-        super(UsernameField, self).validate(value)
+        super().validate(value)
         try:
             Account.objects.get(slug=slugify(value))
             raise forms.ValidationError("There's already an user registered with that username.")
@@ -66,7 +66,7 @@ class UserRegisterForm(UserCreationForm):
         fields = ("username", "email")    
 
     def __init__(self, *args, **kwargs):
-        super(UserRegisterForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['password1'].widget = forms.PasswordInput(attrs={'class': 'form-control'})
         self.fields['password2'].widget = forms.PasswordInput(attrs={'class': 'form-control'})
         self.fields['email'].widget = forms.EmailInput(attrs={'class': 'form-control'})
@@ -83,5 +83,5 @@ class UserAuthenticationForm(AuthenticationForm):
     )
 
     def __init__(self, *args, **kwargs):
-        super(UserAuthenticationForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['password'].widget = forms.PasswordInput(attrs={'class': 'form-control'})
