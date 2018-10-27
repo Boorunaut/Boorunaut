@@ -6,6 +6,7 @@ from django.contrib.contenttypes.fields import (GenericForeignKey,
                                                 GenericRelation)
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.db.models import Sum
 from django.urls import reverse
 from taggit.managers import TaggableManager
 from taggit.models import GenericTaggedItemBase, TagBase
@@ -129,7 +130,6 @@ class Post(models.Model):
     update_timestamp = models.DateTimeField(auto_now=True, auto_now_add=False)
     source = models.URLField(blank=True)
     score = models.IntegerField(default=0)
-    favorites = models.IntegerField(default=0)
     identifier = models.UUIDField(default=uuid.uuid4, editable=False)
     locked = models.BooleanField(default=False)
     tags = TaggableManager(through=TaggedPost, related_name="posts")
@@ -210,10 +210,17 @@ class Post(models.Model):
         return ordered_tags
 
     def get_score_count(self):
-        return self.scorevote_set.count()
+        votes = ScoreVote.objects.filter(post=self)
+        
+        if votes.exists():
+            votes = votes.aggregate(Sum('point'))['point__sum']
+        else:
+            votes = 0
+        
+        return votes
 
     def get_favorites_count(self):
-        return self.favorite_set.count()
+        return self.favorites.count()
 
     def mirror_tags(self):
         self.tags_mirror = " ".join(self.tags.names())
@@ -225,8 +232,8 @@ class Post(models.Model):
 
 
 class Favorite(models.Model):
-    account = models.ForeignKey(Account, on_delete=models.CASCADE)
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name="account_favorites")
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="favorites")
 
     class Meta:
         unique_together = ('account', 'post',)

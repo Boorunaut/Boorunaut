@@ -18,7 +18,7 @@ from account.models import Account
 from . import utils
 from .forms import (CreatePostForm, EditPostForm, ImplicationCreateForm,
                     TagEditForm, TagListSearchForm)
-from .models import Comment, Implication, Post, PostTag, TaggedPost, Favorite
+from .models import Comment, Implication, Post, PostTag, TaggedPost, Favorite, ScoreVote
 
 
 def index(request):
@@ -28,8 +28,16 @@ def index(request):
 def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     form = EditPostForm(request.POST or None, request.FILES or None, instance=post)
+    
+    is_favorited = False
+    current_vote = 0
 
-    is_favorited = Favorite.objects.filter(account=request.user, post=post).exists()
+    if request.user.is_authenticated:
+        is_favorited = Favorite.objects.filter(account=request.user, post=post).exists()
+        current_vote = ScoreVote.objects.filter(account=request.user, post=post)
+
+        if current_vote.exists():
+            current_vote = current_vote.first().point
     
     if request.method == "POST":
         if not request.user.is_authenticated:
@@ -58,7 +66,7 @@ def post_detail(request, post_id):
     return render(request=request, template_name='booru/post_detail.html',
                 context={"post": post, "ordered_tags": ordered_tags, "form": form,
                         "previous_post": previous_post, "next_post": next_post,
-                        "is_favorited":is_favorited})
+                        "is_favorited":is_favorited, "current_vote": current_vote})
 
 def post_history(request, post_id, page_number = 1):
     post = get_object_or_404(Post, id=post_id)
@@ -298,6 +306,7 @@ def post_delete(request, post_id):
             reversion.set_comment("Deleted post #{}".format(post.id))
     return redirect('booru:post_detail', post_id=post.id)
 
+@login_required
 def post_favorite(request, post_id):
     post = Post.objects.get(id=post_id)
     favorite = Favorite.objects.filter(post=post, account=request.user).first()
@@ -308,3 +317,25 @@ def post_favorite(request, post_id):
         Favorite.objects.create(post=post, account=request.user)
     
     return redirect('booru:post_detail', post_id=post.id)
+
+@login_required
+def post_score_vote(request, post_id):
+    post = Post.objects.get(id=post_id)
+    score_vote = ScoreVote.objects.filter(post=post, account=request.user).first()
+
+    value = int(request.GET.get("point", 0))
+    if value > 1: value = 1
+    if value < -1: value = -1
+
+    if score_vote:
+        if score_vote.point == value:
+            score_vote.point = 0
+        else:
+            score_vote.point = value
+
+        score_vote.save()
+    else:
+        score_vote = ScoreVote.objects.create(post=post, account=request.user, point=value)
+    
+    results = {'value': score_vote.point, "current_points": post.get_score_count()}
+    return HttpResponse(json.dumps(results), content_type='application/json')

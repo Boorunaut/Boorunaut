@@ -8,11 +8,22 @@
 {% block scripts %}
 <script>
     var is_favorited = {{is_favorited|yesno:'true,false'}};
+    var current_vote = {{current_vote}};
     var favorite_url = "{% url 'booru:post_favorite' post.id %}";
+    var vote_url = "{% url 'booru:post_score_vote' post.id %}";
     
     $(document).ready(function() {
+        $('[data-toggle="tooltip"]').tooltip()
+
         if (is_favorited){
             $("#btn_favorited").toggleClass("btn-primary btn-outline-primary");
+        }
+
+        if (current_vote == 1){
+            $("#btn_vote_up").toggleClass("btn-primary btn-outline-primary");
+        }
+        else if(current_vote == -1){
+            $("#btn_vote_down").toggleClass("btn-primary btn-outline-primary");
         }
 
         $("#btn_favorited").click(function(){
@@ -33,6 +44,56 @@
             });
         });
 
+        function getScore(){
+            return parseInt($("#score_count").text(), 10);
+        }
+
+        function setScore(value){
+            $("#score_count").text(value);
+        }
+
+        function switchButton(button_name, value){
+            if (value == true){
+                $(button_name).addClass('btn-outline-primary').removeClass('btn-primary');
+            }
+            else if (value == false){
+                $(button_name).addClass('btn-primary').removeClass('btn-outline-primary');
+            }
+        }
+
+        $("#btn_vote_up").click(function(){            
+            $.get(vote_url + "?point=1", function(data, status){
+                var value = data['value'];
+                var current_points = data['current_points'];
+                setScore(current_points);
+
+                if (value === 1){
+                    switchButton("#btn_vote_up", true);
+                    switchButton("#btn_vote_down", false);
+                }
+                else {
+                    switchButton("#btn_vote_up", false);
+                    switchButton("#btn_vote_down", false);
+                }
+            });
+        });
+
+        $("#btn_vote_down").click(function(){            
+            $.get(vote_url + "?point=-1", function(data, status){
+                var value = data['value'];
+                var current_points = data['current_points'];
+                setScore(current_points);
+
+                if (value === -1){
+                    switchButton("#btn_vote_up", false);
+                    switchButton("#btn_vote_down", true);
+                }
+                else {
+                    switchButton("#btn_vote_up", false);
+                    switchButton("#btn_vote_down", false);
+                }
+            });
+        });
     });
 </script>
 {% endblock %}
@@ -147,7 +208,7 @@
                         </tr>
                         <tr>
                             <th scope="row">Score</th>
-                            <td>{{post.get_score_count}}</td>
+                            <td id="score_count">{{post.get_score_count}}</td>
                         </tr>
                         <tr>
                             <th scope="row">Favorites</th>
@@ -159,17 +220,43 @@
                         </tr>
                     </tbody>
                 </table>
+                {% if user.is_authenticated %}
                 <div class="row text-center">
-                    <span class="col-2 offset-3">
-                        <button id="btn_favorited" type="button" class="btn btn-primary"><i class="fas fa-star"></i></button>
+                    <span class="col-2 offset-3" data-toggle="tooltip" title="Mark as favorite">
+                        <button id="btn_favorited" type="button" class="btn btn-primary">
+                            <i class="fas fa-star"></i>
+                        </button>
                     </span>
-                    <span class="col-2">
-                        <button type="button" class="btn btn-primary"><i class="fas fa-thumbs-up"></i></button>
+                    <span class="col-2" data-toggle="tooltip" title="Upvote">
+                        <button id="btn_vote_up" type="button" class="btn btn-primary">
+                            <i class="fas fa-thumbs-up"></i>
+                        </button>
                     </span>
-                    <span class="col-2">
-                        <button type="button" class="btn btn-primary"><i class="fas fa-thumbs-down"></i></button>
+                    <span class="col-2" data-toggle="tooltip" title="Downvote">
+                        <button id="btn_vote_down" type="button" class="btn btn-primary">
+                            <i class="fas fa-thumbs-down"></i>
+                        </button>
                     </span>
                 </div>
+                {% else %}
+                <div class="row text-center">
+                    <span class="col-2 offset-3" data-toggle="tooltip" title="Login to mark posts as favorite">                            
+                        <button type="button" class="btn btn-primary" disabled>
+                            <i class='fas fa-star'></i>
+                        </button>
+                    </span>
+                    <span class="col-2" data-toggle="tooltip" title="Login to upvote posts">
+                        <button type="button" class="btn btn-primary" disabled>
+                            <i class="fas fa-thumbs-up"></i>
+                        </button>
+                    </span>
+                    <span class="col-2" data-toggle="tooltip" title="Login to downvote posts">
+                        <button type="button" class="btn btn-primary" disabled>
+                            <i class="fas fa-thumbs-down"></i>
+                        </button>
+                    </span>
+                </div>
+                {% endif %}
             </div>
         </div>
         <div id="post" class="col">
