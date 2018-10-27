@@ -17,7 +17,7 @@ from account.models import Account
 
 from . import utils
 from .forms import (CreatePostForm, EditPostForm, ImplicationCreateForm,
-                    TagEditForm, TagListSearchForm)
+                    TagEditForm, TagListSearchForm, MassRenameForm)
 from .models import Comment, Implication, Post, PostTag, TaggedPost
 
 
@@ -294,3 +294,30 @@ def post_delete(request, post_id):
             reversion.set_user(request.user)
             reversion.set_comment("Deleted post #{}".format(post.id))
     return redirect('booru:post_detail', post_id=post.id)
+
+def staff_mass_rename(request):
+    form = MassRenameForm(request.POST or None, request.FILES or None)
+
+    if form.is_valid():
+        filter_by = form.cleaned_data['filter_by']
+        when = form.cleaned_data['when']
+        replace_with = form.cleaned_data['replace_with']
+
+        posts = utils.parse_and_filter_tags(filter_by)
+
+        when = utils.space_splitter(when)
+        replace_with = utils.space_splitter(replace_with)
+
+        posts = posts.filter(tags__name__in=when)
+
+        for post in posts:
+            with reversion.create_revision():
+                post.tags.remove(*when)
+                post.tags.add(*replace_with)
+                post.save()
+
+                reversion.set_user(request.user)
+                reversion.set_comment("Edited on mass rename #" + str(post.id))
+            
+        return redirect('booru:staff_mass_rename')
+    return render(request, 'booru/staff_mass_rename.html', {"form": form})
