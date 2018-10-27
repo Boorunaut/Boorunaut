@@ -17,8 +17,8 @@ from account.models import Account
 
 from . import utils
 from .forms import (CreatePostForm, EditPostForm, ImplicationCreateForm,
-                    TagEditForm, TagListSearchForm)
-from .models import Comment, Implication, Post, PostTag, TaggedPost
+                    TagEditForm, TagListSearchForm, MassRenameForm)
+from .models import Comment, Implication, Post, PostTag, TaggedPost, Favorite, ScoreVote
 
 
 def index(request):
@@ -28,6 +28,16 @@ def index(request):
 def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     form = EditPostForm(request.POST or None, request.FILES or None, instance=post)
+    
+    is_favorited = False
+    current_vote = 0
+
+    if request.user.is_authenticated:
+        is_favorited = Favorite.objects.filter(account=request.user, post=post).exists()
+        current_vote = ScoreVote.objects.filter(account=request.user, post=post)
+
+        if current_vote.exists():
+            current_vote = current_vote.first().point
     
     if request.method == "POST":
         if not request.user.is_authenticated:
@@ -55,7 +65,8 @@ def post_detail(request, post_id):
     ordered_tags = post.get_ordered_tags()
     return render(request=request, template_name='booru/post_detail.html',
                 context={"post": post, "ordered_tags": ordered_tags, "form": form,
-                        "previous_post": previous_post, "next_post": next_post})
+                        "previous_post": previous_post, "next_post": next_post,
+                        "is_favorited":is_favorited, "current_vote": current_vote})
 
 def post_history(request, post_id, page_number = 1):
     post = get_object_or_404(Post, id=post_id)
@@ -294,3 +305,66 @@ def post_delete(request, post_id):
             reversion.set_user(request.user)
             reversion.set_comment("Deleted post #{}".format(post.id))
     return redirect('booru:post_detail', post_id=post.id)
+
+@login_required
+def post_favorite(request, post_id):
+    post = Post.objects.get(id=post_id)
+    favorite = Favorite.objects.filter(post=post, account=request.user).first()
+
+    if favorite:
+        favorite.delete()
+    else:
+        Favorite.objects.create(post=post, account=request.user)
+    
+    return redirect('booru:post_detail', post_id=post.id)
+
+@login_required
+def post_score_vote(request, post_id):
+    post = Post.objects.get(id=post_id)
+    score_vote = ScoreVote.objects.filter(post=post, account=request.user).first()
+
+    value = int(request.GET.get("point", 0))
+    if value > 1: value = 1
+    if value < -1: value = -1
+
+    if score_vote:
+        if score_vote.point == value:
+            score_vote.point = 0
+        else:
+            score_vote.point = value
+
+        score_vote.save()
+    else:
+        score_vote = ScoreVote.objects.create(post=post, account=request.user, point=value)
+    
+    results = {'value': score_vote.point, "current_points": post.get_score_count()}
+    return HttpResponse(json.dumps(results), content_type='application/json')
+
+def staff_mass_rename(request):
+    form = MassRenameForm(request.POST or None, request.FILES or None)
+
+    if request.user.has_perm("booru.mass_rename"):
+        if form.is_valid():
+            filter_by = form.cleaned_data['filter_by']
+            when = form.cleaned_data['when']
+            replace_with = form.cleaned_data['replace_with']
+
+            posts = utils.parse_and_filter_tags(filter_by)
+
+            when = utils.space_splitter(when)
+            replace_with = utils.space_splitter(replace_with)
+
+            posts = posts.filter(tags__name__in=when)
+
+            for post in posts:
+                with reversion.create_revision():
+                    post.tags.remove(*when)
+                    post.tags.add(*replace_with)
+                    post.save()
+
+                    reversion.set_user(request.user)
+                    reversion.set_comment("Edited on mass rename #" + str(post.id))
+                
+            return redirect('booru:staff_mass_rename')
+        return render(request, 'booru/staff_mass_rename.html', {"form": form})
+    return redirect('booru:index')

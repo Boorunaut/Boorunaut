@@ -1,10 +1,10 @@
 from django.apps import apps
 from django.contrib.auth.models import AbstractUser
+from django.contrib.contenttypes.fields import (GenericForeignKey,
+                                                GenericRelation)
 from django.db import models
 from django.template.defaultfilters import slugify
 from django.urls import reverse
-from django.contrib.contenttypes.fields import (GenericForeignKey,
-                                                GenericRelation)
 
 class Account(AbstractUser):
     avatar          = models.ForeignKey('booru.Post', null=True, blank=True, on_delete=models.SET_NULL)
@@ -31,4 +31,4 @@ class Account(AbstractUser):
         return Post.objects.all().filter(uploader=self)
 
     def get_favorites_count(self):
-        return self.favorite_set.count()
+        return self.account_favorites.count()

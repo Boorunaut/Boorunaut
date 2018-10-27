@@ -11,11 +11,6 @@
 {% block body %}
     {% load humanize %}
     <div class="row">
-        <div class="col-12">
-            <h1>Profile</h1>
-        </div>
-    </div>
-    <div class="row">
         <div class="col-2">
             <div class="col text-center">
                 <h4 class="mb-0">{{account.username}}</h4>
@@ -47,7 +42,7 @@
                     </tr>
                     <tr>
                         <th scope="row">Favorites</th>
-                        <td>-</td>
+                        <td>{{account.get_favorites_count}}</td>
                     </tr>
                     <tr>
                         <th scope="row">Comments</th>

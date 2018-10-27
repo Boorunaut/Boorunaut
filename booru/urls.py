@@ -15,6 +15,8 @@ urlpatterns = [
     re_path(r'^post/view/(?P<post_id>[0-9]+)/approve$', views.post_approve, name='post_approve'),
     re_path(r'^post/view/(?P<post_id>[0-9]+)/hide$', views.post_hide, name='post_hide'),
     re_path(r'^post/view/(?P<post_id>[0-9]+)/delete$', views.post_delete, name='post_delete'),
+    re_path(r'^post/view/(?P<post_id>[0-9]+)/favorite$', views.post_favorite, name='post_favorite'),
+    re_path(r'^post/view/(?P<post_id>[0-9]+)/vote$', views.post_score_vote, name='post_score_vote'),
 
     re_path(r'^post/list/$', views.post_list_detail, name='posts'),
     re_path(r'^post/list/(?P<page_number>[0-9]+)/$', views.post_list_detail, name='post_page_detail'),
@@ -38,5 +40,6 @@ urlpatterns = [
     re_path(r'^profile/(?P<account_slug>[\w-]+)/$', account.views.profile, name='profile'),
     
     re_path(r'^staff_page/$', views.staff_page, name='staff_page'),
+    re_path(r'^staff_page/mass_rename$', views.staff_mass_rename, name='staff_mass_rename'),
     re_path(r'^tag_search/$', views.tag_search, name='tag_search'),
 ]

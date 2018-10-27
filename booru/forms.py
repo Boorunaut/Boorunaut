@@ -99,3 +99,17 @@ class ImplicationCreateForm(forms.Form):
         super(ImplicationCreateForm, self).__init__(*args, **kwargs)
         self.fields['from_tag'].widget = forms.TextInput(attrs={'class': 'form-control'})
         self.fields['to_tag'].widget = forms.TextInput(attrs={'class': 'form-control'})
+
+class MassRenameForm(forms.Form):
+    filter_by = forms.CharField(required=False)
+    when = forms.CharField(required=True)
+    replace_with = forms.CharField(required=True)
+
+    class Meta:
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super(MassRenameForm, self).__init__(*args, **kwargs)
+        self.fields['filter_by'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        self.fields['when'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        self.fields['replace_with'].widget = forms.TextInput(attrs={'class': 'form-control'})
