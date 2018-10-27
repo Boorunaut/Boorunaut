@@ -298,26 +298,28 @@ def post_delete(request, post_id):
 def staff_mass_rename(request):
     form = MassRenameForm(request.POST or None, request.FILES or None)
 
-    if form.is_valid():
-        filter_by = form.cleaned_data['filter_by']
-        when = form.cleaned_data['when']
-        replace_with = form.cleaned_data['replace_with']
+    if request.user.has_perm("booru.mass_rename"):
+        if form.is_valid():
+            filter_by = form.cleaned_data['filter_by']
+            when = form.cleaned_data['when']
+            replace_with = form.cleaned_data['replace_with']
 
-        posts = utils.parse_and_filter_tags(filter_by)
+            posts = utils.parse_and_filter_tags(filter_by)
 
-        when = utils.space_splitter(when)
-        replace_with = utils.space_splitter(replace_with)
+            when = utils.space_splitter(when)
+            replace_with = utils.space_splitter(replace_with)
 
-        posts = posts.filter(tags__name__in=when)
+            posts = posts.filter(tags__name__in=when)
 
-        for post in posts:
-            with reversion.create_revision():
-                post.tags.remove(*when)
-                post.tags.add(*replace_with)
-                post.save()
+            for post in posts:
+                with reversion.create_revision():
+                    post.tags.remove(*when)
+                    post.tags.add(*replace_with)
+                    post.save()
 
-                reversion.set_user(request.user)
-                reversion.set_comment("Edited on mass rename #" + str(post.id))
-            
-        return redirect('booru:staff_mass_rename')
-    return render(request, 'booru/staff_mass_rename.html', {"form": form})
+                    reversion.set_user(request.user)
+                    reversion.set_comment("Edited on mass rename #" + str(post.id))
+                
+            return redirect('booru:staff_mass_rename')
+        return render(request, 'booru/staff_mass_rename.html', {"form": form})
+    return redirect('booru:index')

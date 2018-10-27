@@ -221,6 +221,7 @@ class Post(models.Model):
     class Meta:
         permissions = (
             ("change_status", "Can change the status of posts"),
+            ("mass_rename", "Can mass rename posts"),
         )
 
 
