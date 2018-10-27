@@ -198,7 +198,7 @@ class Post(models.Model):
 
     def get_ordered_tags(self):
         ordered_tags = {}
-        tags = self.tags.all().order_by('category')
+        tags = self.tags.all().order_by('category', 'name')
         
         for tag in tags:
             try:
