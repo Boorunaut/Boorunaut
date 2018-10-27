@@ -1,6 +1,8 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UsernameField
 from account.models import Account
+from django.db.models import Q
+from django.template.defaultfilters import slugify
 
 class UniqueUserEmailField(forms.EmailField):
     """
@@ -17,18 +19,35 @@ class UniqueUserEmailField(forms.EmailField):
         except Account.DoesNotExist:
             pass
 
-class UniqueUsernameField(UsernameField):
+class UsernameExistsField(UsernameField):
     """
-    An UsernameField which raises error when the name is 
-    already in use.
+    An UsernameField that raises an error when the name is 
+    not registered on the database.
     """
 
     def validate(self, value):
         super(UsernameField, self).validate(value)
         try:
-            Account.objects.get(username=value)
+            Account.objects.get(Q(username=value) & Q(slug=slugify(value)))
         except Account.DoesNotExist:
             raise forms.ValidationError("There's no user registered with that username.")
+
+
+class UniqueUsernameField(UsernameField):
+    """
+    An UsernameField that raises an error when the 
+    name is already in use.
+    """
+
+    def validate(self, value):
+        super(UsernameField, self).validate(value)
+        try:
+            Account.objects.get(slug=slugify(value))
+            raise forms.ValidationError("There's already an user registered with that username.")
+        except Account.MultipleObjectsReturned:
+            raise forms.ValidationError("There's already an user registered with that username.")
+        except Account.DoesNotExist:
+            pass
 
 class UserRegisterForm(UserCreationForm):
     """
@@ -37,13 +56,14 @@ class UserRegisterForm(UserCreationForm):
     """
 
     email = UniqueUserEmailField(required=True, label='Email address')
+    username = UniqueUsernameField(
+        max_length=254,
+        widget=forms.TextInput(attrs={'autofocus': True, 'class': 'form-control'}),
+    )
 
     class Meta:
         model = Account
-        fields = ("username", "email")
-        widgets = {
-            'username': forms.TextInput(attrs={'class': 'form-control'}),
-        }
+        fields = ("username", "email")    
 
     def __init__(self, *args, **kwargs):
         super(UserRegisterForm, self).__init__(*args, **kwargs)
@@ -57,12 +77,11 @@ class UserAuthenticationForm(AuthenticationForm):
     the form-control class in each widget.
     """
 
-    username = UniqueUsernameField(
+    username = UsernameExistsField(
         max_length=254,
         widget=forms.TextInput(attrs={'autofocus': True, 'class': 'form-control'}),
     )
 
     def __init__(self, *args, **kwargs):
         super(UserAuthenticationForm, self).__init__(*args, **kwargs)
-        #self.fields['username'].widget = forms.TextInput(attrs={'autofocus': True, 'class': 'form-control'})
         self.fields['password'].widget = forms.PasswordInput(attrs={'class': 'form-control'})

@@ -5,6 +5,7 @@ from django.template.defaultfilters import slugify
 from django.urls import reverse
 from django.contrib.contenttypes.fields import (GenericForeignKey,
                                                 GenericRelation)
+
 class Account(AbstractUser):
     avatar          = models.ForeignKey('booru.Post', null=True, blank=True, on_delete=models.SET_NULL)
     slug            = models.SlugField(max_length=250, default="", blank=True)
@@ -14,7 +15,6 @@ class Account(AbstractUser):
     comments        = GenericRelation('booru.Comment')
 
     def save(self, *args, **kwargs):
-
         if self.__is_a_new_user():
             self.slug = slugify(self.username)
 
