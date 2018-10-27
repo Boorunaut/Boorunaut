@@ -50,8 +50,8 @@ class EditPostForm(forms.ModelForm):
         self.fields['rating'].widget = forms.Select(attrs={'class': 'form-control'},
                                                     choices=Post.RATING_CHOICES)
         self.fields['parent'].widget = forms.NumberInput(attrs={'class': 'form-control'})
-        self.fields['source'].widget = forms.Textarea(attrs={'class': 'form-control'})
-        self.fields['description'].widget = forms.Textarea(attrs={'class': 'form-control'})
+        self.fields['source'].widget = forms.Textarea(attrs={'class': 'form-control', 'rows':4, 'cols':15})
+        self.fields['description'].widget = forms.Textarea(attrs={'class': 'form-control', 'rows':4, 'cols':15})
         self.fields['tags'].widget = TaggitAdminTextareaWidget(attrs={'class': 'form-control'})
 
 class TagListSearchForm(forms.Form):
