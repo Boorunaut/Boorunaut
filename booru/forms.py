@@ -25,12 +25,13 @@ class CreatePostForm(forms.ModelForm):
 
     class Meta:
         model = Post
-        fields = ["image", "sample", "preview", "source", "tags"]
+        fields = ["image", "sample", "preview", "source", "description", "tags"]
 
     def __init__(self, *args, **kwargs):
         super(CreatePostForm, self).__init__(*args, **kwargs)
         self.fields['image'].widget = forms.FileInput(attrs={'class': 'custom-file-input'})
-        self.fields['source'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        self.fields['source'].widget = forms.Textarea(attrs={'class': 'form-control'})
+        self.fields['description'].widget = forms.Textarea(attrs={'class': 'form-control'})
         self.fields['tags'].widget = forms.TextInput(attrs={'class': 'form-control'})
 
 class EditPostForm(forms.ModelForm):
@@ -42,14 +43,15 @@ class EditPostForm(forms.ModelForm):
 
     class Meta:
         model = Post
-        fields = ["rating", "parent", "source", "tags"]
+        fields = ["rating", "parent", "source", "tags", "description"]
 
     def __init__(self, *args, **kwargs):
         super(EditPostForm, self).__init__(*args, **kwargs)
         self.fields['rating'].widget = forms.Select(attrs={'class': 'form-control'},
                                                     choices=Post.RATING_CHOICES)
         self.fields['parent'].widget = forms.NumberInput(attrs={'class': 'form-control'})
-        self.fields['source'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        self.fields['source'].widget = forms.Textarea(attrs={'class': 'form-control'})
+        self.fields['description'].widget = forms.Textarea(attrs={'class': 'form-control'})
         self.fields['tags'].widget = TaggitAdminTextareaWidget(attrs={'class': 'form-control'})
 
 class TagListSearchForm(forms.Form):
