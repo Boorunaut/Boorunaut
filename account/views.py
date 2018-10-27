@@ -1,6 +1,7 @@
+from django.contrib.auth import REDIRECT_FIELD_NAME, authenticate
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
-from django.contrib.auth import REDIRECT_FIELD_NAME, authenticate
+from django.core.paginator import Paginator
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.decorators import method_decorator
@@ -10,7 +11,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import FormView, RedirectView
 
-from booru.models import Comment
+from booru.models import Comment, Post
 
 from .forms import UserAuthenticationForm, UserRegisterForm
 from .models import Account
@@ -123,11 +124,12 @@ def profile(request, account_slug):
 
     # TODO: I don't remember if I can safely pass account as 
     # an parameter to the render.
+    favorites = Post.objects.filter(favorites__account=account)[:5]
     
     context = {
         'account' : account,
         'user_role' : "(User role here)", #TODO: This
-        'recent_favorites' : [], #TODO: This
+        'recent_favorites' : favorites, #TODO: This
         'recent_uploads' : account.get_posts().not_deleted().order_by('-id'),
         'deleted_posts' : account.get_posts().deleted(),
     }
