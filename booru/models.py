@@ -128,6 +128,9 @@ class Gallery(models.Model):
     def __str__(self):
         return "{}".format(self.name)
     
+    def get_count(self):
+        return self.posts.count()
+
     def get_absolute_url(self):
         return reverse('booru:gallery_detail', kwargs={'gallery_id': self.id})
 

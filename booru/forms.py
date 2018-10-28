@@ -149,3 +149,15 @@ class GalleryEditForm(forms.ModelForm):
         self.fields['name'].widget = forms.TextInput(attrs={'class': 'form-control'})
         self.fields['description'].widget = forms.Textarea(attrs={'class': 'form-control'})
         self.fields['posts_ids'].widget = forms.Textarea(attrs={'class': 'form-control'})
+
+class GalleryListSearchForm(forms.Form):
+    '''Form searching galleries in the Gallery List.'''
+
+    name = forms.CharField(required=False)    
+
+    class Meta:
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super(GalleryListSearchForm, self).__init__(*args, **kwargs)
+        self.fields['name'].widget = forms.TextInput(attrs={'class': 'form-control form-control-sm'})

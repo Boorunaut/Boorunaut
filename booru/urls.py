@@ -39,7 +39,9 @@ urlpatterns = [
     
     re_path(r'^profile/(?P<account_slug>[\w-]+)/$', account.views.profile, name='profile'),
 
-    re_path(r'^gallery/new/$', views.gallery_create, name='gallery_create'),    
+    re_path(r'^gallery/list/$', views.gallery_list, name='gallery'),
+    re_path(r'^gallery/list/(?P<page_number>[0-9]+)/$', views.gallery_list, name='gallery_list'),
+    re_path(r'^gallery/new/$', views.gallery_create, name='gallery_create'),
     re_path(r'^gallery/(?P<gallery_id>[0-9]+)/$', views.gallery_detail, name='gallery_detail'),
     re_path(r'^gallery/(?P<gallery_id>[0-9]+)/edit$', views.gallery_edit, name='gallery_edit'),
     

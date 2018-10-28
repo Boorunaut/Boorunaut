@@ -17,8 +17,9 @@ from account.models import Account
 
 from . import utils
 from .forms import (CreatePostForm, EditPostForm, GalleryCreateForm,
-                    GalleryEditForm, ImplicationCreateForm, MassRenameForm,
-                    TagEditForm, TagListSearchForm)
+                    GalleryEditForm, GalleryListSearchForm,
+                    ImplicationCreateForm, MassRenameForm, TagEditForm,
+                    TagListSearchForm)
 from .models import (Comment, Favorite, Gallery, Implication, Post, PostTag,
                      ScoreVote, TaggedPost)
 
@@ -417,3 +418,28 @@ def staff_mass_rename(request):
             return redirect('booru:staff_mass_rename')
         return render(request, 'booru/staff_mass_rename.html', {"form": form})
     return redirect('booru:index')
+
+def gallery_list(request, page_number = 1):
+    galleries = Gallery.objects.all().order_by('-id')    
+    page_limit = 10
+
+    p = Paginator(galleries, page_limit)
+    page = p.page(page_number)
+    gallery_list = page.object_list
+    
+    return render(request, 'booru/gallery_list.html', {"galleries": gallery_list, "page": page})
+
+def gallery_list(request, page_number = 1):
+    searched_gallery = request.GET.get("name", "")
+    form = GalleryListSearchForm(request.GET or None)
+
+    galleries = Gallery.objects.all().order_by('-id')
+    if searched_gallery != "":
+        galleries = galleries.filter(name__icontains=searched_gallery)
+    
+    page_limit = 10
+    p = Paginator(galleries, page_limit)
+    page = p.page(page_number)
+    gallery_list = page.object_list
+    
+    return render(request, 'booru/gallery_list.html', {"galleries": gallery_list, "page": page, "form": form})
