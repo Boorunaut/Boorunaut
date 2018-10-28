@@ -1,17 +1,20 @@
+from django.contrib.auth import REDIRECT_FIELD_NAME, authenticate
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
-from django.contrib.auth import REDIRECT_FIELD_NAME, authenticate
+from django.core.paginator import Paginator
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.decorators import method_decorator
 from django.utils.http import is_safe_url
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import FormView, RedirectView
-from .models import Account
+
+from booru.models import Comment, Post
 
 from .forms import UserAuthenticationForm, UserRegisterForm
+from .models import Account
 
 
 class LoginView(FormView):
@@ -47,7 +50,7 @@ class LoginView(FormView):
 
     def get_success_url(self):
         redirect_to = self.request.GET.get(self.redirect_field_name)
-        if not is_safe_url(url=redirect_to, host=self.request.get_host()):
+        if not is_safe_url(url=redirect_to, allowed_hosts=self.request.get_host()):
             redirect_to = self.success_url
         return redirect_to
 
@@ -102,20 +105,31 @@ class RegisterView(FormView):
 
     def get_success_url(self):
         redirect_to = self.request.GET.get(self.redirect_field_name)
-        if not is_safe_url(url=redirect_to, host=self.request.get_host()):
+        if not is_safe_url(url=redirect_to, allowed_hosts=self.request.get_host()):
             redirect_to = self.success_url
         return redirect_to
 
 def profile(request, account_slug):
     account = get_object_or_404(Account, slug=account_slug)
 
+    if request.method == "POST":
+        newCommentTextarea = request.POST.get("newCommentTextarea")
+        
+        if not request.user.is_authenticated:
+            return redirect('account:login')
+        elif newCommentTextarea: # Comment creating
+            comment_content = newCommentTextarea
+            Comment.objects.create(content=comment_content, author=request.user, content_object=account)
+            return redirect('booru:profile', account_slug=account.slug)
+
     # TODO: I don't remember if I can safely pass account as 
     # an parameter to the render.
+    favorites = Post.objects.filter(favorites__account=account)[:5]
     
     context = {
         'account' : account,
         'user_role' : "(User role here)", #TODO: This
-        'recent_favorites' : [], #TODO: This
+        'recent_favorites' : favorites, #TODO: This
         'recent_uploads' : account.get_posts().not_deleted().order_by('-id'),
         'deleted_posts' : account.get_posts().deleted(),
     }

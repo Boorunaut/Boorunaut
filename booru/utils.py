@@ -1,8 +1,11 @@
 from io import BytesIO
 
+import diff_match_patch as dmp_module
 from django.apps import apps
 from django.core.files.base import ContentFile
+from django.shortcuts import get_object_or_404
 from PIL import Image as ImagePIL
+from reversion.models import Version
 
 sample_max_resolution = (850, None)
 preview_max_resolution = (150, 150)
@@ -108,21 +111,82 @@ def convert_to_rgb(pil_image):
         return pil_image
 
 
-def verify_and_perform_aliases_and_implications(tag_name):
+def verify_and_perform_implications(tag_name):
     Post = apps.get_model('booru', 'Post')
     Implication = apps.get_model('booru', 'Implication')
-    Alias = apps.get_model('booru', 'Alias')
     posts = Post.objects.filter(tags__name__in=[tag_name])
     
     implications = Implication.objects.filter(from_tag__name=tag_name, status=1)    
-    alias = Alias.objects.filter(from_tag__name=tag_name, status=1).first()
 
-    if alias != None or implications.count() > 0:        
-        for post in posts:
-            if alias != None:
-                post.tags.remove(alias.from_tag)
-                post.tags.add(alias.to_tag)
+    if implications.count() > 0:        
+        for post in posts:            
             if implications.count() > 0:
                 for implication in implications:
                     post.tags.add(implication.to_tag)
 
+def get_diff(field_name, old_revision, new_revision):
+    old_revision_field = old_revision.field_dict[field_name]
+    new_revision_field = new_revision.field_dict[field_name]
+
+    dmp = dmp_module.diff_match_patch()
+    diff_field = dmp.diff_main(old_revision_field, new_revision_field)
+    dmp.diff_cleanupSemantic(diff_field)
+    diff_html = dmp.diff_prettyHtml(diff_field).replace('&para;', '') # Removes paragraph character 
+                                                                      # added by the library.
+
+    return diff_html
+
+def compare_strings(old_string, new_string):
+    """Splits a string by spaces, and compares the lists. Then, returns a dictionary containing the following results:
+
+    `equal` is a list of words in common.
+
+    `removed` is a list of words that ARE in old_string, but ARE NOT in new_string.
+
+    `added` is a list of words that ARE NOT in old_string, but ARE in new_string.
+    """
+    old_string = old_string.split(" ")
+    new_string = new_string.split(" ")
+
+    equal_words = list(set(old_string).intersection(new_string))
+    removed_words = list(set(old_string) - set(new_string))
+    added_words = list(set(new_string) - set(old_string))
+
+    return {"equal": equal_words, "removed": removed_words, "added": added_words}
+
+def parse_tags(tag_string):
+    splitted_tags = space_splitter(tag_string)
+
+    tag_info = {'~': [], '' : [], '-' : []}
+
+    for tag in splitted_tags:
+        if tag.startswith('~') or tag.startswith('-'):
+            tag_info[tag[0]].append(tag[1:])
+        else:
+            tag_info[''].append(tag)
+
+    return tag_info
+
+def filter_posts(tag_list):
+    from booru.models import Post
+    from django.db.models import Q
+
+    filtered_posts = Post.objects.all()
+
+    query = Q()
+
+    for tag in tag_list['~']:
+        query = query | Q(tags__name__in=[tag])
+    
+    filtered_posts = filtered_posts.filter(query)
+
+    for tag in tag_list['']:
+        filtered_posts = filtered_posts.filter(Q(tags__name__in=[tag]))
+
+    for tag in tag_list['-']:
+        filtered_posts = filtered_posts.exclude(Q(tags__name__in=[tag]))
+
+    return filtered_posts.distinct()
+
+def parse_and_filter_tags(tags):
+    return filter_posts(parse_tags(tags))

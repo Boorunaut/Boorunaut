@@ -9,10 +9,10 @@ from .models import Category, Post, PostTag, Gallery
 
 class TaggitAdminTextareaWidget(AdminTextareaWidget):
     # taken from taggit.forms.TagWidget
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         if value is not None and not isinstance(value, six.string_types):
             value = edit_string_for_tags([o.tag for o in value.select_related("tag")])
-        return super(TaggitAdminTextareaWidget, self).render(name, value, attrs)
+        return super(TaggitAdminTextareaWidget, self).render(name, value, attrs, renderer)
 
 class CreatePostForm(forms.ModelForm):
     '''Form for creating an post.'''
@@ -25,12 +25,13 @@ class CreatePostForm(forms.ModelForm):
 
     class Meta:
         model = Post
-        fields = ["image", "sample", "preview", "source", "tags"]
+        fields = ["image", "sample", "preview", "source", "description", "tags"]
 
     def __init__(self, *args, **kwargs):
         super(CreatePostForm, self).__init__(*args, **kwargs)
         self.fields['image'].widget = forms.FileInput(attrs={'class': 'custom-file-input'})
-        self.fields['source'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        self.fields['source'].widget = forms.Textarea(attrs={'class': 'form-control'})
+        self.fields['description'].widget = forms.Textarea(attrs={'class': 'form-control'})
         self.fields['tags'].widget = forms.TextInput(attrs={'class': 'form-control'})
 
 class EditPostForm(forms.ModelForm):
@@ -42,14 +43,15 @@ class EditPostForm(forms.ModelForm):
 
     class Meta:
         model = Post
-        fields = ["rating", "parent", "source", "tags"]
+        fields = ["rating", "parent", "source", "tags", "description"]
 
     def __init__(self, *args, **kwargs):
         super(EditPostForm, self).__init__(*args, **kwargs)
         self.fields['rating'].widget = forms.Select(attrs={'class': 'form-control'},
                                                     choices=Post.RATING_CHOICES)
         self.fields['parent'].widget = forms.NumberInput(attrs={'class': 'form-control'})
-        self.fields['source'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        self.fields['source'].widget = forms.Textarea(attrs={'class': 'form-control', 'rows':4, 'cols':15})
+        self.fields['description'].widget = forms.Textarea(attrs={'class': 'form-control', 'rows':4, 'cols':15})
         self.fields['tags'].widget = TaggitAdminTextareaWidget(attrs={'class': 'form-control'})
 
 class TagListSearchForm(forms.Form):
@@ -71,24 +73,22 @@ class TagEditForm(forms.ModelForm):
     '''Form for creating an post.'''
 
     category = forms.ModelChoiceField(queryset=Category.objects.all(),
-                                    widget=forms.Select(attrs={'class': 'form-control'}),
-                                    required=False, empty_label=None)
+                                      widget=forms.Select(attrs={'class': 'form-control'}),
+                                      required=False, empty_label=None)
+    associated_user_name = forms.CharField(required=False)
+    aliases = TagField(required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(TagEditForm, self).__init__(*args, **kwargs)
+        self.fields['description'].widget = forms.Textarea(attrs={'class': 'form-control'})
+        self.fields['associated_link'].widget = forms.Textarea(attrs={'class': 'form-control'})
+        self.fields['associated_user_name'].widget = forms.Textarea(attrs={'class': 'form-control'})
+        self.fields['aliases'].widget = TaggitAdminTextareaWidget(attrs={'class': 'form-control',
+                                                                        'data-role': 'tagsinput'})
 
     class Meta:
         model = PostTag
-        fields = ["category"]
-
-class AliasCreateForm(forms.Form):
-    from_tag = forms.CharField(required=True)
-    to_tag = forms.CharField(required=True)
-
-    class Meta:
-        fields = "__all__"
-
-    def __init__(self, *args, **kwargs):
-        super(AliasCreateForm, self).__init__(*args, **kwargs)
-        self.fields['from_tag'].widget = forms.TextInput(attrs={'class': 'form-control'})
-        self.fields['to_tag'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        fields = ["category", "description", "associated_link", "associated_user_name", "aliases"]
 
 class ImplicationCreateForm(forms.Form):
     from_tag = forms.CharField(required=True)
@@ -101,6 +101,20 @@ class ImplicationCreateForm(forms.Form):
         super(ImplicationCreateForm, self).__init__(*args, **kwargs)
         self.fields['from_tag'].widget = forms.TextInput(attrs={'class': 'form-control'})
         self.fields['to_tag'].widget = forms.TextInput(attrs={'class': 'form-control'})
+
+class MassRenameForm(forms.Form):
+    filter_by = forms.CharField(required=False)
+    when = forms.CharField(required=True)
+    replace_with = forms.CharField(required=True)
+
+    class Meta:
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super(MassRenameForm, self).__init__(*args, **kwargs)
+        self.fields['filter_by'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        self.fields['when'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        self.fields['replace_with'].widget = forms.TextInput(attrs={'class': 'form-control'})
 
 class GalleryCreateForm(forms.ModelForm):
     '''Form for creating an gallery.'''

@@ -19,7 +19,7 @@
 
     <div class="row">            
         <div id="table" class="col">
-            <table class="table table-striped table-hover">
+            <table class="table table-striped table-hover text-center">
                 <thead class="thead-light">
                     <tr>
                         <th scope="col">#</th>
@@ -37,8 +37,14 @@
                     {% for implication in object_list %}
                     <tr>
                         <th scope="row">{{ forloop.counter }}</th>
-                        <td>{{implication.from_tag}} {{implication.from_tag.get_count}}</td>
-                        <td>{{implication.to_tag}} {{implication.to_tag.get_count}}</td>
+                        <td>
+                            <a href="{% url 'booru:posts' %}?tags={{implication.from_tag}}" style="color: #{{implication.from_tag.category.color}};">{{implication.from_tag}}</a> 
+                            <span class="text-muted">{{implication.from_tag.get_count}}</span>
+                        </td>
+                        <td>
+                            <a href="{% url 'booru:posts' %}?tags={{implication.to_tag}}" style="color: #{{implication.to_tag.category.color}};">{{implication.to_tag}}</a> 
+                            <span class="text-muted">{{implication.to_tag.get_count}}</span>
+                        </td>
                         <td><a href="{{implication.approver.get_absolute_url}}">{{implication.approver}}</a></td>                            
                         <td>{{implication.get_status_display}}</td>                      
                         <td><a href="{% url 'booru:implication-detail' implication.id %}">Show</a></td>

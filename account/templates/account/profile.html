@@ -9,11 +9,13 @@
 {% endblock %}
 
 {% block body %}
+    {% load humanize %}
     <div class="row">
         <div class="col-12">
             <h1>Profile</h1>
         </div>
-
+    </div>
+    <div class="row">
         <div class="col-2">
             <div class="col text-center">
                 <h4 class="mb-0">{{account.username}}</h4>
@@ -45,7 +47,7 @@
                     </tr>
                     <tr>
                         <th scope="row">Favorites</th>
-                        <td>-</td>
+                        <td>{{account.get_favorites_count}}</td>
                     </tr>
                     <tr>
                         <th scope="row">Comments</th>
@@ -118,6 +120,61 @@
             {% else %}
             <p class="text-muted">This user have not written nothing about themselves yet!</p>
             {% endif %}
+        </div>
+    </div>
+    <div class="row">
+        <div id="comment-section" class="mt-3 mb-3 col offset-2">
+            <h3>Comments</h3>            
+            <div id="comments" class="row">
+                {% for comment in account.comments.all %}
+                <div id="comment-{{comment.id}}" class="comment col-10 border comment-border pt-3 pb-3 mb-2">
+                    <div class="row">
+                        <div class="comment col">
+                            <div class="row">
+                                <span class="col">
+                                    <h5><a href="{{comment.author.get_absolute_url}}">{{comment.author}}</a></h5>
+                                </span>
+                            </div>
+                            <div class="row">
+                                <span class="col text-muted">
+                                    {{comment.timestamp|naturaltime}}
+                                </span>
+                            </div>
+                            <div class="row">
+                                <span class="col">
+                                    <small>Score: {{comment.get_score}}</small>
+                                </span>
+                            </div>                            
+                        </div>
+                        <div class="comment col-9">
+                            {% load markdown_deux_tags %}
+                            {{comment.content|markdown}}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div id="comment-create-form" class="row mt-3">
+                <form class="col-10" method="post" action="." enctype="multipart/form-data">
+                    {% if not user.is_authenticated %}
+                    <fieldset disabled>
+                    {% endif %}
+
+                        {% csrf_token %}
+                        <div class="form-group">
+                            {% if not user.is_authenticated %}
+                            <label for="newCommentTextarea" class="text-muted">New comment (Login to comment)</label>
+                            {% else %}
+                            <label for="newCommentTextarea">New comment</label>
+                            {% endif %}
+                            <textarea class="form-control" id="newCommentTextarea" name="newCommentTextarea" rows="3"></textarea>
+                        </div>
+                        <button type="submit" id="send" class="btn btn-sm btn-primary">Create comment</button>
+                    {% if not user.is_authenticated %}
+                    </fieldset>
+                    {% endif %}
+                </form>
+            </div>
         </div>
     </div>
 {% endblock %}

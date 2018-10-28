@@ -1,8 +1,11 @@
 from django.apps import apps
 from django.contrib.auth.models import AbstractUser
+from django.contrib.contenttypes.fields import (GenericForeignKey,
+                                                GenericRelation)
 from django.db import models
 from django.template.defaultfilters import slugify
 from django.urls import reverse
+
 
 class Account(AbstractUser):
     avatar          = models.ForeignKey('booru.Post', null=True, blank=True, on_delete=models.SET_NULL)
@@ -10,6 +13,7 @@ class Account(AbstractUser):
     email_activated = models.BooleanField(default=False)
     comments_locked = models.BooleanField(default=False)
     about           = models.CharField(max_length=2500, blank=True)
+    comments        = GenericRelation('booru.Comment')
 
     def save(self, *args, **kwargs):
 
@@ -29,4 +33,4 @@ class Account(AbstractUser):
         return Post.objects.all().filter(uploader=self)
 
     def get_favorites_count(self):
-        return self.favorite_set.count()
+        return self.account_favorites.count()

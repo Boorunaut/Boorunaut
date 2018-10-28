@@ -1,0 +1,43 @@
+{% extends 'booru/base.html' %}
+
+{% block css %}
+    {% load staticfiles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'booru/css/index.css' %}"/>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block body %}
+    {% load markdown_deux_tags %}
+    <div class="container">
+        <div class="row mb-1">
+            <h1>Tag: <a href="{% url 'booru:tag_history' tag.id %}">{{tag}}</a></h1>
+        </div>
+
+        <div class="row col">
+            Showing the differences between {{old_revision.revision.date_created}} (<a href="{{old_revision.revision.user.get_absolute_url}}">{{old_revision.revision.user}}</a>) and
+            {{new_revision.revision.date_created}} (<a href="{{new_revision.revision.user.get_absolute_url}}">{{new_revision.revision.user}}</a>)                    
+        </div>
+
+        <div class="row mt-3">
+            <h2 class="h4">Description</h2>
+        </div>
+
+        <div class="pl-1 pr-1" style="background-image: repeating-linear-gradient(
+            #f7f7f9 0.05rem,
+            #f7f7f9 1.3rem,
+            #46529800 1.3rem,
+            #46529800 2.8rem);">
+            {{ description_diff | safe }}
+        </div>
+
+        <div class="row mt-3">
+            <h2 class="h4">Associated links</h2>
+        </div>
+
+        <div class="pl-1 pr-1" >
+            {{ associated_link_diff | safe }}
+        </div>
+    </div>
+{% endblock %}

@@ -1,13 +1,21 @@
 import os
 import uuid
 
-from account.models import Account
+import reversion
+from django.contrib.contenttypes.fields import (GenericForeignKey,
+                                                GenericRelation)
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from taggit.managers import TaggableManager
-from taggit.models import TagBase, GenericTaggedItemBase
-from . import utils
+from django.db.models import Sum
 from django.urls import reverse
+from taggit.managers import TaggableManager
+from taggit.models import GenericTaggedItemBase, TagBase
+
+from account.models import Account
+
+from . import utils
 from .managers import PostManager
+
 
 def get_file_path(instance, filename):
     ext = filename.split('.')[-1]
@@ -25,6 +33,24 @@ def get_file_path_sample(instance, filename):
 def get_file_path_image(instance, filename):
     name = get_file_path(instance, filename)
     return os.path.join('data/image/', name)
+
+class Comment(models.Model):
+    author = models.ForeignKey(Account, on_delete=models.CASCADE)
+    content = models.CharField(max_length=1000, blank=True)
+    timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
+    update_timestamp = models.DateTimeField(auto_now=True, auto_now_add=False)
+
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
+
+    def get_vote_count(self):
+        return self.commentvote_set.count()
+    
+    def get_score(self):
+        upvotes = self.commentvote_set.filter(point=1).count()
+        downvotes = self.commentvote_set.filter(point=-1).count()
+        return upvotes - downvotes
 
 class Implication(models.Model):
     from_tag = models.ForeignKey('booru.PostTag', blank=True, null=True, default=None, on_delete=models.CASCADE, related_name="from_implications")    
@@ -49,32 +75,6 @@ class Implication(models.Model):
     def __str__(self):
         return "{} -> {}".format(self.from_tag, self.to_tag)
 
-class Alias(models.Model):
-    from_tag = models.ForeignKey('booru.PostTag', blank=True, null=True, default=None, on_delete=models.CASCADE, related_name="from_aliases")    
-    to_tag = models.ForeignKey('booru.PostTag', blank=True, null=True, default=None, on_delete=models.CASCADE, related_name="to_aliases")    
-    author = models.ForeignKey(Account, null=True, on_delete=models.SET_NULL, related_name="authored_aliases")
-    approver = models.ForeignKey(Account, blank=True, null=True, default=None, on_delete=models.SET_NULL, related_name="approved_aliases")
-    timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
-
-    PENDING = 0
-    APPROVED = 1
-    UNAPPROVED = 2
-    STATUS_CHOICES = (
-        (PENDING, 'Pending'),
-        (APPROVED, 'Approved'),
-        (UNAPPROVED, 'Unapproved')
-    )
-    status = models.IntegerField(
-        choices=STATUS_CHOICES,
-        default=PENDING,
-    )
-
-    def __str__(self):
-        return "{} -> {}".format(self.from_tag, self.to_tag)
-
-    class Meta:
-        verbose_name_plural = 'Aliases'
-
 class Category(models.Model):
     '''Basic model for the content app. It should be inherited from the other models.'''
     label = models.CharField(max_length=100, blank=True)
@@ -88,16 +88,28 @@ class Category(models.Model):
     class Meta:
         verbose_name_plural = 'Categories'
 
+@reversion.register()
 class PostTag(TagBase):
     category = models.ForeignKey(Category, default=1, on_delete=models.SET_DEFAULT)
+    description = models.CharField(max_length=100, blank=True)
+    associated_link = models.CharField(max_length=100, blank=True)
+    associated_user = models.ForeignKey(Account, null=True, blank=True,
+                                                 on_delete=models.SET_NULL, related_name="associated_tags")
+    author = models.ForeignKey(Account, null=True, on_delete=models.SET_NULL, related_name="authored_tags")
+    timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
+    aliases = TaggableManager()
 
     class Meta:
         verbose_name = ("Tag")
         verbose_name_plural = ("Tags")
 
+    def get_absolute_url(self):
+        return reverse('booru:tag_detail', kwargs={'tag_id': self.id})
+
     def get_count(self):
         return TaggedPost.objects.filter(tag=self).count()
 
+#@reversion.register()
 class TaggedPost(GenericTaggedItemBase):
     tag = models.ForeignKey(PostTag, related_name="%(app_label)s_%(class)s_items", on_delete=models.CASCADE)
 
@@ -105,7 +117,7 @@ class TaggedPost(GenericTaggedItemBase):
         super(TaggedPost, self).save(*args, **kwargs)
 
         tag_name = self.tag
-        utils.verify_and_perform_aliases_and_implications(tag_name)
+        utils.verify_and_perform_implications(tag_name)
 
 class Gallery(models.Model):
     name = models.CharField(max_length=100, blank=True)
@@ -119,6 +131,7 @@ class Gallery(models.Model):
     def get_absolute_url(self):
         return reverse('booru:gallery_detail', kwargs={'gallery_id': self.id})
 
+@reversion.register()
 class Post(models.Model):
     parent = models.IntegerField(null=True, blank=True)
     preview = models.ImageField(upload_to=get_file_path_preview, blank=True)
@@ -127,12 +140,14 @@ class Post(models.Model):
     uploader = models.ForeignKey(Account, null=True, on_delete=models.SET_NULL)
     timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
     update_timestamp = models.DateTimeField(auto_now=True, auto_now_add=False)
-    source = models.URLField(blank=True)
+    source = models.TextField(blank=True)
     score = models.IntegerField(default=0)
-    favorites = models.IntegerField(default=0)
     identifier = models.UUIDField(default=uuid.uuid4, editable=False)
     locked = models.BooleanField(default=False)
     tags = TaggableManager(through=TaggedPost, related_name="posts")
+    tags_mirror = models.CharField(max_length=1000, blank=True)
+    description = models.TextField(max_length=1000, blank=True)
+    comments = GenericRelation(Comment)
 
     objects = PostManager()
 
@@ -153,16 +168,21 @@ class Post(models.Model):
 
     PENDING = 0
     APPROVED = 1
-    DELETED = 2
+    HIDDEN = 2
+    DELETED = 3
     STATUS_CHOICES = (
         (PENDING, 'Pending'),
         (APPROVED, 'Approved'),
+        (HIDDEN, 'Hidden'),
         (DELETED, 'Deleted')
     )
     status = models.IntegerField(
         choices=STATUS_CHOICES,
         default=PENDING,
     )
+
+    def __str__(self):
+        return "#{}".format(self.id)
 
     def save(self, *args, **kwargs):
         pil_image = utils.get_pil_image_if_valid(self.image)
@@ -175,6 +195,9 @@ class Post(models.Model):
                 self.sample.save(".jpg", sample, save=False)
 
             self.preview.save(".jpg", preview, save=False)
+
+        if self.id:
+            self.mirror_tags()
         super(Post, self).save(*args, **kwargs)
 
     def get_sample_url(self):
@@ -188,7 +211,7 @@ class Post(models.Model):
 
     def get_ordered_tags(self):
         ordered_tags = {}
-        tags = self.tags.all().order_by('category')
+        tags = self.tags.all().order_by('category', 'name')
         
         for tag in tags:
             try:
@@ -200,14 +223,31 @@ class Post(models.Model):
         return ordered_tags
 
     def get_score_count(self):
-        return self.scorevote_set.count()
+        votes = ScoreVote.objects.filter(post=self)
+        
+        if votes.exists():
+            votes = votes.aggregate(Sum('point'))['point__sum']
+        else:
+            votes = 0
+        
+        return votes
 
     def get_favorites_count(self):
-        return self.favorite_set.count()
+        return self.favorites.count()
+
+    def mirror_tags(self):
+        self.tags_mirror = " ".join(self.tags.names())
+
+    class Meta:
+        permissions = (
+            ("change_status", "Can change the status of posts"),
+            ("mass_rename", "Can mass rename posts"),
+        )
+
 
 class Favorite(models.Model):
-    account = models.ForeignKey(Account, on_delete=models.CASCADE)
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name="account_favorites")
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="favorites")
 
     class Meta:
         unique_together = ('account', 'post',)
@@ -219,3 +259,11 @@ class ScoreVote(models.Model):
 
     class Meta:
         unique_together = ('account', 'post',)
+
+class CommentVote(models.Model):
+    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE)
+    point = models.IntegerField(default=1)
+
+    class Meta:
+        unique_together = ('account', 'comment',)
