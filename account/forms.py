@@ -28,7 +28,7 @@ class UsernameExistsField(UsernameField):
     def validate(self, value):
         super().validate(value)
         try:
-            Account.objects.get(username__iexact=value)
+            Account.objects.get(username=value)
         except Account.DoesNotExist:
             raise forms.ValidationError("There's no user registered with that username.")
 
