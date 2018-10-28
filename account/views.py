@@ -114,12 +114,17 @@ def profile(request, account_slug):
 
     if request.method == "POST":
         newCommentTextarea = request.POST.get("newCommentTextarea")
+        aboutUserTextarea = request.POST.get("aboutUserTextarea")
         
         if not request.user.is_authenticated:
             return redirect('account:login')
         elif newCommentTextarea: # Comment creating
             comment_content = newCommentTextarea
             Comment.objects.create(content=comment_content, author=request.user, content_object=account)
+            return redirect('booru:profile', account_slug=account.slug)
+        elif aboutUserTextarea and request.user == account: # About myself editing
+            request.user.about = aboutUserTextarea
+            request.user.save()
             return redirect('booru:profile', account_slug=account.slug)
 
     # TODO: I don't remember if I can safely pass account as 

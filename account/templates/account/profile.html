@@ -6,6 +6,7 @@
 {% endblock %}
 
 {% block scripts %}
+    <script src="{% static 'account/js/profile.js' %}"></script>
 {% endblock %}
 
 {% block body %}
@@ -107,14 +108,30 @@
             </div>
         </div>
         <div class="col-4">
-            <h3>About myself</h3>
-            {% load markdown_deux_tags %}
-            {{account.about|markdown}}
+            <h3>
+                About myself
+                {% if user.is_authenticated and account.id == user.id %}
+                <a class="float-right" id="edit_about" href="#"><i class="fas fa-pencil-alt"></i></a>
+                {% endif %}
+            </h3>
 
-            {% if account.about %}
-            {% else %}
-            <p class="text-muted">This user have not written nothing about themselves yet!</p>
-            {% endif %}
+            {% load markdown_deux_tags %}
+
+            <div id="about-data">
+                {% if account.about %}
+                {{account.about|markdown}}
+                {% else %}
+                <p class="text-muted">This user have not written nothing about themselves yet!</p>
+                {% endif %}
+            </div>
+
+            <div class="form-group" id="about-edit" style="display: none;">
+                <form method="post" action="." enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <textarea class="form-control" id="aboutUserTextarea" name="aboutUserTextarea" rows="4">{{account.about}}</textarea>
+                    <button type="submit" id="send_about" class="btn btn-md btn-primary float-right mt-1">Save changes</button>
+                </form>
+            </div>
         </div>
     </div>
     <div class="row">
@@ -164,7 +181,7 @@
                             {% endif %}
                             <textarea class="form-control" id="newCommentTextarea" name="newCommentTextarea" rows="3"></textarea>
                         </div>
-                        <button type="submit" id="send" class="btn btn-sm btn-primary">Create comment</button>
+                        <button type="submit" id="sendComment" class="btn btn-sm btn-primary">Create comment</button>
                     {% if not user.is_authenticated %}
                     </fieldset>
                     {% endif %}
