@@ -126,12 +126,10 @@ def tags_list(request, page_number = 1):
 @login_required
 def tag_edit(request, tag_id):
     tag = get_object_or_404(PostTag, pk=tag_id)
-
-    versions = Version.objects.get_for_object(tag)
     tag_dict = model_to_dict(tag)
 
-    if len(versions) > 0 and versions[0].field_dict["associated_user_id"]:
-        associated_user = get_object_or_404(Account, id=versions[0].field_dict["associated_user_id"])
+    if tag.associated_user_id:
+        associated_user = get_object_or_404(Account, id=tag.associated_user_id)
         tag_dict['associated_user_name'] = associated_user.slug
 
     form = TagEditForm(request.POST or None, instance=tag, initial=tag_dict)
@@ -159,19 +157,20 @@ def tag_history(request, tag_id, page_number = 1):
     p = Paginator(tag.history.all(), page_limit)
     page = p.page(page_number)
 
+    print(page.object_list[0].history_id)
+
     return render(request, 'booru/tag_history.html', {"page": page, "tag": tag})
 
 def tag_revision_diff(request, tag_id):
     tag = get_object_or_404(PostTag, pk=tag_id)
-    
-    old_revision = get_object_or_404(Version, pk=request.GET.get('oldRevision'))
-    new_revision = get_object_or_404(Version, pk=request.GET.get('newRevision'))
 
-    description_diff        = utils.get_diff("description", old_revision, new_revision)
-    associated_link_diff    = utils.get_diff("associated_link", old_revision, new_revision)
+    old_version = tag.history.filter(history_id=request.GET.get('oldRevision')).first()
+    new_version = tag.history.filter(history_id=request.GET.get('newRevision')).first()
 
-    context = {"tag": tag, "description_diff": description_diff, "associated_link_diff": associated_link_diff,
-               "old_revision": old_revision, "new_revision": new_revision}
+    delta = new_version.diff_against(old_version)
+
+    context = {"tag": tag, "changes": delta.changes,
+               "old_version": old_version, "new_version": new_version}
     
     return render(request, 'booru/tag_revision_diff.html', context)
 
