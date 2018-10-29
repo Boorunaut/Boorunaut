@@ -39,8 +39,8 @@
                                     </a>
                                 </td>
                                 <td>
-                                    {{version.revision.date_created}} by
-                                    <a href="{% url 'booru:profile' version.revision.user %}">{{version.revision.user}}</a>
+                                    {{version.date_created}} by
+                                    <a href="{% url 'booru:profile' version.history_user %}">{{version.history_user}}</a>
                                 </td>
                             </tr>
                             {% endfor %}
