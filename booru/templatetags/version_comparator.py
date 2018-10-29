@@ -18,29 +18,18 @@ from booru.utils import compare_strings
 register = template.Library()
 
 @register.inclusion_tag('booru/templatetags/version_comparator.html')
-def version_comparator(model, current_version, field_name):
-    versions = Version.objects.get_for_object(model).order_by('revision__date_created')
-    version_number = list(versions).index(current_version)
+def version_comparator(current_version, field_name):
+    previous_version = current_version.prev_record
 
-    previous_version = None
-    try:
-        previous_version = versions[version_number - 1]
-    except:
-        previous_version = None
-
-    current_value = current_version.field_dict[field_name]
-
-    if type(current_value) == list:
-        current_value = ' '.join(str(e) for e in current_value)    
-
+    current_value = getattr(current_version, field_name)    
+    
     if previous_version != None:
-        previous_value = previous_version.field_dict[field_name]
+        previous_value = getattr(previous_version, field_name)
     else:
         previous_value = ""
 
     if type(previous_value) == list:
         previous_value = ' '.join(str(e) for e in previous_value)
 
-    # result = compare_strings(previous_value, current_value)
     result = compare_strings(previous_value, current_value)
     return {"value": result}

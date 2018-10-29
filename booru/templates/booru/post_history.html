@@ -38,27 +38,27 @@
                                 </a>
                             </th>
                             <td>
-                                {{version.revision.date_created}}
+                                {{version.date_created}}
                             </td>
                             <td>
-                                <a href="{% url 'booru:profile' version.revision.user %}">{{version.revision.user}}</a>
+                                <a href="{% url 'booru:profile' version.history_user %}">{{version.history_user}}</a>
                             </td>
                             <td>
-                                {% if version.field_dict.rating == 0 %}
+                                {% if version.rating == 0 %}
                                 None
-                                {% elif version.field_dict.rating == 1 %}
+                                {% elif version.rating == 1 %}
                                 Safe
-                                {% elif version.field_dict.rating == 2 %}
+                                {% elif version.rating == 2 %}
                                 Questionable
-                                {% elif version.field_dict.rating == 3 %}
+                                {% elif version.rating == 3 %}
                                 Explicit
                                 {% endif %}
                             </td>
                             <td>
-                                {{version.field_dict.parent}}
+                                {{version.parent}}
                             </td>
                             <td>
-                                {{version.field_dict.source}}
+                                {{version.source}}
                             </td>
                             <td>
                                 {% version_comparator post version "tags_mirror" %}
