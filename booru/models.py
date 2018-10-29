@@ -10,7 +10,7 @@ from django.db.models import Sum
 from django.urls import reverse
 from simple_history.models import HistoricalRecords
 from taggit.managers import TaggableManager
-from taggit.models import GenericTaggedItemBase, TagBase
+from taggit.models import GenericTaggedItemBase, TagBase, Tag, TaggedItem
 
 from account.models import Account
 
@@ -183,9 +183,6 @@ class Post(models.Model):
                 self.sample.save(".jpg", sample, save=False)
 
             self.preview.save(".jpg", preview, save=False)
-
-        if self.id:
-            self.mirror_tags()
         super(Post, self).save(*args, **kwargs)
 
     def get_sample_url(self):
@@ -222,9 +219,6 @@ class Post(models.Model):
 
     def get_favorites_count(self):
         return self.favorites.count()
-
-    def mirror_tags(self):
-        self.tags_mirror = " ".join(self.tags.names())
 
     class Meta:
         permissions = (
