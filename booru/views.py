@@ -1,7 +1,6 @@
 import json
 
 import diff_match_patch as dmp_module
-import reversion
 from django.apps import apps
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
@@ -11,7 +10,6 @@ from django.forms.models import model_to_dict
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views import generic
-from reversion.models import Version
 
 from account.models import Account
 
@@ -46,13 +44,10 @@ def post_detail(request, post_id):
         newCommentTextarea = request.POST.get("newCommentTextarea")
 
         if form.is_valid(): # Post editting (post_edit)
-            with reversion.create_revision():
                 post = form.save(commit=False)
+                post.tags_mirror = " ".join(form.cleaned_data['tags'])
                 post.save()
                 form.save_m2m()
-                
-                reversion.set_user(request.user)
-                reversion.set_comment("Created revision" + str(post.id))
                 return redirect('booru:post_detail', post_id=post.id)
         elif newCommentTextarea: # Comment creating
             comment_content = newCommentTextarea
@@ -72,17 +67,10 @@ def post_history(request, post_id, page_number = 1):
     post = get_object_or_404(Post, id=post_id)
     page_limit = 20
 
-    versions = Version.objects.get_for_object(post)
-    p = Paginator(versions, page_limit)
+    p = Paginator(post.history.all(), page_limit)
     page = p.page(page_number)
 
-    object_enum = enumerate(page.object_list)
-
-    for key, page_object in object_enum:
-        if key <= len(page.object_list):
-            page_object.previous_version = key + 1
-
-    return render(request, 'booru/post_history.html', {"versions": versions, "page": page, "post": post})
+    return render(request, 'booru/post_history.html', {"page": page, "post": post})
 
 @login_required
 def upload(request):    
@@ -91,6 +79,7 @@ def upload(request):
     if form.is_valid():
         post = form.save(commit=False)
         post.uploader = request.user
+        post.tags_mirror = " ".join(form.cleaned_data['tags'])
         post.save()
         form.save_m2m()
 
@@ -137,25 +126,21 @@ def tags_list(request, page_number = 1):
 @login_required
 def tag_edit(request, tag_id):
     tag = get_object_or_404(PostTag, pk=tag_id)
-
-    versions = Version.objects.get_for_object(tag)
     tag_dict = model_to_dict(tag)
 
-    if len(versions) > 0 and versions[0].field_dict["associated_user_id"]:
-        associated_user = get_object_or_404(Account, id=versions[0].field_dict["associated_user_id"])
+    if tag.associated_user_id:
+        associated_user = get_object_or_404(Account, id=tag.associated_user_id)
         tag_dict['associated_user_name'] = associated_user.slug
 
     form = TagEditForm(request.POST or None, instance=tag, initial=tag_dict)
     if form.is_valid() and request.POST:
-        with reversion.create_revision():
-            tag = form.save(commit=False)
-            tag.author = request.user
-            if form.cleaned_data['associated_user_name']:
-                associated_user = get_object_or_404(Account, slug=form.cleaned_data['associated_user_name'])
-                tag.associated_user = associated_user
-            tag.save()
-            form.save_m2m()
-            reversion.set_user(request.user)
+        tag = form.save(commit=False)
+        tag.author = request.user
+        if form.cleaned_data['associated_user_name']:
+            associated_user = get_object_or_404(Account, slug=form.cleaned_data['associated_user_name'])
+            tag.associated_user = associated_user
+        tag.save()
+        form.save_m2m()
         return redirect('booru:tag_detail', tag.id)
         
     return render(request, 'booru/tag_edit.html', {"tag": tag, "form": form})
@@ -169,23 +154,23 @@ def tag_history(request, tag_id, page_number = 1):
     tag = get_object_or_404(PostTag, pk=tag_id)
     page_limit = 20
 
-    versions = Version.objects.get_for_object(tag)
-    p = Paginator(versions, page_limit)
+    p = Paginator(tag.history.all(), page_limit)
     page = p.page(page_number)
 
-    return render(request, 'booru/tag_history.html', {"versions": versions, "page": page, "tag": tag})
+    print(page.object_list[0].history_id)
+
+    return render(request, 'booru/tag_history.html', {"page": page, "tag": tag})
 
 def tag_revision_diff(request, tag_id):
     tag = get_object_or_404(PostTag, pk=tag_id)
-    
-    old_revision = get_object_or_404(Version, pk=request.GET.get('oldRevision'))
-    new_revision = get_object_or_404(Version, pk=request.GET.get('newRevision'))
 
-    description_diff        = utils.get_diff("description", old_revision, new_revision)
-    associated_link_diff    = utils.get_diff("associated_link", old_revision, new_revision)
+    old_version = tag.history.filter(history_id=request.GET.get('oldRevision')).first()
+    new_version = tag.history.filter(history_id=request.GET.get('newRevision')).first()
 
-    context = {"tag": tag, "description_diff": description_diff, "associated_link_diff": associated_link_diff,
-               "old_revision": old_revision, "new_revision": new_revision}
+    delta = new_version.diff_against(old_version)
+
+    context = {"tag": tag, "changes": delta.changes,
+               "old_version": old_version, "new_version": new_version}
     
     return render(request, 'booru/tag_revision_diff.html', context)
 
@@ -277,33 +262,24 @@ def post_approve(request, post_id):
     post = Post.objects.get(id=post_id)
 
     if request.user.has_perm("booru.change_status") and post.status != 1:
-        with reversion.create_revision():
-            post.status = 1
-            post.save()            
-            reversion.set_user(request.user)
-            reversion.set_comment("Approved post #{}".format(post.id))
+        post.status = 1
+        post.save()
     return redirect('booru:post_detail', post_id=post.id)
 
 def post_hide(request, post_id):
     post = Post.objects.get(id=post_id)
 
     if request.user.has_perm("booru.change_status") and post.status != 2:
-        with reversion.create_revision():
-            post.status = 2
-            post.save()            
-            reversion.set_user(request.user)
-            reversion.set_comment("Hid post #{}".format(post.id))
+        post.status = 2
+        post.save()
     return redirect('booru:post_detail', post_id=post.id)
 
 def post_delete(request, post_id):
     post = Post.objects.get(id=post_id)
 
     if request.user.has_perm("booru.change_status") and post.status != 3:
-        with reversion.create_revision():
-            post.status = 3
-            post.save()            
-            reversion.set_user(request.user)
-            reversion.set_comment("Deleted post #{}".format(post.id))
+        post.status = 3
+        post.save()
     return redirect('booru:post_detail', post_id=post.id)
 
 @login_required
@@ -357,13 +333,9 @@ def staff_mass_rename(request):
             posts = posts.filter(tags__name__in=when)
 
             for post in posts:
-                with reversion.create_revision():
-                    post.tags.remove(*when)
-                    post.tags.add(*replace_with)
-                    post.save()
-
-                    reversion.set_user(request.user)
-                    reversion.set_comment("Edited on mass rename #" + str(post.id))
+                post.tags.remove(*when)
+                post.tags.add(*replace_with)
+                post.save()
                 
             return redirect('booru:staff_mass_rename')
         return render(request, 'booru/staff_mass_rename.html', {"form": form})

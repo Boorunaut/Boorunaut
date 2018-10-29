@@ -19,13 +19,12 @@ register = template.Library()
 
 @register.inclusion_tag('booru/templatetags/version_comparator.html')
 def version_comparator(current_version, field_name):
-    previous_revision = current_version.revision.get_previous_by_date_created()
-    previous_version = Version.objects.filter(revision__id=previous_revision.id).first()
+    previous_version = current_version.prev_record
 
-    current_value = current_version.field_dict[field_name]
+    current_value = getattr(current_version, field_name)    
     
     if previous_version != None:
-        previous_value = previous_version.field_dict[field_name]
+        previous_value = getattr(previous_version, field_name)
     else:
         previous_value = ""
 
