@@ -244,53 +244,6 @@ def implication_disapprove(request, implication_id):
     implication.save()
     return redirect('booru:implication-detail', implication.id)
 
-@login_required
-def gallery_create(request):    
-    form = GalleryCreateForm(request.POST or None, request.FILES or None)
-    
-    if form.is_valid():
-        posts_text = form.cleaned_data['posts_ids']
-        posts_ids = posts_text.splitlines()
-        
-        gallery = form.save(commit=False)
-        gallery.save()
-        posts = Post.objects.filter(id__in=posts_ids)
-        gallery.posts.add(*posts)
-        form.save_m2m()
-        return redirect('booru:gallery_detail', gallery_id=gallery.id)
-    return render(request, 'booru/gallery_create.html', {"form": form})
-
-def gallery_detail(request, gallery_id):
-    page_number = int(request.GET.get('page', '1'))
-    page_limit = 20
-
-    gallery = Gallery.objects.get(id=gallery_id)
-    posts = gallery.posts.all()
-
-    p = Paginator(posts, page_limit)
-    page = p.page(page_number)
-
-    return render(request, 'booru/gallery_detail.html', {"gallery": gallery, "page": page})
-
-@login_required
-def gallery_edit(request, gallery_id):
-    gallery = get_object_or_404(Gallery, pk=gallery_id)
-
-    gallery_dict = model_to_dict(gallery)
-    gallery_dict['posts_ids'] = '\n'.join([str(post_id['id']) for post_id in gallery.posts.values('id')])
-    form = GalleryEditForm(request.POST or None, instance=gallery, initial=gallery_dict)
-
-    if form.is_valid():
-        posts_ids = form.cleaned_data['posts_ids'].splitlines()
-        gallery = form.save(commit=False)
-        gallery.posts.clear()
-        gallery.save()
-        posts = Post.objects.filter(id__in=posts_ids)
-        gallery.posts.add(*posts)
-        form.save_m2m()
-        return redirect('booru:gallery_detail', gallery_id=gallery.id)
-    return render(request, 'booru/gallery_edit.html', {"form": form, "gallery": gallery})
-
 @staff_member_required
 def staff_page(request):
     Account = apps.get_model('account', 'Account')
@@ -420,16 +373,6 @@ def staff_mass_rename(request):
     return redirect('booru:index')
 
 def gallery_list(request, page_number = 1):
-    galleries = Gallery.objects.all().order_by('-id')    
-    page_limit = 10
-
-    p = Paginator(galleries, page_limit)
-    page = p.page(page_number)
-    gallery_list = page.object_list
-    
-    return render(request, 'booru/gallery_list.html', {"galleries": gallery_list, "page": page})
-
-def gallery_list(request, page_number = 1):
     searched_gallery = request.GET.get("name", "")
     form = GalleryListSearchForm(request.GET or None)
 
@@ -443,3 +386,70 @@ def gallery_list(request, page_number = 1):
     gallery_list = page.object_list
     
     return render(request, 'booru/gallery_list.html', {"galleries": gallery_list, "page": page, "form": form})
+
+def gallery_history(request, gallery_id, page_number = 1):
+    gallery = get_object_or_404(Gallery, id=gallery_id)
+    page_limit = 20
+
+    versions = Version.objects.get_for_object(gallery)
+    p = Paginator(versions, page_limit)
+    page = p.page(page_number)
+
+    object_enum = enumerate(page.object_list)
+
+    for key, page_object in object_enum:
+        if key <= len(page.object_list):
+            page_object.previous_version = key + 1
+
+    return render(request, 'booru/gallery_history.html', {"versions": versions, "page": page, "gallery": gallery})
+
+@login_required
+def gallery_edit(request, gallery_id):
+    gallery = get_object_or_404(Gallery, pk=gallery_id)
+
+    gallery_dict = model_to_dict(gallery)
+    gallery_dict['posts_ids'] = '\n'.join([str(post_id['id']) for post_id in gallery.posts.values('id')])
+    form = GalleryEditForm(request.POST or None, instance=gallery, initial=gallery_dict)
+
+    if form.is_valid():
+        with reversion.create_revision():
+            posts_ids = form.cleaned_data['posts_ids'].splitlines()
+            gallery = form.save(commit=False)
+            gallery.posts.clear()
+            gallery.save()
+            posts = Post.objects.filter(id__in=posts_ids)
+            gallery.posts.add(*posts)
+            form.save_m2m()
+            reversion.set_user(request.user)
+            reversion.set_comment("Edited gallery #{}".format(gallery.id))
+            return redirect('booru:gallery_detail', gallery_id=gallery.id)
+        
+    return render(request, 'booru/gallery_edit.html', {"form": form, "gallery": gallery})
+
+@login_required
+def gallery_create(request):    
+    form = GalleryCreateForm(request.POST or None, request.FILES or None)
+    
+    if form.is_valid():
+        posts_text = form.cleaned_data['posts_ids']
+        posts_ids = posts_text.splitlines()
+        
+        gallery = form.save(commit=False)
+        gallery.save()
+        posts = Post.objects.filter(id__in=posts_ids)
+        gallery.posts.add(*posts)
+        form.save_m2m()
+        return redirect('booru:gallery_detail', gallery_id=gallery.id)
+    return render(request, 'booru/gallery_create.html', {"form": form})
+
+def gallery_detail(request, gallery_id):
+    page_number = int(request.GET.get('page', '1'))
+    page_limit = 20
+
+    gallery = Gallery.objects.get(id=gallery_id)
+    posts = gallery.posts.all()
+
+    p = Paginator(posts, page_limit)
+    page = p.page(page_number)
+
+    return render(request, 'booru/gallery_detail.html', {"gallery": gallery, "page": page})

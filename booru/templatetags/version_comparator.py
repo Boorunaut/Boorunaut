@@ -19,7 +19,7 @@ register = template.Library()
 
 @register.inclusion_tag('booru/templatetags/version_comparator.html')
 def version_comparator(model, current_version, field_name):
-    versions = Version.objects.get_for_object(model)
+    versions = Version.objects.get_for_object(model).order_by('revision__date_created')
     version_number = list(versions).index(current_version)
 
     previous_version = None
@@ -41,5 +41,6 @@ def version_comparator(model, current_version, field_name):
     if type(previous_value) == list:
         previous_value = ' '.join(str(e) for e in previous_value)
 
+    # result = compare_strings(previous_value, current_value)
     result = compare_strings(previous_value, current_value)
     return {"value": result}

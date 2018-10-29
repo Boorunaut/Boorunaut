@@ -119,6 +119,7 @@ class TaggedPost(GenericTaggedItemBase):
         tag_name = self.tag
         utils.verify_and_perform_implications(tag_name)
 
+@reversion.register()
 class Gallery(models.Model):
     name = models.CharField(max_length=100, blank=True)
     description = models.CharField(max_length=1000, blank=True)
