@@ -1,0 +1,43 @@
+{% extends 'booru/base.html' %}
+
+{% block css %}
+    {% load staticfiles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'booru/css/index.css' %}"/>
+{% endblock %}
+
+{% block scripts %}
+    <!-- <script src="{% static 'account/js/profile.js' %}"></script> -->
+{% endblock %}
+
+{% block body %}
+    {% load humanize %}
+    <div class="row">
+        <div class="col">
+            <h1 class="mb-3">Account Settings</h1>
+            <form method="post" action="." enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="form-group col-6" id="account-settings">
+                        <h2>Tag Blacklist</h2>
+    
+                        <p>All posts that contain any of the tags, ratings or users listed on this field will be hid from all results.</p>
+    
+                        <textarea class="form-control" id="tagBlacklistTextarea" name="aboutUserTextarea" rows="4" placeholder="Ex.: wall rating:explicit user:girugamesh"></textarea>
+                        <button type="submit" id="sendTagBlacklist" class="btn btn-md btn-primary float-right mt-1">Save changes</button>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-6" id="account-settings">
+                        <h2>Safe Only Listing</h2>
+    
+                        <p>All posts is not rated as safe will be hidden from all results.</p>                        
+                        
+                        <input type="checkbox" id="safeOnlyCheckbox" name="safeOnlyCheckbox">
+                        <button type="submit" id="sendTagBlacklist" class="btn btn-md btn-primary float-right mt-1">Save changes</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

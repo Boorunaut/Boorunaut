@@ -28,7 +28,7 @@
                 <a class="nav-link" href="#">Filters (Default)</a>
             </li>
             <li class="nav-item active">
-                <a class="nav-link" href="#">Settings</a>
+                <a class="nav-link" href="{% url 'account:settings' %}">Settings</a>
             </li>
             {% if not user.is_authenticated %}
             <li class="nav-item active">

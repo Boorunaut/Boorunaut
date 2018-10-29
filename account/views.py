@@ -140,3 +140,29 @@ def profile(request, account_slug):
     }
 
     return render(request, 'account/profile.html', context)
+
+class SettingsView(FormView):
+    """
+    Provides the ability to an user to modify it's 
+    account settings.
+    """
+    success_url = '.'
+    form_class = UserRegisterForm
+    redirect_field_name = REDIRECT_FIELD_NAME
+    template_name = "account/settings.html"
+
+    @method_decorator(csrf_protect)
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('account:login')
+
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        redirect_to = self.request.GET.get(self.redirect_field_name)
+        if not is_safe_url(url=redirect_to, allowed_hosts=self.request.get_host()):
+            redirect_to = self.success_url
+        return redirect_to

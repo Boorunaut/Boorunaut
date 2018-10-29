@@ -32,3 +32,7 @@ class Account(AbstractUser):
 
     def get_favorites_count(self):
         return self.account_favorites.count()
+
+    def get_comments_count(self):
+        Comment = apps.get_model('booru', 'Comment')
+        return Comment.objects.filter(author=self, content_type__model="post").count()
