@@ -8,6 +8,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models import Sum
 from django.urls import reverse
+from simple_history.models import HistoricalRecords
 from taggit.managers import TaggableManager
 from taggit.models import GenericTaggedItemBase, TagBase
 
@@ -88,7 +89,6 @@ class Category(models.Model):
     class Meta:
         verbose_name_plural = 'Categories'
 
-@reversion.register()
 class PostTag(TagBase):
     category = models.ForeignKey(Category, default=1, on_delete=models.SET_DEFAULT)
     description = models.CharField(max_length=100, blank=True)
@@ -98,6 +98,7 @@ class PostTag(TagBase):
     author = models.ForeignKey(Account, null=True, on_delete=models.SET_NULL, related_name="authored_tags")
     timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
     aliases = TaggableManager()
+    history = HistoricalRecords()
 
     class Meta:
         verbose_name = ("Tag")
@@ -109,7 +110,6 @@ class PostTag(TagBase):
     def get_count(self):
         return TaggedPost.objects.filter(tag=self).count()
 
-#@reversion.register()
 class TaggedPost(GenericTaggedItemBase):
     tag = models.ForeignKey(PostTag, related_name="%(app_label)s_%(class)s_items", on_delete=models.CASCADE)
 
@@ -119,7 +119,6 @@ class TaggedPost(GenericTaggedItemBase):
         tag_name = self.tag
         utils.verify_and_perform_implications(tag_name)
 
-@reversion.register()
 class Post(models.Model):
     parent = models.IntegerField(null=True, blank=True)
     preview = models.ImageField(upload_to=get_file_path_preview, blank=True)
@@ -138,6 +137,7 @@ class Post(models.Model):
     comments = GenericRelation(Comment)
 
     objects = PostManager()
+    history = HistoricalRecords()
 
     NONE = 0
     SAFE = 1
