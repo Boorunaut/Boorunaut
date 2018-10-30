@@ -415,6 +415,7 @@ def gallery_detail(request, gallery_id):
     gallery = Gallery.objects.get(id=gallery_id)
     posts = gallery.posts.all()
 
+    print(posts[0])
     p = Paginator(posts, page_limit)
     page = p.page(page_number)
 
