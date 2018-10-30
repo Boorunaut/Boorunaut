@@ -156,23 +156,23 @@ class SettingsView(FormView):
         Returns the initial data to use for forms on this view.
         """
         initial = super().get_initial()
-        account = get_object_or_404(Account, id=self.request.user.id)
+        account = self.request.user
 
         initial['safe_only'] = account.safe_only
         initial['show_comments'] = account.show_comments
         initial['tag_blacklist'] = account.tag_blacklist
 
-        if self.request.method == "POST":
-            safeOnlyCheckbox = self.request.POST.get("safe_only") == "on"
-            showCommentsCheckbox = self.request.POST.get("show_comments") == "on"
-            tagBlacklistTextarea = self.request.POST.get("tag_blacklist", "")
-
-            account.safe_only = safeOnlyCheckbox
-            account.show_comments = showCommentsCheckbox
-            account.tag_blacklist = tagBlacklistTextarea
-            account.save()
-
         return initial
+
+    def form_valid(self, form):
+        account = self.request.user
+
+        account.safe_only = form.cleaned_data.get('safe_only')
+        account.show_comments = form.cleaned_data.get('show_comments')
+        account.tag_blacklist = form.cleaned_data.get('tag_blacklist')
+        account.save()
+
+        return super().form_valid(form)
 
     @method_decorator(csrf_protect)
     def dispatch(self, request, *args, **kwargs):
