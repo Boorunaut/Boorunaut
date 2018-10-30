@@ -21,9 +21,9 @@
                     <thead>
                         <tr>
                             <th scope="col">Gallery</th>
+                            <th scope="col">Tags</th>
                             <th scope="col">Date</th>
                             <th scope="col">User</th>
-                            <th scope="col">Tags</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -31,17 +31,17 @@
                         <tr>
                             <th scope="row">
                                 <a href="{{gallery.get_absolute_url}}">
-                                    {{gallery}}
+                                    #{{gallery.id}}
                                 </a>
                             </th>
                             <td>
-                                {{version.date_created|date:"c"}}
+                                {% version_comparator version "posts_mirror" %}
+                            </td>
+                            <td>
+                                {{version.history_date}}
                             </td>
                             <td>
                                 <a href="{% url 'booru:profile' version.history_user %}">{{version.history_user}}</a>
-                            </td>
-                            <td>
-                                {% version_comparator version "posts_mirror" %}
                             </td>
                         </tr>
                         {% endfor %}
