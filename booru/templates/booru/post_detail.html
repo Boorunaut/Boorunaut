@@ -135,12 +135,12 @@
                 </ul>
             </nav>
             <div class="row text-center">
-                    <span class="col mb-2">
-                        <a href="{% url 'booru:post_history' post.id %}" type="button" class="btn btn-sm btn-primary">
-                            <i class="fas fa-history"></i> History
-                        </a>
-                    </span>
-                </div>
+                <span class="col mb-2">
+                    <a href="{% url 'booru:post_history' post.id %}" type="button" class="btn btn-sm btn-primary">
+                        <i class="fas fa-history"></i> History
+                    </a>
+                </span>
+            </div>
             <div id="tag-tables" class="col">
                 {% for category, tags in ordered_tags.items %}
                 <div id="tag-table-{{category.label}}" class="mb-3">
