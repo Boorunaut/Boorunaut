@@ -5,7 +5,7 @@ from django.apps import apps
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Count, Q
 from django.forms.models import model_to_dict
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -101,8 +101,11 @@ def post_list_detail(request, page_number = 1):
     p = Paginator(posts, page_limit)
     page = p.page(page_number)
     post_list = page.object_list
+
     
-    return render(request, 'booru/posts.html', {"posts": post_list, "page": page})
+    tags_list = Post.tags.most_common().filter(post__id__in=post_list)[:25]
+    
+    return render(request, 'booru/posts.html', {"posts": post_list, "page": page, "tags_list": tags_list})
 
 def tags_list(request, page_number = 1):
     searched_tag = request.GET.get("tags", "")
