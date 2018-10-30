@@ -4,7 +4,7 @@ from django.utils import six
 from taggit.forms import TagField, TagWidget
 from taggit.utils import edit_string_for_tags
 
-from .models import Category, Post, PostTag
+from .models import Category, Post, PostTag, Gallery
 
 
 class TaggitAdminTextareaWidget(AdminTextareaWidget):
@@ -115,3 +115,49 @@ class MassRenameForm(forms.Form):
         self.fields['filter_by'].widget = forms.TextInput(attrs={'class': 'form-control'})
         self.fields['when'].widget = forms.TextInput(attrs={'class': 'form-control'})
         self.fields['replace_with'].widget = forms.TextInput(attrs={'class': 'form-control'})
+
+class GalleryCreateForm(forms.ModelForm):
+    '''Form for creating an gallery.'''
+
+    name = forms.CharField(required=True)
+    description = forms.CharField(required=True)
+    posts_ids = forms.CharField(required=True)
+
+    class Meta:
+        model = Gallery
+        fields = ["name", "description"]
+
+    def __init__(self, *args, **kwargs):
+        super(GalleryCreateForm, self).__init__(*args, **kwargs)
+        self.fields['name'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        self.fields['description'].widget = forms.Textarea(attrs={'class': 'form-control'})
+        self.fields['posts_ids'].widget = forms.Textarea(attrs={'class': 'form-control'})
+
+class GalleryEditForm(forms.ModelForm):
+    '''Form for creating an gallery.'''
+
+    name = forms.CharField(required=True)
+    description = forms.CharField(required=True)
+    posts_ids = forms.CharField(required=True)
+
+    class Meta:
+        model = Gallery
+        fields = ["name", "description"]
+
+    def __init__(self, *args, **kwargs):
+        super(GalleryEditForm, self).__init__(*args, **kwargs)
+        self.fields['name'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        self.fields['description'].widget = forms.Textarea(attrs={'class': 'form-control'})
+        self.fields['posts_ids'].widget = forms.Textarea(attrs={'class': 'form-control'})
+
+class GalleryListSearchForm(forms.Form):
+    '''Form searching galleries in the Gallery List.'''
+
+    name = forms.CharField(required=False)    
+
+    class Meta:
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super(GalleryListSearchForm, self).__init__(*args, **kwargs)
+        self.fields['name'].widget = forms.TextInput(attrs={'class': 'form-control form-control-sm'})

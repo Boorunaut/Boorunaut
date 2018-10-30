@@ -14,9 +14,12 @@ from django.views import generic
 from account.models import Account
 
 from . import utils
-from .forms import (CreatePostForm, EditPostForm, ImplicationCreateForm,
-                    TagEditForm, TagListSearchForm, MassRenameForm)
-from .models import Comment, Implication, Post, PostTag, TaggedPost, Favorite, ScoreVote
+from .forms import (CreatePostForm, EditPostForm, GalleryCreateForm,
+                    GalleryEditForm, GalleryListSearchForm,
+                    ImplicationCreateForm, MassRenameForm, TagEditForm,
+                    TagListSearchForm)
+from .models import (Comment, Favorite, Gallery, Implication, Post, PostTag,
+                     ScoreVote, TaggedPost)
 
 
 def index(request):
@@ -156,8 +159,6 @@ def tag_history(request, tag_id, page_number = 1):
 
     p = Paginator(tag.history.all(), page_limit)
     page = p.page(page_number)
-
-    print(page.object_list[0].history_id)
 
     return render(request, 'booru/tag_history.html', {"page": page, "tag": tag})
 
@@ -340,3 +341,80 @@ def staff_mass_rename(request):
             return redirect('booru:staff_mass_rename')
         return render(request, 'booru/staff_mass_rename.html', {"form": form})
     return redirect('booru:index')
+
+def gallery_list(request, page_number = 1):
+    searched_gallery = request.GET.get("name", "")
+    form = GalleryListSearchForm(request.GET or None)
+
+    galleries = Gallery.objects.all().order_by('-id')
+    if searched_gallery != "":
+        galleries = galleries.filter(name__icontains=searched_gallery)
+    
+    page_limit = 10
+    p = Paginator(galleries, page_limit)
+    page = p.page(page_number)
+    gallery_list = page.object_list
+    
+    return render(request, 'booru/gallery_list.html', {"galleries": gallery_list, "page": page, "form": form})
+
+def gallery_history(request, gallery_id, page_number = 1):
+    gallery = get_object_or_404(Gallery, id=gallery_id)
+    page_limit = 20
+
+    p = Paginator(gallery.history.all(), page_limit)
+    page = p.page(page_number)
+
+    object_enum = enumerate(page.object_list)
+
+    return render(request, 'booru/gallery_history.html', {"page": page, "gallery": gallery})
+
+@login_required
+def gallery_edit(request, gallery_id):
+    gallery = get_object_or_404(Gallery, pk=gallery_id)
+
+    gallery_dict = model_to_dict(gallery)
+    gallery_dict['posts_ids'] = '\n'.join([str(post_id['id']) for post_id in gallery.posts.values('id')])
+    form = GalleryEditForm(request.POST or None, instance=gallery, initial=gallery_dict)
+
+    if form.is_valid():
+        posts_ids = form.cleaned_data['posts_ids'].splitlines()
+        gallery = form.save(commit=False)
+        gallery.posts.clear()
+        gallery.posts_mirror = " ".join(form.cleaned_data['posts_ids'].splitlines())
+        gallery.save()
+        posts = Post.objects.filter(id__in=posts_ids)
+        gallery.posts.add(*posts)
+        form.save_m2m()
+        return redirect('booru:gallery_detail', gallery_id=gallery.id)
+        
+    return render(request, 'booru/gallery_edit.html', {"form": form, "gallery": gallery})
+
+@login_required
+def gallery_create(request):    
+    form = GalleryCreateForm(request.POST or None, request.FILES or None)
+    
+    if form.is_valid():
+        posts_text = form.cleaned_data['posts_ids']
+        posts_ids = posts_text.splitlines()
+        
+        gallery = form.save(commit=False)
+        gallery.posts_mirror = " ".join(posts_ids)
+        gallery.save()
+        posts = Post.objects.filter(id__in=posts_ids)
+        gallery.posts.add(*posts)
+        form.save_m2m()
+        return redirect('booru:gallery_detail', gallery_id=gallery.id)
+    return render(request, 'booru/gallery_create.html', {"form": form})
+
+def gallery_detail(request, gallery_id):
+    page_number = int(request.GET.get('page', '1'))
+    page_limit = 20
+
+    gallery = Gallery.objects.get(id=gallery_id)
+    posts = gallery.posts.all()
+
+    print(posts[0])
+    p = Paginator(posts, page_limit)
+    page = p.page(page_number)
+
+    return render(request, 'booru/gallery_detail.html', {"gallery": gallery, "page": page})

@@ -119,6 +119,24 @@ class TaggedPost(GenericTaggedItemBase):
         tag_name = self.tag
         utils.verify_and_perform_implications(tag_name)
 
+class Gallery(models.Model):
+    name = models.CharField(max_length=100, blank=True)
+    description = models.CharField(max_length=1000, blank=True)
+    posts = models.ManyToManyField('booru.Post')
+    posts_mirror = models.CharField(max_length=1000, blank=True)
+    is_active = models.BooleanField(default=True)
+
+    history = HistoricalRecords()
+
+    def __str__(self):
+        return "{}".format(self.name)
+    
+    def get_count(self):
+        return self.posts.count()
+
+    def get_absolute_url(self):
+        return reverse('booru:gallery_detail', kwargs={'gallery_id': self.id})
+
 class Post(models.Model):
     parent = models.IntegerField(null=True, blank=True)
     preview = models.ImageField(upload_to=get_file_path_preview, blank=True)
