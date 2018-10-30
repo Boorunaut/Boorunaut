@@ -24,10 +24,10 @@
                                     <div class="col-8">
                                         <h3>Safe Only Listing</h3>
 
-                                        <p>All posts is not rated as safe will be hidden from all results.</p> 
+                                        <p>All posts is not rated as safe will be hidden from all results.</p>
                                     </div>
                                     <div class="col-4 pt-4">
-                                        <input type="checkbox" id="safeOnlyCheckbox" name="safeOnlyCheckbox" data-toggle="toggle">
+                                        {{form.safe_only}}
                                     </div>
                                 </div>
 
@@ -38,7 +38,7 @@
                                         <p>All comments on posts and profiles will be shown.</p>
                                     </div>
                                     <div class="col-4 pt-4">
-                                        <input type="checkbox" id="showCommentsCheckbox" name="showCommentsCheckbox" data-toggle="toggle">
+                                        {{form.show_comments}}
                                     </div>
                                 </div>
                             </div>
@@ -50,7 +50,7 @@
     
                         <p>All posts that contain any of the tags, ratings or users listed on this field will be hid from all results.</p>
     
-                        <textarea class="form-control" id="tagBlacklistTextarea" name="aboutUserTextarea" rows="4" placeholder="Ex.: wall rating:explicit user:girugamesh"></textarea>
+                        {{form.tag_blacklist}}
                     </div>
                 </div>
 

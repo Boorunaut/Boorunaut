@@ -85,3 +85,18 @@ class UserAuthenticationForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['password'].widget = forms.PasswordInput(attrs={'class': 'form-control'})
+
+class UserSettingsForm(forms.ModelForm):
+    """
+    Form for modifying the user settings.
+    """
+
+    class Meta:
+        model = Account
+        fields = ["safe_only", "show_comments", "tag_blacklist"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['safe_only'].widget = forms.CheckboxInput(attrs={'class': 'form-control', 'data-toggle': 'toggle'})
+        self.fields['show_comments'].widget = forms.CheckboxInput(attrs={'class': 'form-control', 'data-toggle': 'toggle'})
+        self.fields['tag_blacklist'].widget = forms.Textarea(attrs={'class': 'form-control', 'rows': '4', 'placeholder': 'Ex.: wall rating:explicit user:girugamesh'})

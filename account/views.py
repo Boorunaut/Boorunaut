@@ -13,7 +13,7 @@ from django.views.generic import FormView, RedirectView
 
 from booru.models import Comment, Post
 
-from .forms import UserAuthenticationForm, UserRegisterForm
+from .forms import UserAuthenticationForm, UserRegisterForm, UserSettingsForm
 from .models import Account
 
 
@@ -143,13 +143,36 @@ def profile(request, account_slug):
 
 class SettingsView(FormView):
     """
-    Provides the ability to an user to modify it's 
-    account settings.
+    Provides the ability to a visitor to register as new user 
+    with an username, an email and a password
     """
     success_url = '.'
-    form_class = UserRegisterForm
+    form_class = UserSettingsForm
     redirect_field_name = REDIRECT_FIELD_NAME
     template_name = "account/settings.html"
+
+    def get_initial(self):
+        """
+        Returns the initial data to use for forms on this view.
+        """
+        initial = super().get_initial()
+        account = get_object_or_404(Account, id=self.request.user.id)
+
+        initial['safe_only'] = account.safe_only
+        initial['show_comments'] = account.show_comments
+        initial['tag_blacklist'] = account.tag_blacklist
+
+        if self.request.method == "POST":
+            safeOnlyCheckbox = self.request.POST.get("safe_only") == "on"
+            showCommentsCheckbox = self.request.POST.get("show_comments") == "on"
+            tagBlacklistTextarea = self.request.POST.get("tag_blacklist", "")
+
+            account.safe_only = safeOnlyCheckbox
+            account.show_comments = showCommentsCheckbox
+            account.tag_blacklist = tagBlacklistTextarea
+            account.save()
+
+        return initial
 
     @method_decorator(csrf_protect)
     def dispatch(self, request, *args, **kwargs):
@@ -157,12 +180,3 @@ class SettingsView(FormView):
             return redirect('account:login')
 
         return super().dispatch(request, *args, **kwargs)
-
-    def form_valid(self, form):
-        return super().form_valid(form)
-
-    def get_success_url(self):
-        redirect_to = self.request.GET.get(self.redirect_field_name)
-        if not is_safe_url(url=redirect_to, allowed_hosts=self.request.get_host()):
-            redirect_to = self.success_url
-        return redirect_to

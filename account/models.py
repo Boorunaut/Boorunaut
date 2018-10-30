@@ -13,6 +13,10 @@ class Account(AbstractUser):
     comments_locked = models.BooleanField(default=False)
     about           = models.CharField(max_length=2500, blank=True)
     comments        = GenericRelation('booru.Comment')
+    # Account settings
+    safe_only       = models.BooleanField(default=True)
+    show_comments   = models.BooleanField(default=True)
+    tag_blacklist   = models.CharField(max_length=2500, blank=True)
 
     def save(self, *args, **kwargs):
         if self.__is_a_new_user():
