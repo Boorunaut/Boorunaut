@@ -363,17 +363,12 @@ def gallery_history(request, gallery_id, page_number = 1):
     gallery = get_object_or_404(Gallery, id=gallery_id)
     page_limit = 20
 
-    versions = Version.objects.get_for_object(gallery)
-    p = Paginator(versions, page_limit)
+    p = Paginator(gallery.history.all(), page_limit)
     page = p.page(page_number)
 
     object_enum = enumerate(page.object_list)
 
-    for key, page_object in object_enum:
-        if key <= len(page.object_list):
-            page_object.previous_version = key + 1
-
-    return render(request, 'booru/gallery_history.html', {"versions": versions, "page": page, "gallery": gallery})
+    return render(request, 'booru/gallery_history.html', {"page": page, "gallery": gallery})
 
 @login_required
 def gallery_edit(request, gallery_id):
@@ -384,17 +379,15 @@ def gallery_edit(request, gallery_id):
     form = GalleryEditForm(request.POST or None, instance=gallery, initial=gallery_dict)
 
     if form.is_valid():
-        with reversion.create_revision():
-            posts_ids = form.cleaned_data['posts_ids'].splitlines()
-            gallery = form.save(commit=False)
-            gallery.posts.clear()
-            gallery.save()
-            posts = Post.objects.filter(id__in=posts_ids)
-            gallery.posts.add(*posts)
-            form.save_m2m()
-            reversion.set_user(request.user)
-            reversion.set_comment("Edited gallery #{}".format(gallery.id))
-            return redirect('booru:gallery_detail', gallery_id=gallery.id)
+        posts_ids = form.cleaned_data['posts_ids'].splitlines()
+        gallery = form.save(commit=False)
+        gallery.posts.clear()
+        gallery.posts_mirror = " ".join(form.cleaned_data['posts_ids'].splitlines())
+        gallery.save()
+        posts = Post.objects.filter(id__in=posts_ids)
+        gallery.posts.add(*posts)
+        form.save_m2m()
+        return redirect('booru:gallery_detail', gallery_id=gallery.id)
         
     return render(request, 'booru/gallery_edit.html', {"form": form, "gallery": gallery})
 
@@ -407,6 +400,7 @@ def gallery_create(request):
         posts_ids = posts_text.splitlines()
         
         gallery = form.save(commit=False)
+        gallery.posts_mirror = " ".join(posts_ids)
         gallery.save()
         posts = Post.objects.filter(id__in=posts_ids)
         gallery.posts.add(*posts)

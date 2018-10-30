@@ -123,7 +123,10 @@ class Gallery(models.Model):
     name = models.CharField(max_length=100, blank=True)
     description = models.CharField(max_length=1000, blank=True)
     posts = models.ManyToManyField('booru.Post')
+    posts_mirror = models.CharField(max_length=1000, blank=True)
     is_active = models.BooleanField(default=True)
+
+    history = HistoricalRecords()
 
     def __str__(self):
         return "{}".format(self.name)
