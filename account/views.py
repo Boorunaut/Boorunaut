@@ -163,7 +163,8 @@ class SettingsView(FormView):
 
         initial['safe_only'] = account.safe_only
         initial['show_comments'] = account.show_comments
-        initial['tag_blacklist'] = account.tag_blacklist
+        # TODO: implement the tag blacklist
+        #initial['tag_blacklist'] = account.tag_blacklist
 
         return initial
 

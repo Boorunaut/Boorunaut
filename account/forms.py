@@ -99,4 +99,6 @@ class UserSettingsForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['safe_only'].widget = forms.CheckboxInput(attrs={'class': 'form-control', 'data-toggle': 'toggle'})
         self.fields['show_comments'].widget = forms.CheckboxInput(attrs={'class': 'form-control', 'data-toggle': 'toggle'})
-        self.fields['tag_blacklist'].widget = forms.Textarea(attrs={'class': 'form-control', 'rows': '4', 'placeholder': 'Ex.: wall rating:explicit user:girugamesh'})
+        # TODO: implement the tag blacklist
+        #self.fields['tag_blacklist'].widget = forms.Textarea(attrs={'class': 'form-control', 'rows': '4', 'placeholder': 'Ex.: wall rating:explicit user:girugamesh'})
+        self.fields['tag_blacklist'].widget = forms.Textarea(attrs={'class': 'form-control', 'rows': '4', 'placeholder': "This feature wasn't implemented yet.", "disabled": ""})
