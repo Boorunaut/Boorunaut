@@ -133,6 +133,7 @@
             </div>
         </div>
     </div>
+    {% if request.user.show_comments %}
     <div class="row">
         <div id="comment-section" class="mt-3 mb-3 col offset-2">
             <h3>Comments</h3>            
@@ -188,4 +189,5 @@
             </div>
         </div>
     </div>
+    {% endif %}
 {% endblock %}

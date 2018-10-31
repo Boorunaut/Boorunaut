@@ -276,14 +276,20 @@
                     {% endif %}
                 </div>
             </div>
-            <div class="row mt-2 mb-4">
-                <button id="show_comments" class="btn btn-primary btn mr-1">Comments</button>
-                <button id="show_edit_form" class="btn btn-outline-primary btn mr-3">Edit</button>
-                {% if perms.booru.change_status == True %}
-                <a id="approve_post" href="{% url 'booru:post_approve' post.id %}" class="btn btn-success btn mr-1">Approve</a>
-                <a id="hide_post" href="{% url 'booru:post_hide' post.id %}" class="btn btn-warning btn mr-1">Hide</a>
-                <a id="delete_post" href="{% url 'booru:post_delete' post.id %}" class="btn btn-danger btn">Delete</a>
-                {% endif %}
+            <div class="row">
+                <div class="col mt-2 mb-4">
+                    {% if request.user.show_comments %}
+                    <button id="show_comments" class="btn btn-primary btn mr-1">Comments</button>
+                    {% endif %}
+                    <button id="show_edit_form" class="btn btn-outline-primary btn mr-3">Edit</button>
+                    {% if perms.booru.change_status == True %}
+                    <div class="float-right">
+                        <a id="approve_post" href="{% url 'booru:post_approve' post.id %}" class="btn btn-success btn mr-1">Approve</a>
+                        <a id="hide_post" href="{% url 'booru:post_hide' post.id %}" class="btn btn-warning btn mr-1">Hide</a>
+                        <a id="delete_post" href="{% url 'booru:post_delete' post.id %}" class="btn btn-danger btn">Delete</a>
+                    </div>
+                    {% endif %}
+                </div>
             </div>            
             <div class="row">
                 <div id="edit" class="col-10" style="display: none;">
@@ -310,6 +316,7 @@
                     </form>
                 </div>
             </div>
+            {% if request.user.show_comments %}
             <div id="comment-section" class="mb-3">
                 <div id="comments" class="row">
                     {% for comment in post.comments.all %}
@@ -362,6 +369,7 @@
                     </form>
                 </div>
             </div>
+            {% endif %}
         </div>
     </div>
 
