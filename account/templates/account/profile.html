@@ -2,10 +2,10 @@
 
 {% block css %}
     {% load staticfiles %}
-    <link rel="stylesheet" type="text/css" href="{% static 'booru/css/index.css' %}"/>
 {% endblock %}
 
 {% block scripts %}
+    <script src="{% static 'account/js/profile.js' %}"></script>
 {% endblock %}
 
 {% block body %}
@@ -46,7 +46,7 @@
                     </tr>
                     <tr>
                         <th scope="row">Comments</th>
-                        <td>-</td>
+                        <td>{{account.get_comments_count}}</td>
                     </tr>
                     <tr>
                         <th scope="row">Tag Edits</th>
@@ -107,16 +107,33 @@
             </div>
         </div>
         <div class="col-4">
-            <h3>About myself</h3>
-            {% load markdown_deux_tags %}
-            {{account.about|markdown}}
+            <h3>
+                About myself
+                {% if can_modify_profile %}
+                <a class="float-right" id="edit_about" href="#"><i class="fas fa-pencil-alt"></i></a>
+                {% endif %}
+            </h3>
 
-            {% if account.about %}
-            {% else %}
-            <p class="text-muted">This user have not written nothing about themselves yet!</p>
-            {% endif %}
+            {% load markdown_deux_tags %}
+
+            <div id="about-data">
+                {% if account.about %}
+                {{account.about|markdown}}
+                {% else %}
+                <p class="text-muted">This user have not written nothing about themselves yet!</p>
+                {% endif %}
+            </div>
+
+            <div class="form-group" id="about-edit" style="display: none;">
+                <form method="post" action="." enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <textarea class="form-control" id="aboutUserTextarea" name="aboutUserTextarea" rows="4">{{account.about}}</textarea>
+                    <button type="submit" id="send_about" class="btn btn-md btn-primary float-right mt-1">Save changes</button>
+                </form>
+            </div>
         </div>
     </div>
+    {% if request.user.show_comments %}
     <div class="row">
         <div id="comment-section" class="mt-3 mb-3 col offset-2">
             <h3>Comments</h3>            
@@ -164,7 +181,7 @@
                             {% endif %}
                             <textarea class="form-control" id="newCommentTextarea" name="newCommentTextarea" rows="3"></textarea>
                         </div>
-                        <button type="submit" id="send" class="btn btn-sm btn-primary">Create comment</button>
+                        <button type="submit" id="sendComment" class="btn btn-sm btn-primary">Create comment</button>
                     {% if not user.is_authenticated %}
                     </fieldset>
                     {% endif %}
@@ -172,4 +189,5 @@
             </div>
         </div>
     </div>
+    {% endif %}
 {% endblock %}

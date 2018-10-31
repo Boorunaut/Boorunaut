@@ -13,6 +13,10 @@ class Account(AbstractUser):
     comments_locked = models.BooleanField(default=False)
     about           = models.CharField(max_length=2500, blank=True)
     comments        = GenericRelation('booru.Comment')
+    # Account settings
+    safe_only       = models.BooleanField(default=True)
+    show_comments   = models.BooleanField(default=True)
+    tag_blacklist   = models.CharField(max_length=2500, blank=True)
 
     def save(self, *args, **kwargs):
         if self.__is_a_new_user():
@@ -32,3 +36,12 @@ class Account(AbstractUser):
 
     def get_favorites_count(self):
         return self.account_favorites.count()
+
+    def get_comments_count(self):
+        Comment = apps.get_model('booru', 'Comment')
+        return Comment.objects.filter(author=self, content_type__model="post").count()
+
+    class Meta:
+        permissions = (
+            ("modify_profile", "Can change values from all profiles."),
+        )

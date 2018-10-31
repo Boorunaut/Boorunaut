@@ -1,0 +1,65 @@
+{% extends 'booru/base.html' %}
+
+{% block css %}
+    {% load staticfiles %}
+    <link href="{% static 'booru/bootstrap-toggle-master/css/bootstrap-toggle.min.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'booru/bootstrap-toggle-master/js/bootstrap-toggle.min.js' %}"></script>
+{% endblock %}
+
+{% block body %}
+    {% load humanize %}
+    <div class="row">
+        <div class="col" id="account-settings">
+            <h1 class="mb-4">Account Settings</h1>
+            <form method="post" action="." enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-5 ml-md-4">
+                        <div class="col p-0">
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-8">
+                                        <h3>Safe Only Listing</h3>
+
+                                        <p>All posts is not rated as safe will be hidden from all results.</p>
+                                    </div>
+                                    <div class="col-4 pt-4">
+                                        {{form.safe_only}}
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-8">
+                                        <h3>Show Comments</h3>
+    
+                                        <p>All comments on posts and profiles will be shown.</p>
+                                    </div>
+                                    <div class="col-4 pt-4">
+                                        {{form.show_comments}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <h3>Tag Blacklist</h3>
+    
+                        <p>Any posts that contains the tags, ratings or users listed here will be shown as censored in any search result.</p>
+    
+                        {{form.tag_blacklist}}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col">
+                        <button type="submit" id="sendTagBlacklist" class="btn btn-primary float-right mt-1 col-sm-12 col-md-2">Save changes</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

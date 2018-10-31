@@ -13,7 +13,7 @@ from django.views.generic import FormView, RedirectView
 
 from booru.models import Comment, Post
 
-from .forms import UserAuthenticationForm, UserRegisterForm
+from .forms import UserAuthenticationForm, UserRegisterForm, UserSettingsForm
 from .models import Account
 
 
@@ -112,14 +112,21 @@ class RegisterView(FormView):
 def profile(request, account_slug):
     account = get_object_or_404(Account, slug=account_slug)
 
+    can_modify_profile = (request.user == account or request.user.has_perm("account.modify_profile"))
+
     if request.method == "POST":
         newCommentTextarea = request.POST.get("newCommentTextarea")
+        aboutUserTextarea = request.POST.get("aboutUserTextarea")
         
         if not request.user.is_authenticated:
             return redirect('account:login')
         elif newCommentTextarea: # Comment creating
             comment_content = newCommentTextarea
             Comment.objects.create(content=comment_content, author=request.user, content_object=account)
+            return redirect('booru:profile', account_slug=account.slug)
+        elif aboutUserTextarea and can_modify_profile: # About myself editing
+            account.about = aboutUserTextarea
+            account.save()
             return redirect('booru:profile', account_slug=account.slug)
 
     # TODO: I don't remember if I can safely pass account as 
@@ -132,6 +139,48 @@ def profile(request, account_slug):
         'recent_favorites' : favorites, #TODO: This
         'recent_uploads' : account.get_posts().not_deleted().order_by('-id'),
         'deleted_posts' : account.get_posts().deleted(),
+        'can_modify_profile': request.user.is_authenticated and can_modify_profile
     }
 
     return render(request, 'account/profile.html', context)
+
+class SettingsView(FormView):
+    """
+    Provides the ability to a visitor to register as new user 
+    with an username, an email and a password
+    """
+    success_url = '.'
+    form_class = UserSettingsForm
+    redirect_field_name = REDIRECT_FIELD_NAME
+    template_name = "account/settings.html"
+
+    def get_initial(self):
+        """
+        Returns the initial data to use for forms on this view.
+        """
+        initial = super().get_initial()
+        account = self.request.user
+
+        initial['safe_only'] = account.safe_only
+        initial['show_comments'] = account.show_comments
+        # TODO: implement the tag blacklist
+        #initial['tag_blacklist'] = account.tag_blacklist
+
+        return initial
+
+    def form_valid(self, form):
+        account = self.request.user
+
+        account.safe_only = form.cleaned_data.get('safe_only')
+        account.show_comments = form.cleaned_data.get('show_comments')
+        account.tag_blacklist = form.cleaned_data.get('tag_blacklist')
+        account.save()
+
+        return super().form_valid(form)
+
+    @method_decorator(csrf_protect)
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('account:login')
+
+        return super().dispatch(request, *args, **kwargs)

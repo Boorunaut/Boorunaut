@@ -92,9 +92,14 @@ def upload(request):
 
 def post_list_detail(request, page_number = 1):
     tags = request.GET.get("tags", "")
-
+    
     posts = utils.parse_and_filter_tags(tags)
     posts = posts.exclude(status=2).exclude(status=3)
+
+    # Check if user enabled safe only
+    # TODO: transform these tag operations into a class
+    if request.user.safe_only:
+        posts = posts.exclude(rating=2).exclude(rating=3)
     
     page_limit = 4
     posts = posts.order_by('id')
