@@ -102,7 +102,7 @@ def post_list_detail(request, page_number = 1):
 
     # Check if user enabled safe only
     # TODO: transform these tag operations into a class
-    if request.user.safe_only:
+    if request.user.is_authenticated and request.user.safe_only:
         posts = posts.exclude(rating=2).exclude(rating=3)
     
     page_limit = 4
