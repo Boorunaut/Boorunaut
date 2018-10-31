@@ -60,6 +60,20 @@
                     {% endif %}
                 </div>
 
+                <div class="form-group row">
+                    <label for="{{ form.description.auto_id }}" class="col-1 col-form-label">{{ form.description.label }}</label>
+                    
+                    <div class="col-4">
+                        {{form.description}}
+                    </div>
+
+                    {% if form.description.errors %}
+                    <div class="col-md-offset-2 col-8 has-errors text-danger small">
+                        {{form.description.errors}}
+                    </div>
+                    {% endif %}
+                </div>
+
                 <button type="submit" class="btn btn-primary">Post</button>
             </form>
         </div>

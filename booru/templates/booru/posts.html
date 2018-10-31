@@ -3,22 +3,40 @@
 {% block css %}
     {% load staticfiles %}
     <link rel="stylesheet" type="text/css" href="{% static 'booru/css/index.css' %}"/>
-{% endblock %}
+    <link rel="stylesheet" type="text/css" href="{% static 'booru/css/post_detail.css' %}"/>
+    {% endblock %}
 
 {% block scripts %}
 {% endblock %}
 
 {% block body %}
+    {% load number_converter %}
     <div class="row">
-        <div id="sidebar" class="col-2">
-            <div class="row col">
-                <p class="font-weight-bold">Tags: </p>
+        <div id="sidebar" class="col-md-3 col">
+            <div id="tag-tables" class="col">
+                <div id="tag-table-general" class="mb-3">
+                    <div class="row col">
+                        <span class="font-weight-bold">Tags</span>
+                    </div>
+                    <table class="tag-table table-sm table borderless">
+                        <tbody>
+                            {% for tag in tags_list %}
+                            <tr>
+                                <th class="tag-wiki-link" scope="row">
+                                    <a href="{% url 'booru:tag_detail' tag.id %}">
+                                        ?
+                                    </a>
+                                </th>
+                                <td class="tag-label">
+                                    <a href="{% url 'booru:posts' %}?tags={{tag}}">{{tag}}</a>
+                                </td>
+                                <td class="tag-count">{{tag.get_count|number_converter}}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            {% for tag in post.tags.all %}
-            <div class="row col">
-                <a href="#">?</a> <a class="" href="#">{{tag}}</a> 0
-            </div>
-            {% endfor %}
         </div>
         <div id="post" class="col">
             {% for post in posts %}
