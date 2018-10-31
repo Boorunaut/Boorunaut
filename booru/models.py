@@ -267,3 +267,7 @@ class CommentVote(models.Model):
 
     class Meta:
         unique_together = ('account', 'comment',)
+
+class Configuration(models.Model):
+    code_name = models.CharField(max_length=100, blank=False)
+    value = models.CharField(max_length=1000, blank=True)
