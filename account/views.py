@@ -112,6 +112,8 @@ class RegisterView(FormView):
 def profile(request, account_slug):
     account = get_object_or_404(Account, slug=account_slug)
 
+    can_modify_profile = (request.user == account or request.user.has_perm("account.modify_profile"))
+
     if request.method == "POST":
         newCommentTextarea = request.POST.get("newCommentTextarea")
         aboutUserTextarea = request.POST.get("aboutUserTextarea")
@@ -122,9 +124,9 @@ def profile(request, account_slug):
             comment_content = newCommentTextarea
             Comment.objects.create(content=comment_content, author=request.user, content_object=account)
             return redirect('booru:profile', account_slug=account.slug)
-        elif aboutUserTextarea and request.user == account: # About myself editing
-            request.user.about = aboutUserTextarea
-            request.user.save()
+        elif aboutUserTextarea and can_modify_profile: # About myself editing
+            account.about = aboutUserTextarea
+            account.save()
             return redirect('booru:profile', account_slug=account.slug)
 
     # TODO: I don't remember if I can safely pass account as 
@@ -137,6 +139,7 @@ def profile(request, account_slug):
         'recent_favorites' : favorites, #TODO: This
         'recent_uploads' : account.get_posts().not_deleted().order_by('-id'),
         'deleted_posts' : account.get_posts().deleted(),
+        'can_modify_profile': request.user.is_authenticated and can_modify_profile
     }
 
     return render(request, 'account/profile.html', context)

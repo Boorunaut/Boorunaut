@@ -40,3 +40,8 @@ class Account(AbstractUser):
     def get_comments_count(self):
         Comment = apps.get_model('booru', 'Comment')
         return Comment.objects.filter(author=self, content_type__model="post").count()
+
+    class Meta:
+        permissions = (
+            ("modify_profile", "Can change values from all profiles."),
+        )

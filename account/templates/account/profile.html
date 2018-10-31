@@ -109,7 +109,7 @@
         <div class="col-4">
             <h3>
                 About myself
-                {% if user.is_authenticated and account.id == user.id %}
+                {% if can_modify_profile %}
                 <a class="float-right" id="edit_about" href="#"><i class="fas fa-pencil-alt"></i></a>
                 {% endif %}
             </h3>
