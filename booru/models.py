@@ -277,3 +277,8 @@ class Configuration(models.Model):
 
     def __str__(self):
         return "{}".format(self.code_name)
+
+    class Meta:
+        permissions = (
+            ("change_configurations", "Can change the configurations of the booru"),
+        )

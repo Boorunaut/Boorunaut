@@ -161,3 +161,13 @@ class GalleryListSearchForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(GalleryListSearchForm, self).__init__(*args, **kwargs)
         self.fields['name'].widget = forms.TextInput(attrs={'class': 'form-control form-control-sm'})
+
+class SiteConfigurationForm(forms.Form):
+    site_title = forms.CharField(required=True)
+
+    class Meta:
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super(SiteConfigurationForm, self).__init__(*args, **kwargs)
+        self.fields['site_title'].widget = forms.TextInput(attrs={'class': 'form-control'})

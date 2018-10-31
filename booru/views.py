@@ -3,23 +3,27 @@ import json
 import diff_match_patch as dmp_module
 from django.apps import apps
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth import REDIRECT_FIELD_NAME, authenticate
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Count, Q
 from django.forms.models import model_to_dict
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.decorators import method_decorator
 from django.views import generic
+from django.views.decorators.csrf import csrf_protect
+from django.views.generic import FormView, RedirectView
 
 from account.models import Account
 
 from . import utils
 from .forms import (CreatePostForm, EditPostForm, GalleryCreateForm,
                     GalleryEditForm, GalleryListSearchForm,
-                    ImplicationCreateForm, MassRenameForm, TagEditForm,
-                    TagListSearchForm)
-from .models import (Comment, Favorite, Gallery, Implication, Post, PostTag,
-                     ScoreVote, TaggedPost)
+                    ImplicationCreateForm, MassRenameForm,
+                    SiteConfigurationForm, TagEditForm, TagListSearchForm)
+from .models import (Comment, Configuration, Favorite, Gallery, Implication,
+                     Post, PostTag, ScoreVote, TaggedPost)
 
 
 def index(request):
@@ -426,3 +430,34 @@ def gallery_detail(request, gallery_id):
     page = p.page(page_number)
 
     return render(request, 'booru/gallery_detail.html', {"gallery": gallery, "page": page})
+
+class SiteConfigurationView(FormView):
+    """
+    Provides a form for staff members to configure their booru.
+    """
+    success_url = '.'
+    form_class = SiteConfigurationForm
+    redirect_field_name = REDIRECT_FIELD_NAME
+    template_name = "booru/staff_site_configuration.html"
+
+    def get_initial(self):
+        """
+        Returns the initial data to use for forms on this view.
+        """
+        initial = super().get_initial()        
+
+        initial['site_title'] = Configuration.objects.get(code_name='site_title').value
+        return initial
+
+    def form_valid(self, form):
+        site_title = Configuration.objects.get(code_name='site_title')
+        site_title.value = form.cleaned_data.get('site_title')
+        site_title.save()
+        return super().form_valid(form)
+
+    @method_decorator(csrf_protect)
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated or not request.user.has_perm('change_configurations'):
+            return redirect('account:login')
+
+        return super().dispatch(request, *args, **kwargs)
