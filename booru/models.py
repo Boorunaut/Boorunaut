@@ -8,8 +8,9 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models import Sum
 from django.urls import reverse
+from simple_history.models import HistoricalRecords
 from taggit.managers import TaggableManager
-from taggit.models import GenericTaggedItemBase, TagBase
+from taggit.models import GenericTaggedItemBase, TagBase, Tag, TaggedItem
 
 from account.models import Account
 
@@ -88,7 +89,6 @@ class Category(models.Model):
     class Meta:
         verbose_name_plural = 'Categories'
 
-@reversion.register()
 class PostTag(TagBase):
     category = models.ForeignKey(Category, default=1, on_delete=models.SET_DEFAULT)
     description = models.CharField(max_length=100, blank=True)
@@ -98,6 +98,7 @@ class PostTag(TagBase):
     author = models.ForeignKey(Account, null=True, on_delete=models.SET_NULL, related_name="authored_tags")
     timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
     aliases = TaggableManager()
+    history = HistoricalRecords()
 
     class Meta:
         verbose_name = ("Tag")
@@ -109,7 +110,6 @@ class PostTag(TagBase):
     def get_count(self):
         return TaggedPost.objects.filter(tag=self).count()
 
-#@reversion.register()
 class TaggedPost(GenericTaggedItemBase):
     tag = models.ForeignKey(PostTag, related_name="%(app_label)s_%(class)s_items", on_delete=models.CASCADE)
 
@@ -119,7 +119,24 @@ class TaggedPost(GenericTaggedItemBase):
         tag_name = self.tag
         utils.verify_and_perform_implications(tag_name)
 
-@reversion.register()
+class Gallery(models.Model):
+    name = models.CharField(max_length=100, blank=True)
+    description = models.CharField(max_length=1000, blank=True)
+    posts = models.ManyToManyField('booru.Post')
+    posts_mirror = models.CharField(max_length=1000, blank=True)
+    is_active = models.BooleanField(default=True)
+
+    history = HistoricalRecords()
+
+    def __str__(self):
+        return "{}".format(self.name)
+    
+    def get_count(self):
+        return self.posts.count()
+
+    def get_absolute_url(self):
+        return reverse('booru:gallery_detail', kwargs={'gallery_id': self.id})
+
 class Post(models.Model):
     parent = models.IntegerField(null=True, blank=True)
     preview = models.ImageField(upload_to=get_file_path_preview, blank=True)
@@ -128,15 +145,17 @@ class Post(models.Model):
     uploader = models.ForeignKey(Account, null=True, on_delete=models.SET_NULL)
     timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
     update_timestamp = models.DateTimeField(auto_now=True, auto_now_add=False)
-    source = models.URLField(blank=True)
+    source = models.TextField(blank=True)
     score = models.IntegerField(default=0)
     identifier = models.UUIDField(default=uuid.uuid4, editable=False)
     locked = models.BooleanField(default=False)
     tags = TaggableManager(through=TaggedPost, related_name="posts")
     tags_mirror = models.CharField(max_length=1000, blank=True)
+    description = models.TextField(max_length=1000, blank=True)
     comments = GenericRelation(Comment)
 
     objects = PostManager()
+    history = HistoricalRecords()
 
     NONE = 0
     SAFE = 1
@@ -182,9 +201,6 @@ class Post(models.Model):
                 self.sample.save(".jpg", sample, save=False)
 
             self.preview.save(".jpg", preview, save=False)
-
-        if self.id:
-            self.mirror_tags()
         super(Post, self).save(*args, **kwargs)
 
     def get_sample_url(self):
@@ -221,9 +237,6 @@ class Post(models.Model):
 
     def get_favorites_count(self):
         return self.favorites.count()
-
-    def mirror_tags(self):
-        self.tags_mirror = " ".join(self.tags.names())
 
     class Meta:
         permissions = (

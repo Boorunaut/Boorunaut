@@ -101,6 +101,7 @@
 {% block body %}
     {% load humanize %}
     {% load number_converter %}
+    {% load markdown_deux_tags %}
     <div class="row">
         <div id="sidebar" class="col-md-3 col">
             <nav aria-label="Page navigation example">
@@ -133,6 +134,13 @@
                     {% endif %}
                 </ul>
             </nav>
+            <div class="row text-center">
+                <span class="col mb-2">
+                    <a href="{% url 'booru:post_history' post.id %}" type="button" class="btn btn-sm btn-primary">
+                        <i class="fas fa-history"></i> History
+                    </a>
+                </span>
+            </div>
             <div id="tag-tables" class="col">
                 {% for category, tags in ordered_tags.items %}
                 <div id="tag-table-{{category.label}}" class="mb-3">
@@ -200,7 +208,7 @@
                         </tr>
                         <tr>
                             <th scope="row">Source</th>
-                            <td class="text-truncate"><a href="{{post.source}}">{{post.source}}</a></td>
+                            <td class="text-truncate">{{post.source|safe}}</td>
                         </tr>
                         <tr>
                             <th scope="row">Rating</th>
@@ -256,7 +264,7 @@
                         </button>
                     </span>
                 </div>
-                {% endif %}
+                {% endif %}                
             </div>
         </div>
         <div id="post" class="col">
@@ -290,8 +298,18 @@
                     </div>
                     {% endif %}
                 </div>
-            </div>            
+            </div>
+            {% if post.description %}
             <div class="row">
+                <div class="card col-10">
+                    <div class="card-body">
+                        <h5 class="card-title">Description</h5>
+                        <p class="card-text">{{post.description|markdown}}</p>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            <div class="row mb-2">
                 <div id="edit" class="col-10" style="display: none;">
                     <form method="post" action="." enctype="multipart/form-data">
                         {% csrf_token %}
@@ -339,8 +357,7 @@
                                     </span>
                                 </div>                            
                             </div>
-                            <div class="comment col-9">
-                                {% load markdown_deux_tags %}
+                            <div class="comment col-9">                                
                                 {{comment.content|markdown}}
                             </div>
                         </div>

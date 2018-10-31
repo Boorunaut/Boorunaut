@@ -1,0 +1,66 @@
+{% extends 'booru/base.html' %}
+
+{% block css %}
+    {% load staticfiles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'booru/css/index.css' %}"/>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <h1>Gallery: {{gallery.name}}</h1>
+        </div>
+        <div class="row mb-2">
+            <a href="{% url 'booru:posts' %}?tags=gallery:{{gallery.id}}" class="btn btn-primary btn-sm">Search</a>
+            <a href="{% url 'booru:gallery_edit' gallery.id %}" class="btn btn-primary btn-sm ml-1">Edit</a>
+            <a href="{% url 'booru:gallery_history' gallery.id %}" class="btn btn-primary btn-sm ml-1">History</a>
+        </div>
+        <div class="row">
+            <p>{{gallery.description}}</p>
+        </div>
+        <div class="row">        
+            <div id="post" class="col">
+                {% for post in page.object_list %}
+                <a href="{{post.get_absolute_url}}"><img src="{{post.preview.url}}" alt=""></a>
+                {% endfor %}
+
+                <nav aria-label="..." class="mt-5">
+                    <ul class="pagination">
+                        {% if page.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="{% url 'booru:gallery_detail' gallery.id %}?page={{page.previous_page_number}}" tabindex="-1">Previous</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1">Previous</a>
+                            </li>
+                        {% endif %}
+                        {% for i in page.paginator.page_range %}
+                            {% if page.number == i %}
+                            <li class="page-item active">
+                                <a class="page-link" href="{% url 'booru:gallery_detail' gallery.id %}?page={{i}}">{{i}} <span class="sr-only">(current)</span></a>
+                            </li>
+                            {% elif i > page.number|add:'-3' and i < page.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="{% url 'booru:gallery_detail' gallery.id %}?page={{i}}">{{i}}</a>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+                        {% if page.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="{% url 'booru:gallery_detail' gallery.id %}?page={{page.next_page_number}}">Next</a>
+                            </li>
+                        {% else %}                        
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#">Next</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+{% endblock %}

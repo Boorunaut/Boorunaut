@@ -29,17 +29,17 @@
                             <tr>
                                 <th scope="row">
                                     diff
-                                    <input class="" type="radio" name="oldRevision" id="oldRevisionOption{{version.id}}" value="{{version.id}}" checked>
-                                    <input class="" type="radio" name="newRevision" id="newRevisionOption{{version.id}}" value="{{version.id}}" checked>
+                                    <input class="" type="radio" name="oldRevision" id="oldRevisionOption{{version.history_id}}" value="{{version.history_id}}" checked>
+                                    <input class="" type="radio" name="newRevision" id="newRevisionOption{{version.history_id}}" value="{{version.history_id}}" checked>
                                 </th>
                                 <td>
-                                    <a href="{% url 'booru:tag_revision_diff' tag.id %}?oldRevision={{version.id}}&newRevision={{version.id}}">
+                                    <a href="{% url 'booru:tag_revision_diff' tag.id %}?oldRevision={{version.history_id}}&newRevision={{version.history_id}}">
                                         {{version}}
                                     </a>
                                 </td>
                                 <td>
-                                    {{version.revision.date_created}} by
-                                    <a href="{% url 'booru:profile' version.revision.user %}">{{version.revision.user}}</a>
+                                    {{version.date_created}} by
+                                    <a href="{% url 'booru:profile' version.history_user %}">{{version.history_user}}</a>
                                 </td>
                             </tr>
                             {% endfor %}
