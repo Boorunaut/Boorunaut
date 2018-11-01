@@ -425,7 +425,6 @@ def gallery_detail(request, gallery_id):
     gallery = Gallery.objects.get(id=gallery_id)
     posts = gallery.posts.all()
 
-    print(posts[0])
     p = Paginator(posts, page_limit)
     page = p.page(page_number)
 
@@ -457,7 +456,7 @@ class SiteConfigurationView(FormView):
 
     @method_decorator(csrf_protect)
     def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_authenticated or not request.user.has_perm('change_configurations'):
+        if not request.user.is_authenticated or not request.user.has_perm('booru.change_configurations'):
             return redirect('account:login')
 
         return super().dispatch(request, *args, **kwargs)

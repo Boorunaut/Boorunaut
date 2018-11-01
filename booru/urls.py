@@ -51,5 +51,5 @@ urlpatterns = [
     
     re_path(r'^staff_page/$', views.staff_page, name='staff_page'),
     re_path(r'^staff_page/mass_rename$', views.staff_mass_rename, name='staff_mass_rename'),
-    re_path(r'^staff_page/configurate$', views.SiteConfigurationView.as_view(), name='staff_site_configuration'),
+    re_path(r'^staff_page/configuration$', views.SiteConfigurationView.as_view(), name='staff_site_configuration'),
 ]
