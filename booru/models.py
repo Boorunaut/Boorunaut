@@ -130,6 +130,9 @@ class Gallery(models.Model):
 
     def __str__(self):
         return "{}".format(self.name)
+
+    class Meta:
+        verbose_name_plural = 'Galleries'
     
     def get_count(self):
         return self.posts.count()
@@ -267,3 +270,15 @@ class CommentVote(models.Model):
 
     class Meta:
         unique_together = ('account', 'comment',)
+
+class Configuration(models.Model):
+    code_name = models.CharField(max_length=100, blank=False)
+    value = models.CharField(max_length=1000, blank=True)
+
+    def __str__(self):
+        return "{}".format(self.code_name)
+
+    class Meta:
+        permissions = (
+            ("change_configurations", "Can change the configurations of the booru"),
+        )
