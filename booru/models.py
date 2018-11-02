@@ -11,9 +11,9 @@ from django.urls import reverse
 from simple_history.models import HistoricalRecords
 from taggit.managers import TaggableManager
 from taggit.models import GenericTaggedItemBase, TagBase, Tag, TaggedItem
-
+from django.db.models import Q
 from account.models import Account
-
+from django.db.models.signals import m2m_changed
 from . import utils
 from .managers import PostManager
 
@@ -204,6 +204,9 @@ class Post(models.Model):
                 self.sample.save(".jpg", sample, save=False)
 
             self.preview.save(".jpg", preview, save=False)
+        
+        if not hasattr(self, "skip_history_when_saving"):
+            self.check_and_update_implications()
         super(Post, self).save(*args, **kwargs)
 
     def get_sample_url(self):
@@ -241,6 +244,29 @@ class Post(models.Model):
     def get_favorites_count(self):
         return self.favorites.count()
 
+    def check_and_update_mirror(self):
+        mirror = " ".join(self.tags.names())
+
+        if self.tags_mirror != mirror:
+            self.tags_mirror = mirror
+
+    def check_and_update_implications(self):
+        missing_implications = Implication.objects.filter(from_tag__in=self.tags.all(), status=1)\
+                                                    .exclude(to_tag__in=self.tags.all()).distinct()
+        if missing_implications.exists():
+            for implication in missing_implications:
+                self.tags.add(implication.to_tag)
+        
+        self.check_and_update_mirror()
+
+    def save_without_historical_record(self, *args, **kwargs):
+        self.skip_history_when_saving = True
+        try:
+            ret = self.save(*args, **kwargs)
+        finally:
+            del self.skip_history_when_saving
+        return ret
+    
     class Meta:
         permissions = (
             ("change_status", "Can change the status of posts"),

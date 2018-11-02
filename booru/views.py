@@ -51,11 +51,11 @@ def post_detail(request, post_id):
         newCommentTextarea = request.POST.get("newCommentTextarea")
 
         if form.is_valid(): # Post editting (post_edit)
-                post = form.save(commit=False)
-                post.tags_mirror = " ".join(form.cleaned_data['tags'])
-                post.save()
-                form.save_m2m()
-                return redirect('booru:post_detail', post_id=post.id)
+            post = form.save(commit=False)
+            post.save_without_historical_record()
+            form.save_m2m()
+            post.save()
+            return redirect('booru:post_detail', post_id=post.id)
         elif newCommentTextarea: # Comment creating
             comment_content = newCommentTextarea
             Comment.objects.create(content=comment_content, author=request.user, content_object=post)
@@ -86,10 +86,9 @@ def upload(request):
     if form.is_valid():
         post = form.save(commit=False)
         post.uploader = request.user
-        post.tags_mirror = " ".join(form.cleaned_data['tags'])
-        post.save()
+        post.save_without_historical_record()
         form.save_m2m()
-
+        post.save()
         return redirect('booru:post_detail', post_id=post.id)
 
     return render(request, 'booru/upload.html', {"form": form})
