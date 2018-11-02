@@ -170,9 +170,6 @@ def tag_history(request, tag_id, page_number = 1):
 
     p = Paginator(tag.history.all(), page_limit)
     page = p.page(page_number)
-
-    print (page.object_list[0].__dict__)
-
     return render(request, 'booru/tag_history.html', {"page": page, "tag": tag})
 
 def tag_revision_diff(request, tag_id):
