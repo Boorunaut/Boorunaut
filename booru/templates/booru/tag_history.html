@@ -34,11 +34,11 @@
                                 </th>
                                 <td>
                                     <a href="{% url 'booru:tag_revision_diff' tag.id %}?oldRevision={{version.history_id}}&newRevision={{version.history_id}}">
-                                        {{version}}
+                                        {{version.name}}
                                     </a>
                                 </td>
                                 <td>
-                                    {{version.date_created}} by
+                                    {{version.history_date}} by
                                     <a href="{% url 'booru:profile' version.history_user %}">{{version.history_user}}</a>
                                 </td>
                             </tr>
