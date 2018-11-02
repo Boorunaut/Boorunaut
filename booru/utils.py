@@ -114,15 +114,18 @@ def convert_to_rgb(pil_image):
 def verify_and_perform_implications(tag_name):
     Post = apps.get_model('booru', 'Post')
     Implication = apps.get_model('booru', 'Implication')
-    posts = Post.objects.filter(tags__name__in=[tag_name])
     
-    implications = Implication.objects.filter(from_tag__name=tag_name, status=1)    
+    implication = Implication.objects.filter(from_tag__name=tag_name, status=1).first()
 
-    if implications.count() > 0:        
-        for post in posts:            
-            if implications.count() > 0:
-                for implication in implications:
-                    post.tags.add(implication.to_tag)
+    if implication is not None:
+        from_tag = implication.from_tag
+        to_tag = implication.to_tag
+
+        missing_posts = Post.objects.filter(tags__name__in=[from_tag]).exclude(tags__name__in=[to_tag])
+
+        if missing_posts.exists():
+            for post in missing_posts:
+                post.check_and_update_implications()
 
 def get_diff(field_name, old_revision, new_revision):
     old_revision_field = old_revision.field_dict[field_name]
