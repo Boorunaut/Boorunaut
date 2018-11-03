@@ -203,10 +203,7 @@ class Post(models.Model):
             if sample:
                 self.sample.save(".jpg", sample, save=False)
 
-            self.preview.save(".jpg", preview, save=False)
-        
-        if not hasattr(self, "skip_history_when_saving"):
-            self.check_and_update_implications()
+            self.preview.save(".jpg", preview, save=False)        
         super(Post, self).save(*args, **kwargs)
 
     def get_sample_url(self):
@@ -249,6 +246,8 @@ class Post(models.Model):
 
         if self.tags_mirror != mirror:
             self.tags_mirror = mirror
+        
+        self.save_without_historical_record()
 
     def check_and_update_implications(self):
         missing_implications = Implication.objects.filter(from_tag__in=self.tags.all(), status=1)\
