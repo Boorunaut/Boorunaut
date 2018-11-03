@@ -22,12 +22,12 @@
                             {% for tag in tags_list %}
                             <tr>
                                 <th class="tag-wiki-link" scope="row">
-                                    <a href="{% url 'booru:tag_detail' tag.id %}">
+                                    <a style="color: #{{tag.category.color}};" href="{% url 'booru:tag_detail' tag.id %}">
                                         ?
                                     </a>
                                 </th>
                                 <td class="tag-label">
-                                    <a href="{% url 'booru:posts' %}?tags={{tag}}">{{tag}}</a>
+                                    <a style="color: #{{tag.category.color}};" href="{% url 'booru:posts' %}?tags={{tag}}">{{tag}}</a>
                                 </td>
                                 <td class="tag-count">{{tag.get_count|number_converter}}</td>
                             </tr>

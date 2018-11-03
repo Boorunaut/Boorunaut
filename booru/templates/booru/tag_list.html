@@ -8,6 +8,7 @@
 {% endblock %}
 
 {% block body %}
+<div class="container">
     <form method="get">
         {% for field in form %}
         <div class="form-group">
@@ -18,9 +19,9 @@
         <button type="submit" class="btn btn-sm btn-primary">Search</button>
     </form>
 
-    <div class="row">            
+    <div class="row mt-3">            
         <div id="table" class="col">
-            <table class="table table-striped text-center">
+            <table class="table table-striped text-center border">
                 <thead>
                     <tr>
                         <th scope="col">#</th>
@@ -37,8 +38,8 @@
                         <th scope="row">{{ forloop.counter }}</th>
                         <td>{{tag.get_count}}</td>
                         <td>
-                            <strong><a href="{% url 'booru:tag_detail' tag.id %}">?</a></strong>
-                            <a href="{% url 'booru:posts' %}?tags={{tag}}">{{tag.name}}</a>
+                            <a class="font-weight-bold" style="color: #{{tag.category.color}};" href="{% url 'booru:tag_detail' tag.id %}">?</a>
+                            <a style="color: #{{tag.category.color}};" href="{% url 'booru:posts' %}?tags={{tag}}">{{tag.name}}</a>
                         </td>
                         {% if user.is_authenticated %}
                         <td scope="col"><a href="{% url 'booru:tag_edit' tag.id %}">Edit</a></td>
@@ -83,4 +84,5 @@
             </nav>
         </div>
     </div>
+</div>
 {% endblock %}
