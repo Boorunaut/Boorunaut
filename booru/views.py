@@ -52,8 +52,8 @@ def post_detail(request, post_id):
 
         if form.is_valid(): # Post editting (post_edit)
             post = form.save(commit=False)
-            post.save_without_historical_record()
             form.save_m2m()
+            post.check_and_update_implications()
             post.save()
             return redirect('booru:post_detail', post_id=post.id)
         elif newCommentTextarea: # Comment creating
@@ -80,7 +80,7 @@ def post_history(request, post_id, page_number = 1):
     return render(request, 'booru/post_history.html', {"page": page, "post": post})
 
 @login_required
-def upload(request):    
+def upload(request): # post_create
     form = CreatePostForm(request.POST or None, request.FILES or None)
     
     if form.is_valid():
@@ -88,6 +88,7 @@ def upload(request):
         post.uploader = request.user
         post.save_without_historical_record()
         form.save_m2m()
+        post.check_and_update_implications()
         post.save()
         return redirect('booru:post_detail', post_id=post.id)
 
@@ -222,7 +223,7 @@ def implication_create(request):
 def implication_approve(request, implication_id):
     implication = Implication.objects.get(id=implication_id)
 
-    if implication.status == 0:
+    if implication.status != 1:
         implication.status = 1
         implication.approver = request.user
         implication.save()

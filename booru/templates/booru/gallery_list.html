@@ -9,6 +9,7 @@
 {% endblock %}
 
 {% block body %}
+<div class="container">
     <form method="get">
         {% for field in form %}
         <div class="form-group">
@@ -19,9 +20,9 @@
         <button type="submit" class="btn btn-sm btn-primary">Search</button>
     </form>
 
-    <div class="row">            
+    <div class="row mt-4">            
         <div id="table" class="col">
-            <table class="table table-striped text-center">
+            <table class="table table-striped text-center border">
                 <thead>
                     <tr>
                         <th scope="col">#</th>
@@ -77,4 +78,5 @@
             </nav>
         </div>
     </div>
+</div>
 {% endblock %}

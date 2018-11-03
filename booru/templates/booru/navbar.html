@@ -25,9 +25,6 @@
         {% endif %}
         <ul class="navbar-nav ml-auto">
             <li class="nav-item active">
-                <a class="nav-link" href="#">Filters (Default)</a>
-            </li>
-            <li class="nav-item active">
                 <a class="nav-link" href="{% url 'account:settings' %}">Settings</a>
             </li>
             {% if not user.is_authenticated %}
@@ -55,11 +52,11 @@
         </a>
         <div class="dropdown-menu">
             <a class="dropdown-item" href="{% url 'booru:posts' %}">List</a>
-            <a class="dropdown-item" href="#">Random</a>
+            <a class="dropdown-item disabled" href="#">Random</a>
         </div>
     </li>
     <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+        <a class="nav-link dropdown-toggle disabled" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
             Activity
         </a>
         <div class="dropdown-menu">
@@ -68,7 +65,7 @@
         </div>
     </li>
     <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+        <a class="nav-link dropdown-toggle disabled" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
             Forums
         </a>
         <div class="dropdown-menu">
@@ -85,7 +82,7 @@
         </a>
         <div class="dropdown-menu">
             <a class="dropdown-item" href="{% url 'booru:tags_list' %}">List</a>
-            <a class="dropdown-item" href="{% url 'booru:implication-list' %}">Implied</a>
+            <a class="dropdown-item" href="{% url 'booru:implication-list' %}">Implications</a>
         </div>
     </li>
     <li class="nav-item dropdown">
@@ -96,7 +93,13 @@
             <a class="dropdown-item" href="{% url 'booru:implication_create' %}">New implication</a>
         </div>
     </li>
-    <li class="nav-item">
-        <a class="nav-link" href="{% url 'booru:gallery' %}">Galleries</a>
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+            Galleries
+        </a>
+        <div class="dropdown-menu">
+            <a class="dropdown-item" href="{% url 'booru:gallery' %}">List</a>
+            <a class="dropdown-item" href="{% url 'booru:gallery_create' %}">Create</a>
+        </div>
     </li>
 </ul>
