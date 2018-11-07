@@ -53,12 +53,12 @@ def post_detail(request, post_id):
         
         newCommentTextarea = request.POST.get("newCommentTextarea")
 
-        if form.is_valid(): # Post editting (post_edit)
-                post = form.save(commit=False)
-                post.tags_mirror = " ".join(form.cleaned_data['tags'])
-                post.save()
-                form.save_m2m()
-                return redirect('booru:post_detail', post_id=post.id)
+        if form.is_valid(): # Post editing (post_edit)
+            post = form.save(commit=False)
+            form.save_m2m()
+            post.check_and_update_implications()
+            post.save()
+            return redirect('booru:post_detail', post_id=post.id)
         elif newCommentTextarea and has_comment_priv: # Comment creating
             comment_content = newCommentTextarea
             Comment.objects.create(content=comment_content, author=request.user, content_object=post)
@@ -86,16 +86,16 @@ def post_history(request, post_id, page_number = 1):
 
 @login_required
 @user_is_not_blocked
-def upload(request):    
+def upload(request): # post_create
     form = CreatePostForm(request.POST or None, request.FILES or None)
     
     if form.is_valid():
         post = form.save(commit=False)
         post.uploader = request.user
-        post.tags_mirror = " ".join(form.cleaned_data['tags'])
-        post.save()
+        post.save_without_historical_record()
         form.save_m2m()
-
+        post.check_and_update_implications()
+        post.save()
         return redirect('booru:post_detail', post_id=post.id)
 
     return render(request, 'booru/upload.html', {"form": form})
@@ -182,7 +182,6 @@ def tag_history(request, tag_id, page_number = 1):
 
     p = Paginator(tag.history.all(), page_limit)
     page = p.page(page_number)
-
     return render(request, 'booru/tag_history.html', {"page": page, "tag": tag})
 
 @user_is_not_blocked
@@ -246,7 +245,7 @@ def implication_create(request):
 def implication_approve(request, implication_id):
     implication = Implication.objects.get(id=implication_id)
 
-    if implication.status == 0:
+    if implication.status != 1:
         implication.status = 1
         implication.approver = request.user
         implication.save()

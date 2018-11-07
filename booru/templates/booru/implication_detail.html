@@ -44,7 +44,7 @@
             {% if request.user.is_staff %}
             <div class="row">
                 <a href="{% url 'booru:implication_approve' object.id %}" class="btn btn-success btn-sm">Approve</a>
-                <a href="{% url 'booru:implication_disapprove' object.id %}" class="btn btn-danger btn-sm">Dispprove</a>
+                <a href="{% url 'booru:implication_disapprove' object.id %}" class="btn btn-danger btn-sm">Disapprove</a>
             </div>
             {% endif %}
         </div>
