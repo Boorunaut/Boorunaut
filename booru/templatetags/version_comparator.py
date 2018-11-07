@@ -11,7 +11,6 @@ from django.utils.safestring import mark_safe
 from django.utils.timezone import is_aware, utc
 from django.utils.translation import gettext as _
 from django.utils.translation import ngettext, pgettext
-from reversion.models import Version
 
 from booru.utils import compare_strings
 
