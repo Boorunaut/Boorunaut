@@ -5,6 +5,35 @@ from django.contrib.contenttypes.fields import (GenericForeignKey,
 from django.db import models
 from django.template.defaultfilters import slugify
 from django.urls import reverse
+from django.utils.translation import gettext as _
+from django.utils import timezone
+
+class Privilege(models.Model):
+    name = models.CharField(_('name'), max_length=255)
+    codename = models.CharField(_('codename'), max_length=100)
+
+    class Meta:
+        verbose_name = _('privilege')
+        verbose_name_plural = _('privileges')
+        ordering = ['codename']
+
+    def __str__(self):
+        return "{} | {}".format(self.codename, self.name)
+
+class Timeout(models.Model):
+    reason      = models.CharField(max_length=2500)
+    expiration  = models.DateTimeField()
+    revoked     = models.ManyToManyField(
+        Privilege,
+        verbose_name=_('privileges'),
+        blank=True,
+        help_text=_('Privileges revoked from this user.'),
+        related_name="revoked_privs",
+        related_query_name="user",
+    )
+    target_user = models.ForeignKey('account.Account', related_name="user_timedout", on_delete=models.CASCADE)
+    author      = models.ForeignKey('account.Account', related_name="timeout_creator", on_delete=models.CASCADE)
+
 
 class Account(AbstractUser):
     avatar          = models.ForeignKey('booru.Post', null=True, blank=True, on_delete=models.SET_NULL)
@@ -40,6 +69,14 @@ class Account(AbstractUser):
     def get_comments_count(self):
         Comment = apps.get_model('booru', 'Comment')
         return Comment.objects.filter(author=self, content_type__model="post").count()
+
+    def get_priv_timeout(self, codename):
+        timeouts = Timeout.objects.filter(target_user=self, revoked__in=Privilege.objects.filter(codename=codename))
+        timeouts.filter(expiration__lt=timezone.now()).delete() # deleting timeouts if already expired
+        return timeouts
+
+    def has_priv(self, codename):
+        return not self.get_priv_timeout(codename=codename).exists()
 
     class Meta:
         permissions = (

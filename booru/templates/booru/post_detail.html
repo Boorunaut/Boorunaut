@@ -370,16 +370,19 @@
                         <fieldset disabled>
                         {% endif %}
 
-                            {% csrf_token %}
-                            <div class="form-group">
-                                {% if not user.is_authenticated %}
-                                <label for="newCommentTextarea" class="text-muted">New comment (Login to comment)</label>
-                                {% else %}
-                                <label for="newCommentTextarea">New comment</label>
-                                {% endif %}
-                                <textarea class="form-control" id="newCommentTextarea" name="newCommentTextarea" rows="3"></textarea>
-                            </div>
-                            <button type="submit" id="send" class="btn btn-sm btn-primary">Create comment</button>
+                        {% csrf_token %}
+                        <div class="form-group">
+                            {% if not user.is_authenticated %}
+                            <label for="newCommentTextarea" class="text-muted">New comment (Login to comment)</label>
+                            {% else %}
+                            <label for="newCommentTextarea">New comment</label>
+                            {% endif %}
+                            <textarea class="form-control" id="newCommentTextarea" name="newCommentTextarea" rows="3" {% if not can_comment %}placeholder="This account cannot comment currently." disabled{% endif %}></textarea>
+                        </div>
+                        {% if can_comment %}
+                        <button type="submit" id="send" class="btn btn-sm btn-primary">Create comment</button>
+                        {% endif %}
+                        
                         {% if not user.is_authenticated %}
                         </fieldset>
                         {% endif %}

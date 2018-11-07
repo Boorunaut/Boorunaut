@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import Account
+from .models import Account, Timeout
 
 # Define a new User admin
 class UserAdmin(BaseUserAdmin):
@@ -11,3 +11,4 @@ class UserAdmin(BaseUserAdmin):
     )
 
 admin.site.register(Account, UserAdmin)
+admin.site.register(Timeout)

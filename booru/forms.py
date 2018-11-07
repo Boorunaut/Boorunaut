@@ -5,6 +5,8 @@ from taggit.forms import TagField, TagWidget
 from taggit.utils import edit_string_for_tags
 
 from .models import Category, Post, PostTag, Gallery
+from account.models import Timeout
+from account.forms import UsernameExistsField
 
 
 class TaggitAdminTextareaWidget(AdminTextareaWidget):
@@ -115,6 +117,25 @@ class MassRenameForm(forms.Form):
         self.fields['filter_by'].widget = forms.TextInput(attrs={'class': 'form-control'})
         self.fields['when'].widget = forms.TextInput(attrs={'class': 'form-control'})
         self.fields['replace_with'].widget = forms.TextInput(attrs={'class': 'form-control'})
+
+class BanUserForm(forms.ModelForm):
+    username = UsernameExistsField(
+        max_length=254,
+        widget=forms.TextInput(attrs={'autofocus': True, 'class': 'form-control'}),
+    )
+
+    expiration = forms.DateTimeField(required=True, input_formats=['%m/%d/%Y'])
+    reason = forms.CharField(required=True)
+
+    class Meta:
+        model = Timeout
+        fields = ["username", "expiration", "reason"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['username'].widget = forms.TextInput(attrs={'class': 'form-control', 'autofocus': True})
+        self.fields['expiration'].widget = forms.TextInput(attrs={'class': 'form-control', 'placeholder' : 'month/day/year'})
+        self.fields['reason'].widget = forms.TextInput(attrs={'class': 'form-control'})
 
 class GalleryCreateForm(forms.ModelForm):
     '''Form for creating an gallery.'''
