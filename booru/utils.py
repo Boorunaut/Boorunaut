@@ -5,7 +5,6 @@ from django.apps import apps
 from django.core.files.base import ContentFile
 from django.shortcuts import get_object_or_404
 from PIL import Image as ImagePIL
-from reversion.models import Version
 
 sample_max_resolution = (850, None)
 preview_max_resolution = (150, 150)

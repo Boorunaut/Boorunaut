@@ -1,7 +1,6 @@
 import os
 import uuid
 
-import reversion
 from django.contrib.contenttypes.fields import (GenericForeignKey,
                                                 GenericRelation)
 from django.contrib.contenttypes.models import ContentType
