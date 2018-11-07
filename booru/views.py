@@ -1,6 +1,13 @@
 import json
 
 import diff_match_patch as dmp_module
+from . import utils
+from .forms import CreatePostForm, EditPostForm, \
+    GalleryCreateForm, GalleryEditForm, GalleryListSearchForm, \
+    ImplicationCreateForm, MassRenameForm, SiteConfigurationForm, \
+    TagEditForm, TagListSearchForm, BanUserForm
+from .models import Comment, Configuration, Favorite, Gallery, Implication, \
+    Post, PostTag, ScoreVote, TaggedPost
 from django.apps import apps
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import REDIRECT_FIELD_NAME, authenticate
@@ -13,29 +20,25 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.decorators import method_decorator
 from django.views import generic
 from django.views.decorators.csrf import csrf_protect
-from django.views.generic import FormView, RedirectView
+from django.views.generic import FormView
 
-from account.models import Account
-
-from . import utils
-from .forms import (CreatePostForm, EditPostForm, GalleryCreateForm,
-                    GalleryEditForm, GalleryListSearchForm,
-                    ImplicationCreateForm, MassRenameForm,
-                    SiteConfigurationForm, TagEditForm, TagListSearchForm)
-from .models import (Comment, Configuration, Favorite, Gallery, Implication,
-                     Post, PostTag, ScoreVote, TaggedPost)
+from account.decorators import user_is_not_blocked
+from account.models import Account, Timeout, Privilege
 
 
+@user_is_not_blocked
 def index(request):
     return render(request, 'booru/index.html', {})
 
-
+@user_is_not_blocked
 def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     form = EditPostForm(request.POST or None, request.FILES or None, instance=post)
     
     is_favorited = False
     current_vote = 0
+
+    has_comment_priv = request.user.has_priv("can_comment")
 
     if request.user.is_authenticated:
         is_favorited = Favorite.objects.filter(account=request.user, post=post).exists()
@@ -56,7 +59,7 @@ def post_detail(request, post_id):
                 post.save()
                 form.save_m2m()
                 return redirect('booru:post_detail', post_id=post.id)
-        elif newCommentTextarea: # Comment creating
+        elif newCommentTextarea and has_comment_priv: # Comment creating
             comment_content = newCommentTextarea
             Comment.objects.create(content=comment_content, author=request.user, content_object=post)
             return redirect('booru:post_detail', post_id=post.id)
@@ -68,8 +71,10 @@ def post_detail(request, post_id):
     return render(request=request, template_name='booru/post_detail.html',
                 context={"post": post, "ordered_tags": ordered_tags, "form": form,
                         "previous_post": previous_post, "next_post": next_post,
-                        "is_favorited":is_favorited, "current_vote": current_vote})
+                        "is_favorited":is_favorited, "current_vote": current_vote, 
+                        "can_comment": has_comment_priv})
 
+@user_is_not_blocked
 def post_history(request, post_id, page_number = 1):
     post = get_object_or_404(Post, id=post_id)
     page_limit = 20
@@ -80,6 +85,7 @@ def post_history(request, post_id, page_number = 1):
     return render(request, 'booru/post_history.html', {"page": page, "post": post})
 
 @login_required
+@user_is_not_blocked
 def upload(request):    
     form = CreatePostForm(request.POST or None, request.FILES or None)
     
@@ -94,6 +100,7 @@ def upload(request):
 
     return render(request, 'booru/upload.html', {"form": form})
 
+@user_is_not_blocked
 def post_list_detail(request, page_number = 1):
     tags = request.GET.get("tags", "")
     
@@ -116,6 +123,7 @@ def post_list_detail(request, page_number = 1):
     
     return render(request, 'booru/posts.html', {"posts": post_list, "page": page, "tags_list": tags_list})
 
+@user_is_not_blocked
 def tags_list(request, page_number = 1):
     searched_tag = request.GET.get("tags", "")
     category = request.GET.get("category", "")
@@ -139,6 +147,7 @@ def tags_list(request, page_number = 1):
     return render(request, 'booru/tag_list.html', {"tags": tags_list, "page": page, "form": form})
 
 @login_required
+@user_is_not_blocked
 def tag_edit(request, tag_id):
     tag = get_object_or_404(PostTag, pk=tag_id)
     tag_dict = model_to_dict(tag)
@@ -160,11 +169,13 @@ def tag_edit(request, tag_id):
         
     return render(request, 'booru/tag_edit.html', {"tag": tag, "form": form})
 
+@user_is_not_blocked
 def tag_detail(request, tag_id):
     tag = get_object_or_404(PostTag, pk=tag_id)
     last_posts = Post.objects.filter(tags__name__in=[tag.name])[:6]
     return render(request, 'booru/tag_detail.html', {"tag": tag, "last_post": last_posts})
 
+@user_is_not_blocked
 def tag_history(request, tag_id, page_number = 1):
     tag = get_object_or_404(PostTag, pk=tag_id)
     page_limit = 20
@@ -174,6 +185,7 @@ def tag_history(request, tag_id, page_number = 1):
 
     return render(request, 'booru/tag_history.html', {"page": page, "tag": tag})
 
+@user_is_not_blocked
 def tag_revision_diff(request, tag_id):
     tag = get_object_or_404(PostTag, pk=tag_id)
 
@@ -195,14 +207,23 @@ class ImplicationListView(generic.ListView):
         queryset = Implication.objects.all()
 
         if self.request.GET.get('name'):
-            queryset = queryset.filter(Q(from_tag__name=self.request.GET.get('name'))|
+            queryset = queryset.filter( Q(from_tag__name=self.request.GET.get('name'))|
                                         Q(to_tag__name=self.request.GET.get('name')))
         return queryset
+    
+    @user_is_not_blocked
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
 
 class ImplicationDetailView(generic.DetailView):
     model = Implication
 
+    @user_is_not_blocked
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
 @login_required
+@user_is_not_blocked
 def implication_create(request):    
     form = ImplicationCreateForm(data=request.POST)
     
@@ -221,6 +242,7 @@ def implication_create(request):
     return render(request, 'booru/implication_create.html', { "form": form })
 
 @staff_member_required
+@user_is_not_blocked
 def implication_approve(request, implication_id):
     implication = Implication.objects.get(id=implication_id)
 
@@ -233,6 +255,7 @@ def implication_approve(request, implication_id):
     return redirect('booru:implication-detail', implication.id)
 
 @staff_member_required
+@user_is_not_blocked
 def implication_disapprove(request, implication_id):
     implication = Implication.objects.get(id=implication_id)
     implication.status = 2
@@ -240,6 +263,7 @@ def implication_disapprove(request, implication_id):
     return redirect('booru:implication-detail', implication.id)
 
 @staff_member_required
+@user_is_not_blocked
 def staff_page(request):
     Account = apps.get_model('account', 'Account')
     accounts = Account.objects.all().order_by("-id")
@@ -250,6 +274,7 @@ def staff_page(request):
 
     return render(request, 'booru/staff_page.html', context)
 
+@user_is_not_blocked
 def tag_search(request):
     term = request.GET.get("term", "")
     operator = ""
@@ -271,6 +296,7 @@ def tag_search(request):
             results.append({'id': tag.pk, 'label': "{} ({})".format(name, term), 'value': name})
     return HttpResponse(json.dumps(results), content_type='application/json')
 
+@user_is_not_blocked
 def post_approve(request, post_id):
     post = Post.objects.get(id=post_id)
 
@@ -279,6 +305,7 @@ def post_approve(request, post_id):
         post.save()
     return redirect('booru:post_detail', post_id=post.id)
 
+@user_is_not_blocked
 def post_hide(request, post_id):
     post = Post.objects.get(id=post_id)
 
@@ -287,6 +314,7 @@ def post_hide(request, post_id):
         post.save()
     return redirect('booru:post_detail', post_id=post.id)
 
+@user_is_not_blocked
 def post_delete(request, post_id):
     post = Post.objects.get(id=post_id)
 
@@ -296,6 +324,7 @@ def post_delete(request, post_id):
     return redirect('booru:post_detail', post_id=post.id)
 
 @login_required
+@user_is_not_blocked
 def post_favorite(request, post_id):
     post = Post.objects.get(id=post_id)
     favorite = Favorite.objects.filter(post=post, account=request.user).first()
@@ -308,6 +337,7 @@ def post_favorite(request, post_id):
     return redirect('booru:post_detail', post_id=post.id)
 
 @login_required
+@user_is_not_blocked
 def post_score_vote(request, post_id):
     post = Post.objects.get(id=post_id)
     score_vote = ScoreVote.objects.filter(post=post, account=request.user).first()
@@ -329,6 +359,7 @@ def post_score_vote(request, post_id):
     results = {'value': score_vote.point, "current_points": post.get_score_count()}
     return HttpResponse(json.dumps(results), content_type='application/json')
 
+@user_is_not_blocked
 def staff_mass_rename(request):
     form = MassRenameForm(request.POST or None, request.FILES or None)
 
@@ -354,6 +385,27 @@ def staff_mass_rename(request):
         return render(request, 'booru/staff_mass_rename.html', {"form": form})
     return redirect('booru:index')
 
+@user_is_not_blocked
+def staff_user_tools(request):
+    form = BanUserForm(request.POST or None, request.FILES or None)
+
+    if form.is_valid():
+        reason = form.cleaned_data['reason']
+        expiration = form.cleaned_data['expiration']
+        revoked = Privilege.objects.get(codename="can_login")
+        target_user = Account.objects.get(username=form.cleaned_data['username'])
+        author = request.user
+
+        instance = Timeout.objects.create(  author=request.user, target_user=target_user, 
+                                            expiration=expiration, reason=reason)
+
+        instance.revoked.add(revoked)
+        
+        return redirect('booru:staff_user_tools')
+    
+    return render(request, 'booru/staff_user_tools.html', {"form": form})
+
+@user_is_not_blocked
 def gallery_list(request, page_number = 1):
     searched_gallery = request.GET.get("name", "")
     form = GalleryListSearchForm(request.GET or None)
@@ -369,6 +421,7 @@ def gallery_list(request, page_number = 1):
     
     return render(request, 'booru/gallery_list.html', {"galleries": gallery_list, "page": page, "form": form})
 
+@user_is_not_blocked
 def gallery_history(request, gallery_id, page_number = 1):
     gallery = get_object_or_404(Gallery, id=gallery_id)
     page_limit = 20
@@ -381,6 +434,7 @@ def gallery_history(request, gallery_id, page_number = 1):
     return render(request, 'booru/gallery_history.html', {"page": page, "gallery": gallery})
 
 @login_required
+@user_is_not_blocked
 def gallery_edit(request, gallery_id):
     gallery = get_object_or_404(Gallery, pk=gallery_id)
 
@@ -402,6 +456,7 @@ def gallery_edit(request, gallery_id):
     return render(request, 'booru/gallery_edit.html', {"form": form, "gallery": gallery})
 
 @login_required
+@user_is_not_blocked
 def gallery_create(request):    
     form = GalleryCreateForm(request.POST or None, request.FILES or None)
     
@@ -418,6 +473,7 @@ def gallery_create(request):
         return redirect('booru:gallery_detail', gallery_id=gallery.id)
     return render(request, 'booru/gallery_create.html', {"form": form})
 
+@user_is_not_blocked
 def gallery_detail(request, gallery_id):
     page_number = int(request.GET.get('page', '1'))
     page_limit = 20
@@ -455,6 +511,7 @@ class SiteConfigurationView(FormView):
         return super().form_valid(form)
 
     @method_decorator(csrf_protect)
+    @user_is_not_blocked
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated or not request.user.has_perm('booru.change_configurations'):
             return redirect('account:login')

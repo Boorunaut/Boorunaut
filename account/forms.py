@@ -32,6 +32,19 @@ class UsernameExistsField(UsernameField):
         except Account.DoesNotExist:
             raise forms.ValidationError("There's no user registered with that username.")
 
+class UsernameNotBlockedField(UsernameExistsField):
+    """
+    An UsernameExistsField that raises an error when the account 
+    is banned from the website.
+    """
+
+    def validate(self, value):
+        super().validate(value)
+        account = Account.objects.get(slug=slugify(value))
+        priv_timeout = account.get_priv_timeout("can_login")
+        if priv_timeout.exists(): # is banned
+            raise forms.ValidationError("This user is currently banned until {}.".format(priv_timeout.first().expiration))
+
 
 class UniqueUsernameField(UsernameField):
     """
@@ -77,7 +90,7 @@ class UserAuthenticationForm(AuthenticationForm):
     the form-control class in each widget.
     """
 
-    username = UsernameExistsField(
+    username = UsernameNotBlockedField(
         max_length=254,
         widget=forms.TextInput(attrs={'autofocus': True, 'class': 'form-control'}),
     )

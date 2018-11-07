@@ -10,6 +10,7 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import FormView, RedirectView
+from account.decorators import user_is_not_blocked
 
 from booru.models import Comment, Post
 
@@ -109,10 +110,13 @@ class RegisterView(FormView):
             redirect_to = self.success_url
         return redirect_to
 
+@user_is_not_blocked
 def profile(request, account_slug):
     account = get_object_or_404(Account, slug=account_slug)
 
     can_modify_profile = (request.user == account or request.user.has_perm("account.modify_profile"))
+
+    has_comment_priv = request.user.has_priv("can_comment")
 
     if request.method == "POST":
         newCommentTextarea = request.POST.get("newCommentTextarea")
@@ -120,7 +124,7 @@ def profile(request, account_slug):
         
         if not request.user.is_authenticated:
             return redirect('account:login')
-        elif newCommentTextarea: # Comment creating
+        elif newCommentTextarea and has_comment_priv: # Comment creating
             comment_content = newCommentTextarea
             Comment.objects.create(content=comment_content, author=request.user, content_object=account)
             return redirect('booru:profile', account_slug=account.slug)
@@ -139,7 +143,8 @@ def profile(request, account_slug):
         'recent_favorites' : favorites, #TODO: This
         'recent_uploads' : account.get_posts().not_deleted().order_by('-id'),
         'deleted_posts' : account.get_posts().deleted(),
-        'can_modify_profile': request.user.is_authenticated and can_modify_profile
+        'can_modify_profile': request.user.is_authenticated and can_modify_profile,
+        'can_comment': has_comment_priv
     }
 
     return render(request, 'account/profile.html', context)
@@ -177,7 +182,8 @@ class SettingsView(FormView):
         account.save()
 
         return super().form_valid(form)
-
+    
+    @user_is_not_blocked
     @method_decorator(csrf_protect)
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:

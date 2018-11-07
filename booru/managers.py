@@ -22,7 +22,6 @@ class PostManager(models.Manager):
 
     def pending(self):
         '''Returns a QuerySet with only Posts that are pending.'''
-        #return self.get_queryset().pending()
         return self.get_queryset().pending()
 
     def approved(self):

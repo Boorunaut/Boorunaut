@@ -7,11 +7,11 @@
         {% load staticfiles %}
         <link rel="stylesheet" type="text/css" href="{% static 'booru/css/custom_cosmo.css' %}"/>
         <link rel="stylesheet" type="text/css" href="{% static 'booru/css/base.css' %}"/>
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
         {% block css %}
         {% endblock %}
         
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-        <script defer src="https://use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
         {% block scripts %}
         {% endblock %}
 
@@ -51,6 +51,10 @@
 
                         <a type="button" href="{% url 'booru:staff_mass_rename' %}" class="btn btn-dark col text-left">
                             <i class="fas fa-exchange-alt"></i> Mass Rename
+                        </a>
+
+                        <a type="button" href="{% url 'booru:staff_user_tools' %}" class="btn btn-dark col text-left">
+                            <i class="fas fa-user-slash"></i> User Tools
                         </a>
                     </div>
                     <div class="col-{{sidebar_size}} fixed-bottom">
