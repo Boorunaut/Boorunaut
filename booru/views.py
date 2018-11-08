@@ -38,11 +38,12 @@ def post_detail(request, post_id):
     is_favorited = False
     current_vote = 0
 
-    has_comment_priv = request.user.has_priv("can_comment")
-
+    has_comment_priv = False
+    
     if request.user.is_authenticated:
         is_favorited = Favorite.objects.filter(account=request.user, post=post).exists()
         current_vote = ScoreVote.objects.filter(account=request.user, post=post)
+        has_comment_priv = request.user.has_priv("can_comment")
 
         if current_vote.exists():
             current_vote = current_vote.first().point
