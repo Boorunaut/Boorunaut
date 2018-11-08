@@ -10,7 +10,7 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import FormView, RedirectView
-from account.decorators import user_is_not_blocked
+from booru.account.decorators import user_is_not_blocked
 
 from booru.models import Comment, Post
 

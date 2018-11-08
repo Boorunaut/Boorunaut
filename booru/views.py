@@ -22,8 +22,8 @@ from django.views import generic
 from django.views.decorators.csrf import csrf_protect
 from django.views.generic import FormView
 
-from account.decorators import user_is_not_blocked
-from account.models import Account, Timeout, Privilege
+from booru.account.decorators import user_is_not_blocked
+from booru.account.models import Account, Timeout, Privilege
 
 
 @user_is_not_blocked

@@ -5,8 +5,8 @@ from taggit.forms import TagField, TagWidget
 from taggit.utils import edit_string_for_tags
 
 from .models import Category, Post, PostTag, Gallery
-from account.models import Timeout
-from account.forms import UsernameExistsField
+from booru.account.models import Timeout
+from booru.account.forms import UsernameExistsField
 
 
 class TaggitAdminTextareaWidget(AdminTextareaWidget):

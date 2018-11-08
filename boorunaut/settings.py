@@ -33,7 +33,7 @@ LOGIN_URL = 'account:login'
 # Application definition
 
 INSTALLED_APPS = [
-    'account.apps.AccountConfig', # Needs to be migrated first
+    'booru.account.apps.AccountConfig', # Needs to be migrated first
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
