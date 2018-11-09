@@ -33,7 +33,7 @@ def create_project(project_name, path, exit_err):
     if path:
         command.append(path)
 
-    print('Creating boorunaut project...')
+    print('Creating a new Boorunaut project...')
 
     if call(command) != 0:
         exit_err(
@@ -41,7 +41,7 @@ def create_project(project_name, path, exit_err):
             "returned an error "
             "(should be printed above)\n" % ' '.join(command))
 
-    print('ok')
+    print('Project created!')
 
 
 def execute_from_command_line():
