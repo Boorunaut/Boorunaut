@@ -1,7 +1,7 @@
-"""boorunaut URL Configuration
+"""{{ project_name }} URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/2.0/topics/http/urls/
+    https://docs.djangoproject.com/en/{{ docs_version }}/topics/http/urls/
 Examples:
 Function views
     1. Add an import:  from my_app import views
@@ -22,7 +22,7 @@ from django.urls import re_path
 urlpatterns = [
     path('admin/', admin.site.urls),
     re_path(r'^', include('booru.urls')),
-    re_path(r'^account/', include('account.urls')),
+    re_path(r'^account/', include('booru.account.urls')),
 ]
 
 if settings.DEBUG == True:

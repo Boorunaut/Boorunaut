@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UsernameField
-from account.models import Account
+from booru.account.models import Account
 from django.db.models import Q
 from django.template.defaultfilters import slugify
 

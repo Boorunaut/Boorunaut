@@ -1,6 +1,6 @@
 from django.urls import re_path, path
 
-import account.views
+import booru.account.views
 from . import views
 
 app_name = "booru"
@@ -39,7 +39,7 @@ urlpatterns = [
     
     re_path(r'^tag_search/$', views.tag_search, name='tag_search'),
 
-    re_path(r'^profile/(?P<account_slug>[\w-]+)/$', account.views.profile, name='profile'),
+    re_path(r'^profile/(?P<account_slug>[\w-]+)/$', booru.account.views.profile, name='profile'),
 
     re_path(r'^gallery/list/$', views.gallery_list, name='gallery'),
     re_path(r'^gallery/list/(?P<page_number>[0-9]+)/$', views.gallery_list, name='gallery_list'),

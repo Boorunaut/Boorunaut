@@ -11,7 +11,7 @@ from simple_history.models import HistoricalRecords
 from taggit.managers import TaggableManager
 from taggit.models import GenericTaggedItemBase, TagBase, Tag, TaggedItem
 from django.db.models import Q
-from account.models import Account
+from booru.account.models import Account
 from django.db.models.signals import m2m_changed
 from . import utils
 from .managers import PostManager

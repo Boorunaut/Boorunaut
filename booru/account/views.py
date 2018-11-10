@@ -10,7 +10,7 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import FormView, RedirectView
-from account.decorators import user_is_not_blocked
+from booru.account.decorators import user_is_not_blocked
 
 from booru.models import Comment, Post
 
@@ -25,7 +25,7 @@ class LoginView(FormView):
     success_url = '/post/list'
     form_class = UserAuthenticationForm
     redirect_field_name = REDIRECT_FIELD_NAME
-    template_name = "account/login.html"
+    template_name = "booru/account/login.html"
 
     @method_decorator(sensitive_post_parameters('password'))
     @method_decorator(csrf_protect)
@@ -73,7 +73,7 @@ class RegisterView(FormView):
     success_url = '/post/list'
     form_class = UserRegisterForm
     redirect_field_name = REDIRECT_FIELD_NAME
-    template_name = "account/register.html"
+    template_name = "booru/account/register.html"
 
     @method_decorator(sensitive_post_parameters('password1'))
     @method_decorator(sensitive_post_parameters('password2'))
@@ -147,7 +147,7 @@ def profile(request, account_slug):
         'can_comment': has_comment_priv
     }
 
-    return render(request, 'account/profile.html', context)
+    return render(request, 'booru/account/profile.html', context)
 
 class SettingsView(FormView):
     """
@@ -157,7 +157,7 @@ class SettingsView(FormView):
     success_url = '.'
     form_class = UserSettingsForm
     redirect_field_name = REDIRECT_FIELD_NAME
-    template_name = "account/settings.html"
+    template_name = "booru/account/settings.html"
 
     def get_initial(self):
         """

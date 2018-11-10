@@ -2,4 +2,4 @@ from django.apps import AppConfig
 
 
 class AccountConfig(AppConfig):
-    name = 'account'
+    name = 'booru.account'
