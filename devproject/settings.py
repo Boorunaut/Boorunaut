@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     # Site apps
     'booru',
+    'booru.core',
     # Dependency apps
     'taggit',
     'markdown_deux',

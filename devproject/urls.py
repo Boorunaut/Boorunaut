@@ -21,6 +21,7 @@ from django.urls import include, path, re_path
 urlpatterns = [
     path('admin/', admin.site.urls),
     re_path(r'^', include('booru.urls')),
+    re_path(r'^', include('booru.core.urls')),
     re_path(r'^account/', include('booru.account.urls')),
 ]
 

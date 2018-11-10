@@ -502,12 +502,22 @@ class SiteConfigurationView(FormView):
         initial = super().get_initial()        
 
         initial['site_title'] = Configuration.objects.get(code_name='site_title').value
+        initial['terms_of_service'] = Configuration.objects.get(code_name='terms_of_service').value
+        initial['privacy_policy'] = Configuration.objects.get(code_name='privacy_policy').value
         return initial
 
     def form_valid(self, form):
         site_title = Configuration.objects.get(code_name='site_title')
         site_title.value = form.cleaned_data.get('site_title')
         site_title.save()
+
+        terms_of_service = Configuration.objects.get(code_name='terms_of_service')
+        terms_of_service.value = form.cleaned_data.get('terms_of_service')
+        terms_of_service.save()
+
+        privacy_policy = Configuration.objects.get(code_name='privacy_policy')
+        privacy_policy.value = form.cleaned_data.get('privacy_policy')
+        privacy_policy.save()
         return super().form_valid(form)
 
     @method_decorator(csrf_protect)

@@ -185,6 +185,8 @@ class GalleryListSearchForm(forms.Form):
 
 class SiteConfigurationForm(forms.Form):
     site_title = forms.CharField(required=True)
+    terms_of_service = forms.CharField(required=False)
+    privacy_policy = forms.CharField(required=False)
 
     class Meta:
         fields = "__all__"
@@ -192,3 +194,5 @@ class SiteConfigurationForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(SiteConfigurationForm, self).__init__(*args, **kwargs)
         self.fields['site_title'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        self.fields['terms_of_service'].widget = forms.Textarea(attrs={'class': 'form-control'})
+        self.fields['privacy_policy'].widget = forms.Textarea(attrs={'class': 'form-control'})

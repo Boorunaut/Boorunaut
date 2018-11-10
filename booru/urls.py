@@ -1,6 +1,7 @@
-from django.urls import re_path, path
+from django.urls import include, path, re_path
 
 import booru.account.views
+
 from . import views
 
 app_name = "booru"
