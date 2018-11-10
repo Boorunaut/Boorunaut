@@ -60,12 +60,11 @@ MIDDLEWARE = [
     'simple_history.middleware.HistoryRequestMiddleware',
 ]
 
-ROOT_URLCONF = 'boorunaut.urls'
+ROOT_URLCONF = '{{ project_name }}.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -81,7 +80,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'boorunaut.wsgi.application'
+WSGI_APPLICATION = '{{ project_name }}.wsgi.application'
 
 
 # Database

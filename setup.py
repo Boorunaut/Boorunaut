@@ -1,7 +1,9 @@
-import os
+import os, io
 from setuptools import find_packages, setup
 
-with open(os.path.join(os.path.dirname(__file__), 'README.rst')) as readme:
+BASE_DIR = os.path.join(os.path.dirname(__file__))
+
+with open(os.path.join(os.path.dirname(__file__), 'README.md')) as readme:
     README = readme.read()
 
 with io.open(os.path.join(BASE_DIR, 'requirements.txt'), encoding='utf-8') as fh:
@@ -21,11 +23,9 @@ setup(
     url='https://github.com/Boorunaut/Boorunaut',
     author='Luk3M, NogardRyuu',
     author_email='luk3@hotmail.com.br, thiago_dragon_@hotmail.com',
-    entry_points="""
-    [console_scripts]
-    boorunaut=booru.setup.start-project:main
-    """,
-    test_suite="runtests.start",
+    entry_points={'console_scripts': [
+        'boorunaut=booru.setup.start_project:main',
+    ]},
     classifiers=[
         'Environment :: Web Environment',
         'Framework :: Django',
