@@ -16,12 +16,16 @@
     </div>
     <div class="row text-center">
         <div class="col">                    
-            <a href="{% url 'booru:posts' %}" class="col-1 font-weight-bold" title="A paginated list of every post">Posts</a>
-            <a href="#" class="col-1" title="All comments listing">Comments</a>
-            <a href="#" class="col-1" title="Forum listing">Forum</a>
-            <a href="#" class="col-1" title="Wiki pages with database documentation">Wiki</a>
-            <a href="#" class="col-1" title="Account options">My Account</a>
-            <a href="#" class="col-1" title="Help page and tools">»</a>
+            <a href="{% url 'booru:posts' %}" class="btn font-weight-bold" title="A paginated list of every post">Posts</a>
+            <a href="#" class="btn disabled" title="All comments listing">Comments</a>
+            <a href="#" class="btn disabled" title="Forum listing">Forum</a>
+            <a href="#" class="btn disabled" title="Wiki pages with database documentation">Wiki</a>
+            {% if not user.is_authenticated %}
+            <a href="{% url 'account:login' %}" class="btn">Login</a>
+            {% else %}
+            <a href="{{user.get_absolute_url}}" class="btn" title="Account options">My Account</a>
+            {% endif %}
+            <a href="#" class="btn disabled" title="Help page and tools">»</a>
         </div>
     </div>
     <form action="{% url 'booru:posts' %}">
@@ -53,7 +57,7 @@
 
     <div class="row">
         <div class="col text-center">
-            <small>Original concept by <a href="http://danbooru.donmai.us">Danbooru</a></small>
+            <small>Original concept by <a href="https://github.com/r888888888/danbooru">Danbooru</a></small>
         </div>
     </div>
 {% endblock %}

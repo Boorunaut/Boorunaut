@@ -38,16 +38,10 @@
                         <a type="button" href="#" class="btn btn-dark col text-left disabled">
                             <i class="fas fa-box"></i> Extension Manager
                         </a>
-    
-                        <div class="btn-group dropright col pl-0 pr-0">
-                            <button type="button" class="btn btn-dark dropdown-toggle text-left col" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-cogs"></i> Board Configuration
-                            </button>
-                            <div class="dropdown-menu">
-                                <a class="dropdown-item" href="{% url 'booru:staff_site_configuration' %}">Normal</a>
-                                <a class="dropdown-item" href="#">Advanced </a>
-                            </div>
-                        </div>
+                        
+                        <a type="button" href="{% url 'booru:staff_site_configuration' %}" class="btn btn-dark col text-left">
+                            <i class="fas fa-cogs"></i> Board Configuration
+                        </a>
 
                         <a type="button" href="{% url 'booru:staff_mass_rename' %}" class="btn btn-dark col text-left">
                             <i class="fas fa-exchange-alt"></i> Mass Rename
