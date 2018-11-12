@@ -47,6 +47,8 @@ def post_detail(request, post_id):
 
         if current_vote.exists():
             current_vote = current_vote.first().point
+        else:
+            current_vote = 0
     
     if request.method == "POST":
         if not request.user.is_authenticated:
