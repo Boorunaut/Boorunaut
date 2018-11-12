@@ -47,6 +47,8 @@ def post_detail(request, post_id):
 
         if current_vote.exists():
             current_vote = current_vote.first().point
+        else:
+            current_vote = 0
     
     if request.method == "POST":
         if not request.user.is_authenticated:
@@ -69,8 +71,12 @@ def post_detail(request, post_id):
     next_post = Post.objects.filter(id__gt=post.id).exclude(status=2).exclude(status=3).first() or None
 
     ordered_tags = post.get_ordered_tags()
-    return render(request=request, template_name='booru/post_detail.html',
-                context={"post": post, "ordered_tags": ordered_tags, "form": form,
+
+    print("#######33 current_vote")
+    print(current_vote)
+
+    return render(  request=request, template_name='booru/post_detail.html',
+                    context={"post": post, "ordered_tags": ordered_tags, "form": form,
                         "previous_post": previous_post, "next_post": next_post,
                         "is_favorited":is_favorited, "current_vote": current_vote, 
                         "can_comment": has_comment_priv})
@@ -154,7 +160,7 @@ def tag_edit(request, tag_id):
     tag_dict = model_to_dict(tag)
 
     if tag.associated_user_id:
-        associated_user = get_object_or_404(Account, id=tag.associated_user_id)
+        associated_user = get_object_or_404(Account.objects.active(), id=tag.associated_user_id)
         tag_dict['associated_user_name'] = associated_user.slug
 
     form = TagEditForm(request.POST or None, instance=tag, initial=tag_dict)
@@ -162,7 +168,7 @@ def tag_edit(request, tag_id):
         tag = form.save(commit=False)
         tag.author = request.user
         if form.cleaned_data['associated_user_name']:
-            associated_user = get_object_or_404(Account, slug=form.cleaned_data['associated_user_name'])
+            associated_user = get_object_or_404(Account.objects.active(), slug=form.cleaned_data['associated_user_name'])
             tag.associated_user = associated_user
         tag.save()
         form.save_m2m()
@@ -266,7 +272,7 @@ def implication_disapprove(request, implication_id):
 @user_is_not_blocked
 def staff_page(request):
     Account = apps.get_model('account', 'Account')
-    accounts = Account.objects.all().order_by("-id")
+    accounts = Account.objects.active().order_by("-id")
 
     context = {
         'accounts': accounts

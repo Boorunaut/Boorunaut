@@ -7,7 +7,7 @@ class UserAdmin(BaseUserAdmin):
     fieldsets = BaseUserAdmin.fieldsets + (
             (None, {'fields': ( 'avatar', 'slug', 'email_activated', 
                                 'comments_locked', 'about', 'safe_only',
-                                'show_comments', 'tag_blacklist')}),
+                                'show_comments', 'tag_blacklist', 'is_deleted')}),
     )
 
 admin.site.register(Account, UserAdmin)

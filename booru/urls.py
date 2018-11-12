@@ -41,6 +41,7 @@ urlpatterns = [
     re_path(r'^tag_search/$', views.tag_search, name='tag_search'),
 
     re_path(r'^profile/(?P<account_slug>[\w-]+)/$', booru.account.views.profile, name='profile'),
+    re_path(r'^profile/(?P<account_slug>[\w-]+)/delete$', booru.account.views.DeleteAccountView.as_view(), name='profile_delete'),
 
     re_path(r'^gallery/list/$', views.gallery_list, name='gallery'),
     re_path(r'^gallery/list/(?P<page_number>[0-9]+)/$', views.gallery_list, name='gallery_list'),

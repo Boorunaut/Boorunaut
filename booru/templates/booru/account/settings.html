@@ -41,6 +41,24 @@
                                         {{form.show_comments}}
                                     </div>
                                 </div>
+                                <div class="row mt-5">
+                                    <div class="col-8">
+                                        <h3>Danger zone</h3>
+                                        <h4>Delete account</h4>
+    
+                                        <p>Contact the administration if you need the removal of sensitive data in posts.</p>
+                                    </div>
+                                    <div class="col-4 pt-4">
+                                        <div class="dropdown">
+                                            <button class="btn btn-danger dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                Delete
+                                            </button>
+                                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                <a class="dropdown-item" href="{% url 'booru:profile_delete' user.slug %}">Confirm</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

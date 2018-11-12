@@ -35,3 +35,16 @@ class PostManager(models.Manager):
     def not_deleted(self):
         '''Returns a QuerySet with only Posts that aren't deleted (pending or approved).'''
         return self.get_queryset().not_deleted()
+
+class UserQueryset(models.query.QuerySet):
+    def active(self):
+        return self.exclude(is_deleted=True)
+
+class UserManager(models.Manager):
+    '''Custom manager for User.'''
+    def get_queryset(self):
+        return UserQueryset(self.model, using=self._db)
+
+    def active(self):
+        '''Returns a QuerySet with only Users that are active.'''
+        return self.get_queryset().active()
