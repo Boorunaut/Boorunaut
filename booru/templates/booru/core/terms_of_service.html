@@ -1,0 +1,24 @@
+{% extends 'booru/base.html' %}
+
+{% block css %}
+    {% load staticfiles %}
+{% endblock %}
+
+{% block title %}{{SITE_TITLE}} | Terms of Service{% endblock %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block body %}
+{% load markdown_deux_tags %}
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h1>Terms of Service</h1>
+            <div>
+                {{ terms_of_service|markdown }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

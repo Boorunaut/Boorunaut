@@ -7,6 +7,7 @@ from django.template.defaultfilters import slugify
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.utils import timezone
+from booru.managers import UserManager
 
 class Privilege(models.Model):
     name = models.CharField(_('name'), max_length=255)
@@ -47,6 +48,10 @@ class Account(AbstractUser):
     show_comments   = models.BooleanField(default=True)
     tag_blacklist   = models.CharField(max_length=2500, blank=True)
 
+    is_deleted = models.BooleanField(default=False)
+
+    objects = UserManager()
+
     def save(self, *args, **kwargs):
         if self.__is_a_new_user():
             self.slug = slugify(self.username)
@@ -57,7 +62,16 @@ class Account(AbstractUser):
         return not self.id
 
     def get_absolute_url(self):
-        return reverse('booru:profile', kwargs={'account_slug': self.slug})
+        if self.is_deleted == False:
+            return reverse('booru:profile', kwargs={'account_slug': self.slug})
+        else:
+            return "#"
+
+    def get_name(self):
+        if self.is_deleted == False:
+            return self.username
+        else:
+            return "Anonymous User"
 
     def get_posts(self):
         Post = apps.get_model('booru', 'Post')
@@ -77,6 +91,11 @@ class Account(AbstractUser):
 
     def has_priv(self, codename):
         return not self.get_priv_timeout(codename=codename).exists()
+
+    def anonymize(self):
+        self.email = ""
+        self.is_deleted = True
+        self.save()
 
     class Meta:
         permissions = (

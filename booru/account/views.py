@@ -9,9 +9,9 @@ from django.utils.http import is_safe_url
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
-from django.views.generic import FormView, RedirectView
-from booru.account.decorators import user_is_not_blocked
+from django.views.generic import FormView, RedirectView, TemplateView
 
+from booru.account.decorators import user_is_not_blocked
 from booru.models import Comment, Post
 
 from .forms import UserAuthenticationForm, UserRegisterForm, UserSettingsForm
@@ -112,7 +112,7 @@ class RegisterView(FormView):
 
 @user_is_not_blocked
 def profile(request, account_slug):
-    account = get_object_or_404(Account, slug=account_slug)
+    account = get_object_or_404(Account.objects.active(), slug=account_slug)
 
     can_modify_profile = (request.user == account or request.user.has_perm("account.modify_profile"))
 
@@ -190,3 +190,15 @@ class SettingsView(FormView):
             return redirect('account:login')
 
         return super().dispatch(request, *args, **kwargs)
+
+class DeleteAccountView(RedirectView):
+    """
+    Provides users the ability to logout
+    """
+    url = '/account/logout'
+
+    def get(self, request, *args, **kwargs):
+        if kwargs['account_slug'] == self.request.user.slug:
+            self.request.user.anonymize()
+        
+        return super(DeleteAccountView, self).get(request, *args, **kwargs)

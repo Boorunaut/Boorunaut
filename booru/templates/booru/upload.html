@@ -8,6 +8,7 @@
 {% endblock %}
 
 {% block body %}
+<div class="container">
     <div class="row">
         <div id="upload" class="col">
             <h1>Upload</h1>
@@ -46,6 +47,20 @@
                 </div>
 
                 <div class="form-group row">
+                    <label for="{{ form.rating.auto_id }}" class="col-1 col-form-label">{{ form.rating.label }}</label>
+                    
+                    <div class="col-4">
+                        {{form.rating}}
+                    </div>
+
+                    {% if form.rating.errors %}
+                    <div class="col-md-offset-2 col-8 has-errors text-danger small">
+                        {{form.rating.errors}}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group row">
                     <label for="{{ form.source.auto_id }}" class="col-1 col-form-label">{{ form.source.label }}</label>
                     
                     <div class="col-4">
@@ -77,4 +92,5 @@
             </form>
         </div>
     </div>
+</div>
 {% endblock %}

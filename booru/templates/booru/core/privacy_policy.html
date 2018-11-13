@@ -1,0 +1,24 @@
+{% extends 'booru/base.html' %}
+
+{% block css %}
+    {% load staticfiles %}
+{% endblock %}
+
+{% block title %}{{SITE_TITLE}} | Privacy policy{% endblock %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block body %}
+{% load markdown_deux_tags %}
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h1>Privacy policy</h1>
+            <div>
+                {{ privacy_policy|markdown }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

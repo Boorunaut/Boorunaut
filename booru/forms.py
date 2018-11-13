@@ -24,15 +24,18 @@ class CreatePostForm(forms.ModelForm):
     preview = forms.ImageField(required=False)
     tags = TagField(required=True)
     source = forms.URLField(required=False)
+    rating = forms.IntegerField()
 
     class Meta:
         model = Post
-        fields = ["image", "sample", "preview", "source", "description", "tags"]
+        fields = ["image", "sample", "preview", "rating", "source", "description", "tags"]
 
     def __init__(self, *args, **kwargs):
         super(CreatePostForm, self).__init__(*args, **kwargs)
         self.fields['image'].widget = forms.FileInput(attrs={'class': 'custom-file-input'})
         self.fields['source'].widget = forms.Textarea(attrs={'class': 'form-control'})
+        self.fields['rating'].widget = forms.Select(attrs={'class': 'form-control'},
+                                                    choices=Post.RATING_CHOICES)
         self.fields['description'].widget = forms.Textarea(attrs={'class': 'form-control'})
         self.fields['tags'].widget = forms.TextInput(attrs={'class': 'form-control'})
 
@@ -141,8 +144,8 @@ class GalleryCreateForm(forms.ModelForm):
     '''Form for creating an gallery.'''
 
     name = forms.CharField(required=True)
-    description = forms.CharField(required=True)
-    posts_ids = forms.CharField(required=True)
+    description = forms.CharField(required=False)
+    posts_ids = forms.CharField(required=False)
 
     class Meta:
         model = Gallery
@@ -185,6 +188,8 @@ class GalleryListSearchForm(forms.Form):
 
 class SiteConfigurationForm(forms.Form):
     site_title = forms.CharField(required=True)
+    terms_of_service = forms.CharField(required=False)
+    privacy_policy = forms.CharField(required=False)
 
     class Meta:
         fields = "__all__"
@@ -192,3 +197,5 @@ class SiteConfigurationForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(SiteConfigurationForm, self).__init__(*args, **kwargs)
         self.fields['site_title'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        self.fields['terms_of_service'].widget = forms.Textarea(attrs={'class': 'form-control'})
+        self.fields['privacy_policy'].widget = forms.Textarea(attrs={'class': 'form-control'})

@@ -9,6 +9,7 @@
 {% endblock %}
 
 {% block body %}
+<div class="container">
     <div class="row">
         <h1>Edit gallery: <a href="{{gallery.get_absolute_url}}">{{gallery}}</a></h1>
     </div>
@@ -22,4 +23,5 @@
         {% endfor %}
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
+</div>
 {% endblock %}
