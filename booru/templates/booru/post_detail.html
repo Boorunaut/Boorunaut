@@ -205,8 +205,8 @@
                         <tr>
                             <th scope="row">Size</th>
                             <td>
-                                <a href="{% url 'booru:post_detail' post.id %}">{{post.image.size}} KB</a>
-                                ({{post.image.width}}x{{post.image.height}})
+                                <a href="{{post.image.url}}">{{post.image.size}} KB</a>
+                                ({{post.image.width}}x{{post.image.height}})                                
                             </td>
                         </tr>
                         <tr>
