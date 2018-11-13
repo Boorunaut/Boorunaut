@@ -204,7 +204,10 @@
                         </tr>
                         <tr>
                             <th scope="row">Size</th>
-                            <td>#TODO</td>
+                            <td>
+                                <a href="{% url 'booru:post_detail' post.id %}">{{post.image.size}} KB</a>
+                                ({{post.image.width}}x{{post.image.height}})
+                            </td>
                         </tr>
                         <tr>
                             <th scope="row">Source</th>
