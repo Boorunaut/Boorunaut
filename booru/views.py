@@ -36,9 +36,8 @@ def post_detail(request, post_id):
     form = EditPostForm(request.POST or None, request.FILES or None, instance=post)
     
     is_favorited = False
-    current_vote = 0
-
     has_comment_priv = False
+    current_vote = 0
     
     if request.user.is_authenticated:
         is_favorited = Favorite.objects.filter(account=request.user, post=post).exists()
@@ -71,9 +70,6 @@ def post_detail(request, post_id):
     next_post = Post.objects.filter(id__gt=post.id).exclude(status=2).exclude(status=3).first() or None
 
     ordered_tags = post.get_ordered_tags()
-
-    print("#######33 current_vote")
-    print(current_vote)
 
     return render(  request=request, template_name='booru/post_detail.html',
                     context={"post": post, "ordered_tags": ordered_tags, "form": form,

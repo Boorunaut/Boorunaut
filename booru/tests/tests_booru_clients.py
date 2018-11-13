@@ -9,6 +9,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser, User
 from django.core.files.images import ImageFile
 from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.urls import reverse
 from django.test import Client, RequestFactory, TestCase
 from PIL import Image
 
@@ -47,7 +48,8 @@ class PostClientsTests(TestCase):
 
     def test_request_post_list_by_anonymous_client(self):
         c = Client()
-        response = c.get('/post/list/')
+        post_list = reverse('booru:posts')
+        response = c.get(post_list)
         self.assertEqual(200, response.status_code)
 
     def test_request_post_detail_by_anonymous_client(self):
@@ -55,7 +57,8 @@ class PostClientsTests(TestCase):
         post = self.create_test_post(user)
 
         c = Client()
-        response = c.get('/post/view/{}/'.format(post.id))
+        post = reverse('booru:post_detail', args=(post.id,))
+        response = c.get(post)
         self.assertEqual(200, response.status_code)
 
     def test_post_was_created_by_logged_client(self):
@@ -79,8 +82,9 @@ class PostClientsTests(TestCase):
                 "tags": "test3 test4",
                 "source": "http://example.org/testing"}
 
-        response = c.post('/upload/', data)
+        upload_url = reverse('booru:upload')
+        response = c.post(upload_url, data)
         del image
-    
-        self.assertEqual(302, response.status_code)
-        self.assertEqual('/post/view/{}/'.format(1), response.url)
+
+        post_url = reverse('booru:post_detail', args=(1,))    
+        self.assertEqual(200, response.status_code)
