@@ -65,7 +65,13 @@ class Account(AbstractUser):
         if self.is_deleted == False:
             return reverse('booru:profile', kwargs={'account_slug': self.slug})
         else:
-            return ""
+            return "#"
+
+    def get_name(self):
+        if self.is_deleted == False:
+            return self.username
+        else:
+            return "Anonymous User"
 
     def get_posts(self):
         Post = apps.get_model('booru', 'Post')

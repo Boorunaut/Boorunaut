@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
+from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import UserManager as AbstractUserManager
 from django.db import models
 from django.db.models import Q
+
 
 class PostQueryset(models.query.QuerySet):
     def pending(self):
@@ -40,7 +43,7 @@ class UserQueryset(models.query.QuerySet):
     def active(self):
         return self.exclude(is_deleted=True)
 
-class UserManager(models.Manager):
+class UserManager(AbstractUserManager):
     '''Custom manager for User.'''
     def get_queryset(self):
         return UserQueryset(self.model, using=self._db)

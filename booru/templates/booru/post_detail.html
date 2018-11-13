@@ -343,7 +343,11 @@
                             <div class="comment col">
                                 <div class="row">
                                     <span class="col">
-                                        <h5><a href="{{comment.author.get_absolute_url}}">{{comment.author}}</a></h5>
+                                        {% if comment.author.is_deleted %}
+                                        <h5>{{comment.author.get_name}}</h5>
+                                        {% else %}
+                                        <h5><a href="{{comment.author.get_absolute_url}}">{{comment.author.get_name}}</a></h5>
+                                        {% endif %}
                                     </span>
                                 </div>
                                 <div class="row">
