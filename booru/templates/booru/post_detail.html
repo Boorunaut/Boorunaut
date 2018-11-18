@@ -5,6 +5,20 @@
     <link rel="stylesheet" type="text/css" href="{% static 'booru/css/post_detail.css' %}"/>
 {% endblock %}
 
+{% block ld_json %}
+<script type="application/ld+json">
+    {
+      "@context": "http://schema.org",
+      "@type": "ImageObject",
+      "contentUrl": "{{post.image.url}}",
+      "datePublished": "{{post.timestamp|date:'c'}}",
+      "description": "{{post.description}}"
+    }
+</script>
+
+<link href="{{post.get_absolute_url}}" rel="canonical" />
+{% endblock %}
+
 {% block scripts %}
 <script>
     var is_favorited = {{is_favorited|yesno:'true,false'}};

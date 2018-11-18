@@ -29,6 +29,23 @@
         <title>
             {% block title %}{{SITE_TITLE}} | Imageboard{% endblock %}
         </title>
+        
+        <script type="application/ld+json">
+        {
+            "@context": "http://schema.org",
+            "@type": "WebSite",
+            "name": "{{SITE_TITLE}}",
+            "url" : "{{request.get_host}}",
+            "potentialAction": [{
+                "@type": "SearchAction",
+                "target": "{{request.get_host}}{% url 'booru:posts' %}?tags={search_term}",
+                "query-input": "required name=search_term"
+            }]
+        }
+        </script>
+        {% block ld_json %}
+        <link href="{{request.get_host}}" rel="canonical" />
+        {% endblock %}
     </head>
     <body>
         {% load static %}
