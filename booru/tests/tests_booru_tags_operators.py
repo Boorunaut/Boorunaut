@@ -1,14 +1,17 @@
 # -*- coding: utf-8 -*-
+import base64
+import tempfile
+
 import django
 from django.contrib.auth import get_user_model
 from django.core.files.images import ImageFile
-from django.test import TestCase
 from django.db.models import Q
+from django.test import TestCase
 
-import tempfile
 from booru.models import Post
-from booru.views import tags_list
 from booru.utils import parse_and_filter_tags
+from booru.views import tags_list
+
 
 def create_test_user():
     user = get_user_model().objects.create_user('Test', password="123")
@@ -16,10 +19,15 @@ def create_test_user():
     return user
 
 def create_test_post(user, tags=[]):
-    image_mock = ImageFile(tempfile.NamedTemporaryFile(suffix='.png'))
+    image_base64 = "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=="
+    image_bytes = base64.b64decode(image_base64)
+    image_file = tempfile.NamedTemporaryFile(suffix='.png')
+    image_file.write(image_bytes)
+
+    image_mock = ImageFile(image_file)
     source = "http://example.org"
 
-    test_post = Post.objects.create(uploader=user, image=image_mock,
+    test_post = Post.objects.create(uploader=user, media=image_mock,
                                     source=source)
     
     for tag in tags:
@@ -95,4 +103,3 @@ class UtilitiesTests(TestCase):
         posts = parse_and_filter_tags('')
 
         self.assertEqual(list(posts), [self.post_one, self.post_two, self.post_three])
-

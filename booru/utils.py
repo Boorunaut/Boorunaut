@@ -54,16 +54,20 @@ def get_video_preview(video):
     in_filename = video.url[1:]
     frame_num = 1
 
-    out, err = (
-            ffmpeg
-            .input(in_filename)
-            .filter('select', 'gte(n,{})'.format(frame_num))
-            .output('pipe:', vframes=1, format='image2', vcodec='mjpeg')
-            .run(capture_stdout=True)
-    )
+    try:
+        out, err = (
+                ffmpeg
+                .input(in_filename)
+                .filter('select', 'gte(n,{})'.format(frame_num))
+                .output('pipe:', vframes=1, format='image2', vcodec='mjpeg')
+                .run(capture_stdout=True)
+        )
+        image = ImagePIL.open(BytesIO(out))
+        return get_preview(image)
+    except ffmpeg.Error as e:
+        print(e.stderr)
 
-    image = ImagePIL.open(BytesIO(out))
-    return get_preview(image)
+    return None
 
 def reduce_image_to_maximum_size(image, max_resolution):
     ''' Reduce the given image to be equal to the maximum resolution allowed (or None if already lower).

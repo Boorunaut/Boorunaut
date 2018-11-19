@@ -215,13 +215,14 @@ class Post(models.Model):
                 if sample:
                     self.sample.save(".jpg", sample, save=False)
 
-                self.preview.save(".jpg", preview, save=False)
+                if preview:
+                    self.preview.save(".jpg", preview, save=False)
 
                 self.media_type = self.IMAGE
             else:
                 self.media_type = self.VIDEO
         super(Post, self).save(*args, **kwargs)
-        if self.media_type == self.VIDEO:
+        if self.media_type == self.VIDEO and not self.preview:
             preview = utils.get_video_preview(self.media)
             self.preview.save(".jpg", preview, save=False)
 
