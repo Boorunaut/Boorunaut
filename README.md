@@ -2,6 +2,7 @@
 Boorunaut is a taggable imagebord built in Django. Based on [Danbooru](https://github.com/r888888888/danbooru).
 
 * [Source repository](https://github.com/Boorunaut/Boorunaut)
+* [Documentation](https://boorunaut.gitbook.io/docs/)
 
 # Installing
 
