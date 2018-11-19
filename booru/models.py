@@ -4,17 +4,18 @@ import uuid
 from django.contrib.contenttypes.fields import (GenericForeignKey,
                                                 GenericRelation)
 from django.contrib.contenttypes.models import ContentType
+from django.core.files.images import get_image_dimensions
 from django.db import models
-from django.db.models import Sum
+from django.db.models import Q, Sum
+from django.db.models.signals import m2m_changed
 from django.urls import reverse
 from simple_history.models import HistoricalRecords
 from taggit.managers import TaggableManager
-from taggit.models import GenericTaggedItemBase, TagBase, Tag, TaggedItem
-from django.db.models import Q
+from taggit.models import GenericTaggedItemBase, Tag, TagBase, TaggedItem
+
+from booru import utils
 from booru.account.models import Account
-from django.db.models.signals import m2m_changed
-from . import utils
-from .managers import PostManager
+from booru.managers import PostManager
 
 
 def get_file_path(instance, filename):
@@ -30,9 +31,9 @@ def get_file_path_sample(instance, filename):
     name = get_file_path(instance, filename)
     return os.path.join('data/sample/', name)
 
-def get_file_path_image(instance, filename):
+def get_file_path_media(instance, filename):
     name = get_file_path(instance, filename)
-    return os.path.join('data/image/', name)
+    return os.path.join('data/media/', name)
 
 class Comment(models.Model):
     author = models.ForeignKey(Account, on_delete=models.CASCADE)
@@ -143,7 +144,7 @@ class Post(models.Model):
     parent = models.IntegerField(null=True, blank=True)
     preview = models.ImageField(upload_to=get_file_path_preview, blank=True)
     sample = models.ImageField(upload_to=get_file_path_sample, blank=True)
-    image = models.ImageField(upload_to=get_file_path_image, blank=True)
+    media = models.FileField(upload_to=get_file_path_media, blank=True)
     uploader = models.ForeignKey(Account, null=True, on_delete=models.SET_NULL)
     timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
     update_timestamp = models.DateTimeField(auto_now=True, auto_now_add=False)
@@ -189,27 +190,46 @@ class Post(models.Model):
         default=PENDING,
     )
 
+    IMAGE = 0
+    VIDEO = 1
+    MEDIA_TYPE_CHOICES = (
+        (IMAGE, 'Image'),
+        (VIDEO, 'Video')
+    )
+    media_type = models.IntegerField(
+        choices=MEDIA_TYPE_CHOICES,
+        default=IMAGE,
+    )
+
     def __str__(self):
         return "#{}".format(self.id)
 
     def save(self, *args, **kwargs):
-        pil_image = utils.get_pil_image_if_valid(self.image)
+        if not self.id:
+            pil_image = utils.get_pil_image_if_valid(self.media)
 
-        if pil_image:
-            sample = utils.get_sample(pil_image)
-            preview = utils.get_preview(pil_image)
-            
-            if sample:
-                self.sample.save(".jpg", sample, save=False)
+            if pil_image:
+                sample = utils.get_sample(pil_image)
+                preview = utils.get_preview(pil_image)
+                
+                if sample:
+                    self.sample.save(".jpg", sample, save=False)
 
-            self.preview.save(".jpg", preview, save=False)        
+                self.preview.save(".jpg", preview, save=False)
+
+                self.media_type = self.IMAGE
+            else:
+                self.media_type = self.VIDEO
         super(Post, self).save(*args, **kwargs)
+        if self.media_type == self.VIDEO:
+            preview = utils.get_video_preview(self.media)
+            self.preview.save(".jpg", preview, save=False)
 
     def get_sample_url(self):
         if self.sample:
             return self.sample.url
         else:
-            return self.image.url
+            return self.media.url
 
     def get_absolute_url(self):
         return reverse('booru:post_detail', kwargs={'post_id': self.id})
@@ -265,12 +285,25 @@ class Post(models.Model):
             del self.skip_history_when_saving
         return ret
     
+    def get_media_width(self):
+        if self.media_type == self.IMAGE:
+            width, height = get_image_dimensions(self.media.file)
+        else:
+            width, height = utils.get_video_dimensions(self.media)
+        return width
+
+    def get_media_height(self):
+        if self.media_type == self.IMAGE:
+            width, height = get_image_dimensions(self.media.file)
+        else:
+            width, height = utils.get_video_dimensions(self.media)
+        return height    
+    
     class Meta:
         permissions = (
             ("change_status", "Can change the status of posts"),
             ("mass_rename", "Can mass rename posts"),
         )
-
 
 class Favorite(models.Model):
     account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name="account_favorites")

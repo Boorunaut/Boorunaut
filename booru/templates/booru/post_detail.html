@@ -123,7 +123,7 @@
                             <th scope="row">Size</th>
                             <td>
                                 <a href="{{post.image.url}}">{{post.image.size}} KB</a>
-                                ({{post.image.width}}x{{post.image.height}})                                
+                                ({{post.get_media_width}}x{{post.get_media_height}})
                             </td>
                         </tr>
                         <tr>
@@ -200,7 +200,13 @@
             <div class="row mb-3">
                 <div class="col">                    
                     {% if perms.booru.change_status or not post.status == 3 %}
+                    {% if post.media_type == 0 %}
                     <img src="{{post.get_sample_url}}" alt="">
+                    {% elif post.media_type == 1 %}
+                    <video controls> 
+                        <source src={{post.media.url}}>
+                    </video>
+                    {% endif %}
                     {% endif %}
                 </div>
             </div>

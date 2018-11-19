@@ -1,8 +1,11 @@
+import tempfile
 from io import BytesIO
 
 import diff_match_patch as dmp_module
+import ffmpeg
 from django.apps import apps
 from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
 from django.shortcuts import get_object_or_404
 from PIL import Image as ImagePIL
 
@@ -45,6 +48,22 @@ def get_preview(original_pil_image):
         return convert_bytes_to_content_file(pil_image)
     else:
         return convert_bytes_to_content_file(original_pil_image)
+
+def get_video_preview(video):
+    ''' Returns the resized preview image. '''
+    in_filename = video.url[1:]
+    frame_num = 1
+
+    out, err = (
+            ffmpeg
+            .input(in_filename)
+            .filter('select', 'gte(n,{})'.format(frame_num))
+            .output('pipe:', vframes=1, format='image2', vcodec='mjpeg')
+            .run(capture_stdout=True)
+    )
+
+    image = ImagePIL.open(BytesIO(out))
+    return get_preview(image)
 
 def reduce_image_to_maximum_size(image, max_resolution):
     ''' Reduce the given image to be equal to the maximum resolution allowed (or None if already lower).
@@ -94,6 +113,26 @@ def get_pil_image_if_valid(image):
         return ImagePIL.open(image)
     except:
         return False
+
+def check_video_is_valid(video):
+    ''' Returns True if it is a valid video file. Returns False otherwise. '''
+    result = False
+    try:
+        with tempfile.NamedTemporaryFile() as f:
+            f.write(video.file.getbuffer())
+            f.seek(0)
+            probe_result = ffmpeg.probe(f.name)
+
+            if probe_result['format']['probe_score'] == 100:
+                result = True
+    except:
+        pass    
+    return result
+
+def get_video_dimensions(video):
+    result = ffmpeg.probe(video.url[1:])
+    video_stream = next((stream for stream in result['streams'] if stream['codec_type'] == 'video'), None)
+    return (video_stream['width'], video_stream['height'])
 
 def convert_to_rgb(pil_image):
     ''' Converts an image from RGBA to RGB if needed. '''
