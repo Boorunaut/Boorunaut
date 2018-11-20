@@ -12,7 +12,6 @@ from PIL import Image as ImagePIL
 
 sample_max_resolution = (850, None)
 preview_max_resolution = (150, 150)
-jpg_quality = 80
 
 def space_splitter(tag_string):
     return [t.strip().lower() for t in tag_string.split(' ') if t.strip()]
@@ -101,7 +100,7 @@ def reduce_image_to_maximum_size(image, max_resolution):
 def convert_image_to_jpeg_bytes(pil_image):
     ''' Convert an PIL Image to JPEG and returns it as bytes. '''
     f = BytesIO()
-    pil_image.save(f, format='JPEG', quality=jpg_quality)
+    pil_image.save(f, format='JPEG', quality=90, optimize=True)
 
     return f
 
