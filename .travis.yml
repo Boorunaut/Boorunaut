@@ -6,6 +6,5 @@ env:
   - DJANGO_VERSION=2.1.2
 install:
   - pip install -r requirements.txt
-  - pip install -q Django==2.1.2 --use-mirrors
 script:
   - python manage.py test
