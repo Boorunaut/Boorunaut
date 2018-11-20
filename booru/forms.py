@@ -7,6 +7,7 @@ from taggit.utils import edit_string_for_tags
 from booru import utils
 from booru.account.forms import UsernameExistsField
 from booru.account.models import Timeout
+from booru.core.models import BannedHash
 from booru.models import Category, Gallery, Post, PostTag
 
 
@@ -49,8 +50,14 @@ class CreatePostForm(forms.ModelForm):
         
         if not utils.get_pil_image_if_valid(media_file):
             if not utils.check_video_is_valid(media_file):
-                raise forms.ValidationError("Please upload a valid image or video.") 
-        return cleaned_data
+                raise forms.ValidationError("Please upload a valid image or video.")
+
+        md5_checksum = utils.get_file_md5(media_file)
+
+        if BannedHash.objects.filter(content=md5_checksum).exists():
+            raise forms.ValidationError("This file is not allowed to be uploaded. Contact the staff.")
+
+        return cleaned_data    
 
 class EditPostForm(forms.ModelForm):
     '''Form for editing an post.'''    

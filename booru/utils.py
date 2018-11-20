@@ -1,3 +1,4 @@
+import hashlib
 import tempfile
 from io import BytesIO
 
@@ -235,3 +236,9 @@ def filter_posts(tag_list):
 
 def parse_and_filter_tags(tags):
     return filter_posts(parse_tags(tags))
+
+def get_file_md5(file_data):
+    hash_md5 = hashlib.md5()
+    for chunk in iter(lambda: file_data.read(4096), b""):
+        hash_md5.update(chunk)
+    return hash_md5.hexdigest()

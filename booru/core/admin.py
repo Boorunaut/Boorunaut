@@ -1,3 +1,4 @@
 from django.contrib import admin
+from booru.core.models import BannedHash
 
-# Register your models here.
+admin.site.register(BannedHash)
