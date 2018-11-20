@@ -8,6 +8,11 @@
 {% block scripts %}
 {% endblock %}
 
+{% block ld_json %}
+<link href="{{request.get_host}}{{request.path}}" rel="canonical" />
+{% endblock %}
+
+
 {% block body %}
     {% load number_converter %}
     <div class="row">

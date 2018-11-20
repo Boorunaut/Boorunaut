@@ -5,6 +5,20 @@
     <link rel="stylesheet" type="text/css" href="{% static 'booru/css/post_detail.css' %}"/>
 {% endblock %}
 
+{% block ld_json %}
+<script type="application/ld+json">
+    {
+      "@context": "http://schema.org",
+      "@type": "ImageObject",
+      "contentUrl": "{{post.media.url}}",
+      "datePublished": "{{post.timestamp|date:'c'}}",
+      "description": "{{post.description}}"
+    }
+</script>
+
+<link href="{{post.get_absolute_url}}" rel="canonical" />
+{% endblock %}
+
 {% block scripts %}
     <script src="{% static 'booru/js/post_detail.js' %}"></script>
     <script>
@@ -122,7 +136,7 @@
                         <tr>
                             <th scope="row">Size</th>
                             <td>
-                                <a href="{{post.image.url}}">{{post.image.size}} KB</a>
+                                <a href="{{post.media.url}}">{{post.media.size}} KB</a>
                                 ({{post.get_media_width}}x{{post.get_media_height}})
                             </td>
                         </tr>

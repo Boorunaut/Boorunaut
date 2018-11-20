@@ -115,8 +115,8 @@ def post_list_detail(request, page_number = 1):
     if request.user.is_authenticated and request.user.safe_only:
         posts = posts.exclude(rating=2).exclude(rating=3)
     
-    page_limit = 4
-    posts = posts.order_by('id')
+    page_limit = 20
+    posts = posts.order_by('-id')
     p = Paginator(posts, page_limit)
     page = p.page(page_number)
     post_list = page.object_list
