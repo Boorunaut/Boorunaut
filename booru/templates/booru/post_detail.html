@@ -10,7 +10,7 @@
     {
       "@context": "http://schema.org",
       "@type": "ImageObject",
-      "contentUrl": "{{post.image.url}}",
+      "contentUrl": "{{post.media.url}}",
       "datePublished": "{{post.timestamp|date:'c'}}",
       "description": "{{post.description}}"
     }
@@ -136,7 +136,7 @@
                         <tr>
                             <th scope="row">Size</th>
                             <td>
-                                <a href="{{post.image.url}}">{{post.image.size}} KB</a>
+                                <a href="{{post.media.url}}">{{post.media.size}} KB</a>
                                 ({{post.get_media_width}}x{{post.get_media_height}})
                             </td>
                         </tr>
