@@ -20,7 +20,8 @@
         {% for field in form %}
         <div class="form-group">
             <label for="{{field.auto_id}}">{{ field.label }}</label>
-            {{ field }}
+            {{ field }}        
+            <p class="text-muted">{{field.help_text}}</p>
         </div>
         {% endfor %}
         <button type="submit" class="btn btn-primary">Submit</button>

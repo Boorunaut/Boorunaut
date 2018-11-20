@@ -79,6 +79,7 @@ TEMPLATES = [
                 # Project processors
                 'booru.context_processors.site_title',
                 'booru.context_processors.announcement',
+                'booru.context_processors.custom_code',
             ],
         },
     },

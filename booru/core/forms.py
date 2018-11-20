@@ -4,9 +4,10 @@ from booru.core.models import BannedHash
 
 class BannedHashCreateForm(forms.ModelForm):
     '''Form for creating an BannedHash.'''
+
     class Meta:
         model = BannedHash
-        fields = ["content"]
+        fields = ["content"]        
 
     def __init__(self, *args, **kwargs):
         super(BannedHashCreateForm, self).__init__(*args, **kwargs)
