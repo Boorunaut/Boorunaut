@@ -207,9 +207,11 @@ class GalleryListSearchForm(forms.Form):
         self.fields['name'].widget = forms.TextInput(attrs={'class': 'form-control form-control-sm'})
 
 class SiteConfigurationForm(forms.Form):
-    site_title = forms.CharField(required=True)
+    site_title = forms.CharField(required=True, help_text="The name of the website to be shown.")
     terms_of_service = forms.CharField(required=False)
     privacy_policy = forms.CharField(required=False)
+    announcement = forms.CharField(required=False, help_text="The contents here will be shown on the top of the website for all users. Markdown is enabled.")
+    custom_code = forms.CharField(required=False, help_text="WARNING: This executes arbitrary HTML code on the top of the site for all users. Be careful of the contents here.")
 
     class Meta:
         fields = "__all__"
@@ -219,3 +221,5 @@ class SiteConfigurationForm(forms.Form):
         self.fields['site_title'].widget = forms.TextInput(attrs={'class': 'form-control'})
         self.fields['terms_of_service'].widget = forms.Textarea(attrs={'class': 'form-control'})
         self.fields['privacy_policy'].widget = forms.Textarea(attrs={'class': 'form-control'})
+        self.fields['announcement'].widget = forms.Textarea(attrs={'class': 'form-control'})
+        self.fields['custom_code'].widget = forms.Textarea(attrs={'class': 'form-control'})

@@ -51,6 +51,19 @@
         {% load static %}
         {% include 'booru/navbar.html' %}
 
+        {% if SITE_ANNOUNCEMENT %}
+        <div class="container">
+            {% load markdown_deux_tags %}
+            <div class="alert alert-info" role="alert">
+                {{SITE_ANNOUNCEMENT|markdown}}
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="container">
+            {{SITE_CUSTOM_CODE|safe}}
+        </div>
+
         <div class="container-fluid mt-4">
         {% block body %}
         {% endblock %}
