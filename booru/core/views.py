@@ -1,6 +1,7 @@
+from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
-from django.views.generic import CreateView, TemplateView
+from django.views.generic import CreateView, RedirectView, TemplateView
 
 from booru.account.decorators import user_is_not_blocked
 from booru.core.forms import BannedHashCreateForm
@@ -49,3 +50,15 @@ class BannedHashCreateView(CreateView):
         context = super(BannedHashCreateView, self).get_context_data(**kwargs)
         context['banned_hashes'] = BannedHash.objects.all()
         return context
+
+class BannedHashDeleteView(RedirectView):
+
+    permanent = False
+    query_string = True
+    pattern_name = 'core:hash_ban'
+
+    def get_redirect_url(self, *args, **kwargs):
+        banned_hash = get_object_or_404(BannedHash.objects.all(), id=kwargs['pk'])
+        banned_hash.delete()        
+        del kwargs['pk']
+        return super().get_redirect_url(*args, **kwargs)

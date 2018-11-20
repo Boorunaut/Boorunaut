@@ -34,6 +34,7 @@
                 <th scope="col">Created</th>
                 <th scope="col">Last Updated</th>
                 <th scope="col">Creator</th>
+                <th scope="col"></th>
             </tr>
         </thead>
         <tbody>
@@ -53,6 +54,9 @@
                 </td>
                 <td>
                     <a href="{{banned_hash.creator.get_absolute_url}}">{{banned_hash.creator}}</a>
+                </td>
+                <td>
+                    <a href="{% url 'core:hash_ban_delete' banned_hash.id %}">Undo</a>
                 </td>
             </tr>
             {% endfor %}
