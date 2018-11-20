@@ -180,7 +180,7 @@ class Migration(migrations.Migration):
                 ('parent', models.IntegerField(blank=True, null=True)),
                 ('preview', models.ImageField(blank=True, upload_to=booru.models.get_file_path_preview)),
                 ('sample', models.ImageField(blank=True, upload_to=booru.models.get_file_path_sample)),
-                ('image', models.ImageField(blank=True, upload_to=booru.models.get_file_path_image)),
+                ('image', models.ImageField(blank=True, upload_to=booru.models.get_file_path_media)),
                 ('timestamp', models.DateTimeField(auto_now_add=True)),
                 ('update_timestamp', models.DateTimeField(auto_now=True)),
                 ('source', models.TextField(blank=True)),

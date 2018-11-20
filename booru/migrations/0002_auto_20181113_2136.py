@@ -3,14 +3,6 @@
 from django.db import migrations
 
 
-def create_configs(apps, schema_editor):
-    db_alias = schema_editor.connection.alias
-    Configuration = apps.get_model("booru", "Configuration")
-    Configuration.objects.using(db_alias).create(code_name="site_title", value="Boorunaut")
-    Configuration.objects.using(db_alias).create(code_name="google_analytics_id", value="")
-    Configuration.objects.using(db_alias).create(code_name="terms_of_service", value="")
-    Configuration.objects.using(db_alias).create(code_name="privacy_policy", value="")
-
 def create_types(apps, schema_editor):
     db_alias = schema_editor.connection.alias
     Category = apps.get_model("booru", "Category")
@@ -33,6 +25,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(create_configs),
         migrations.RunPython(create_types),
     ]

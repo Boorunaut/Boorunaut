@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import base64
 import tempfile
 from collections import Counter
 from io import BytesIO
@@ -12,8 +13,9 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.test import Client, RequestFactory, TestCase
 from PIL import Image
 
+from booru.forms import (CreatePostForm, EditPostForm, ImplicationCreateForm,
+                         TagListSearchForm)
 from booru.models import Category
-from booru.forms import CreatePostForm, EditPostForm, TagListSearchForm, ImplicationCreateForm
 
 
 class CreateBooruFormTests(TestCase):
@@ -33,11 +35,16 @@ class CreateBooruFormTests(TestCase):
         return user
 
     def create_test_post(self, user):
-        image_mock = ImageFile(tempfile.NamedTemporaryFile(suffix='.png'))
+        image_base64 = "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=="
+        image_bytes = base64.b64decode(image_base64)
+        image_file = tempfile.NamedTemporaryFile(suffix='.png')
+        image_file.write(image_bytes)
+
+        image_mock = ImageFile(image_file)
         tags = ['test1', 'test2']
         source = "http://example.org"
 
-        test_post = Post.objects.create(uploader=user, image=image_mock,
+        test_post = Post.objects.create(uploader=user, media=image_mock,
                                         source=source, tags=tags)
         return test_post
 
