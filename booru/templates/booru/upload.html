@@ -17,17 +17,17 @@
                 {% csrf_token %}
 
                 <div class="form-group row">
-                    <label class="col-1 col-form-label">{{ form.image.label }}</label>
+                    <label class="col-1 col-form-label">{{ form.media.label }}</label>
                     
                     <div class="col-4">
-                        {{form.image}}
+                        {{form.media}}
                         <span class="custom-file-control"></span>
-                        <label class="custom-file-label ml-3 mr-3" for="{{ form.image.auto_id }}">Choose file</label>
+                        <label class="custom-file-label ml-3 mr-3" for="{{ form.media.auto_id }}">Choose file</label>
                     </div>
 
-                    {% if form.image.errors %}
+                    {% if form.media.errors %}
                     <div class="col-md-offset-2 col-8 has-errors text-danger small">
-                        {{form.image.errors}}
+                        {{form.media.errors}}
                     </div>
                     {% endif %}
                 </div>

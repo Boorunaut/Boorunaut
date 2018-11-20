@@ -4,9 +4,10 @@ from django.utils import six
 from taggit.forms import TagField, TagWidget
 from taggit.utils import edit_string_for_tags
 
-from .models import Category, Post, PostTag, Gallery
-from booru.account.models import Timeout
+from booru import utils
 from booru.account.forms import UsernameExistsField
+from booru.account.models import Timeout
+from booru.models import Category, Gallery, Post, PostTag
 
 
 class TaggitAdminTextareaWidget(AdminTextareaWidget):
@@ -19,7 +20,7 @@ class TaggitAdminTextareaWidget(AdminTextareaWidget):
 class CreatePostForm(forms.ModelForm):
     '''Form for creating an post.'''
 
-    image = forms.ImageField(required=True)
+    media = forms.FileField(required=True)
     sample = forms.ImageField(required=False)
     preview = forms.ImageField(required=False)
     tags = TagField(required=True)
@@ -28,16 +29,28 @@ class CreatePostForm(forms.ModelForm):
 
     class Meta:
         model = Post
-        fields = ["image", "sample", "preview", "rating", "source", "description", "tags"]
+        fields = ["media", "sample", "preview", "rating", "source", "description", "tags"]
 
     def __init__(self, *args, **kwargs):
         super(CreatePostForm, self).__init__(*args, **kwargs)
-        self.fields['image'].widget = forms.FileInput(attrs={'class': 'custom-file-input'})
+        self.fields['media'].widget = forms.FileInput(attrs={'class': 'custom-file-input'})
         self.fields['source'].widget = forms.Textarea(attrs={'class': 'form-control'})
         self.fields['rating'].widget = forms.Select(attrs={'class': 'form-control'},
                                                     choices=Post.RATING_CHOICES)
         self.fields['description'].widget = forms.Textarea(attrs={'class': 'form-control'})
         self.fields['tags'].widget = forms.TextInput(attrs={'class': 'form-control'})
+
+    def clean( self ): 
+        cleaned_data = self.cleaned_data
+        media_file = cleaned_data.get( "media" )
+
+        if media_file is None:
+            raise forms.ValidationError("Please select a image or video")
+        
+        if not utils.get_pil_image_if_valid(media_file):
+            if not utils.check_video_is_valid(media_file):
+                raise forms.ValidationError("Please upload a valid image or video.") 
+        return cleaned_data
 
 class EditPostForm(forms.ModelForm):
     '''Form for editing an post.'''    

@@ -2,9 +2,12 @@
 
 from django.db import migrations, models
 
+
 def create_configs(apps, schema_editor):
     db_alias = schema_editor.connection.alias
     Configuration = apps.get_model("booru", "Configuration")
+    Configuration.objects.using(db_alias).create(code_name="site_title", value="Boorunaut")
+    Configuration.objects.using(db_alias).create(code_name="google_analytics_id", value="")
     Configuration.objects.using(db_alias).create(code_name="terms_of_service", value="")
     Configuration.objects.using(db_alias).create(code_name="privacy_policy", value="")
 
