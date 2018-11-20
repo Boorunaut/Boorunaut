@@ -7,7 +7,7 @@ class BannedHashCreateForm(forms.ModelForm):
 
     class Meta:
         model = BannedHash
-        fields = ["content"]        
+        fields = ["content"]
 
     def __init__(self, *args, **kwargs):
         super(BannedHashCreateForm, self).__init__(*args, **kwargs)
