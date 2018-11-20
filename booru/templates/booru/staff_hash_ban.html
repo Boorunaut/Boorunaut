@@ -1,0 +1,66 @@
+{% extends 'booru/base_admin.html' %}
+
+{% block css %}
+    {% load staticfiles %}
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block content %}
+<div class="col-12 text-white bg-primary">
+    <h1 class="h4 text-uppercase p-3 mb-0"><i class="fas fa-chart-line mr-3"></i>Configuration</h1>
+</div>
+
+<div class="col bg-white align-middle mt-3 pl-4 pt-3 pb-3 pr-4">
+    <h1>Ban MD5 Hash</h1>
+    <p>Any MD5 hash here will make the corresponding media to be unallowed to be uploaded on the site.</p>
+
+    <form method="post" enctype="multipart/x-www-form-urlencoded">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="form-group">
+            <label for="{{field.auto_id}}">{{ field.label }}</label>
+            {{ field }}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    <table class="table table-striped text-center mt-3">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">MD5 Hash</th>
+                <th scope="col">Created</th>
+                <th scope="col">Last Updated</th>
+                <th scope="col">Creator</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for banned_hash in banned_hashes %}
+            <tr>
+                <th scope="row">
+                    {{banned_hash.id}}
+                </th>
+                <td>
+                    {{banned_hash.content}}
+                </td>
+                <td>
+                    {{banned_hash.timestamp}}
+                </td>
+                <td>
+                    {{banned_hash.update_timestamp}}
+                </td>
+                <td>
+                    <a href="{{banned_hash.creator.get_absolute_url}}">{{banned_hash.creator}}</a>
+                </td>
+                <td>
+                    <a href="{% url 'core:hash_ban_delete' banned_hash.id %}">Undo</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
