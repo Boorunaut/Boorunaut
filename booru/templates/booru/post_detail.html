@@ -34,7 +34,7 @@
     {% load number_converter %}
     {% load markdown_deux_tags %}
     <div class="row">
-        <div id="sidebar" class="col-md-3 col">
+        <div id="sidebar" class="col-md-3 col order-2 order-md-1">
             <nav aria-label="Page navigation example">
                 <ul class="pagination justify-content-center">
                     {% if previous_post %}
@@ -201,7 +201,7 @@
                 {% endif %}                
             </div>
         </div>
-        <div id="post" class="col">
+        <div id="post" class="col-9 order-1 order-md-2">
             {% if post.status == 2 %}
             <div class="alert alert-warning text-center" role="alert">
                 This post was hid by a staff member.
@@ -215,7 +215,7 @@
                 <div class="col">                    
                     {% if perms.booru.change_status or not post.status == 3 %}
                     {% if post.media_type == 0 %}
-                    <img src="{{post.get_sample_url}}" alt="">
+                    <img src="{{post.get_sample_url}}" alt="" style="max-width: 100%;">
                     {% elif post.media_type == 1 %}
                     <video controls> 
                         <source src={{post.media.url}}>
