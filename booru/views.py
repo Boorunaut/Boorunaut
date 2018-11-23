@@ -1,29 +1,31 @@
 import json
 
 import diff_match_patch as dmp_module
-from . import utils
-from .forms import CreatePostForm, EditPostForm, \
-    GalleryCreateForm, GalleryEditForm, GalleryListSearchForm, \
-    ImplicationCreateForm, MassRenameForm, SiteConfigurationForm, \
-    TagEditForm, TagListSearchForm, BanUserForm
-from .models import Comment, Configuration, Favorite, Gallery, Implication, \
-    Post, PostTag, ScoreVote, TaggedPost
 from django.apps import apps
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import REDIRECT_FIELD_NAME, authenticate
 from django.contrib.auth.decorators import login_required
-from django.core.paginator import Paginator
+from django.core.paginator import EmptyPage, Paginator
 from django.db.models import Count, Q
 from django.forms.models import model_to_dict
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views import generic
 from django.views.decorators.csrf import csrf_protect
 from django.views.generic import FormView
 
 from booru.account.decorators import user_is_not_blocked
-from booru.account.models import Account, Timeout, Privilege
+from booru.account.models import Account, Privilege, Timeout
+
+from . import utils
+from .forms import (BanUserForm, CreatePostForm, EditPostForm,
+                    GalleryCreateForm, GalleryEditForm, GalleryListSearchForm,
+                    ImplicationCreateForm, MassRenameForm,
+                    SiteConfigurationForm, TagEditForm, TagListSearchForm)
+from .models import (Comment, Configuration, Favorite, Gallery, Implication,
+                     Post, PostTag, ScoreVote, TaggedPost)
 
 
 @user_is_not_blocked
@@ -130,23 +132,34 @@ def post_list_detail(request, page_number = 1):
 def tags_list(request, page_number = 1):
     searched_tag = request.GET.get("tags", "")
     category = request.GET.get("category", "")
+
+    try:
+        category = int(category)
+    except:
+        category = 0
+
     form = TagListSearchForm(request.GET or None)
 
     tags = PostTag.objects.all()
+
     if searched_tag != "":
         tags = tags.filter(name=searched_tag)
 
-    if category != "":
-        try:
-            tags = tags.filter(category=int(category))
-        except:
-            pass
+    if category != 0:
+        tags = tags.filter(category=category)
+
+    tags = tags.order_by('id')
     
     page_limit = 10
     p = Paginator(tags, page_limit)
-    page = p.page(page_number)
-    tags_list = page.object_list
     
+    try:
+        page = p.page(page_number)
+    except EmptyPage:
+        url = reverse('booru:tags_list') + '?tags={}&category={}'.format(searched_tag, category)
+        return redirect(url, page_number=1)
+    
+    tags_list = page.object_list
     return render(request, 'booru/tag_list.html', {"tags": tags_list, "page": page, "form": form})
 
 @login_required
