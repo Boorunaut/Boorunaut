@@ -9,7 +9,24 @@ from booru.account.forms import UsernameExistsField
 from booru.account.models import Timeout
 from booru.core.models import BannedHash
 from booru.models import Category, Gallery, Post, PostTag
+from django.core.validators import URLValidator
+from django.core.exceptions import ValidationError
 
+
+def validate_sources(source):
+    sources = source.splitlines()
+
+    val = URLValidator()
+    for index, source in enumerate(sources):
+        if '://' not in source:
+            source = 'http://' + source
+            sources[index] = source
+        try:
+            val(source)
+        except ValidationError as e:
+            return None
+    sources = "\n".join(sources)
+    return sources
 
 class TaggitAdminTextareaWidget(AdminTextareaWidget):
     # taken from taggit.forms.TagWidget
@@ -25,7 +42,7 @@ class CreatePostForm(forms.ModelForm):
     sample = forms.ImageField(required=False)
     preview = forms.ImageField(required=False)
     tags = TagField(required=True)
-    source = forms.URLField(required=False)
+    source = forms.CharField(required=False)
     rating = forms.IntegerField()
 
     class Meta:
@@ -43,7 +60,7 @@ class CreatePostForm(forms.ModelForm):
 
     def clean( self ): 
         cleaned_data = self.cleaned_data
-        media_file = cleaned_data.get( "media" )
+        media_file = cleaned_data.get( "media" )       
 
         if media_file is None:
             raise forms.ValidationError("Please select a image or video")
@@ -57,18 +74,30 @@ class CreatePostForm(forms.ModelForm):
         if BannedHash.objects.filter(content=md5_checksum).exists():
             raise forms.ValidationError("This file is not allowed to be uploaded. Contact the staff.")
 
-        return cleaned_data    
+        return cleaned_data
+
+    def clean_source(self):
+        source = validate_sources(self.cleaned_data['source'])
+        if not source:
+            raise forms.ValidationError("Please use valid URLs.")
+        return source
 
 class EditPostForm(forms.ModelForm):
     '''Form for editing an post.'''    
     rating = forms.IntegerField()
     parent = forms.IntegerField(required=False)
-    source = forms.URLField(required=False)
+    source = forms.CharField(required=False)
     tags = TagField(required=False)
 
     class Meta:
         model = Post
         fields = ["rating", "parent", "source", "tags", "description"]
+    
+    def clean_source(self):
+        source = validate_sources(self.cleaned_data['source'])
+        if not source:
+            raise forms.ValidationError("Please use valid URLs.")
+        return source
 
     def __init__(self, *args, **kwargs):
         super(EditPostForm, self).__init__(*args, **kwargs)
