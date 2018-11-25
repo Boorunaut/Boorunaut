@@ -60,7 +60,7 @@ class CreatePostForm(forms.ModelForm):
 
     def clean( self ): 
         cleaned_data = self.cleaned_data
-        media_file = cleaned_data.get( "media" )       
+        media_file = cleaned_data.get( "media" )
 
         if media_file is None:
             raise forms.ValidationError("Please select a image or video")
