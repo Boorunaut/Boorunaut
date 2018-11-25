@@ -401,26 +401,6 @@ def staff_mass_rename(request):
     return redirect('booru:index')
 
 @user_is_not_blocked
-def staff_user_tools(request):
-    form = BanUserForm(request.POST or None, request.FILES or None)
-
-    if form.is_valid():
-        reason = form.cleaned_data['reason']
-        expiration = form.cleaned_data['expiration']
-        revoked = Privilege.objects.get(codename="can_login")
-        target_user = Account.objects.get(username=form.cleaned_data['username'])
-        author = request.user
-
-        instance = Timeout.objects.create(  author=request.user, target_user=target_user, 
-                                            expiration=expiration, reason=reason)
-
-        instance.revoked.add(revoked)
-        
-        return redirect('booru:staff_user_tools')
-    
-    return render(request, 'booru/staff_user_tools.html', {"form": form})
-
-@user_is_not_blocked
 def gallery_list(request, page_number = 1):
     searched_gallery = request.GET.get("name", "")
     form = GalleryListSearchForm(request.GET or None)
@@ -500,6 +480,37 @@ def gallery_detail(request, gallery_id):
     page = p.page(page_number)
 
     return render(request, 'booru/gallery_detail.html', {"gallery": gallery, "page": page})
+
+class StaffBanUser(FormView):
+    """
+    Provides a form for staff members to configure their booru.
+    """
+    success_url = '.'
+    form_class = BanUserForm
+    redirect_field_name = REDIRECT_FIELD_NAME
+    template_name = "booru/staff_user_tools.html"
+
+    def form_valid(self, form):
+        reason = form.cleaned_data['reason']
+        expiration = form.cleaned_data['expiration']
+        revoked = Privilege.objects.get(codename="can_login")
+        target_user = Account.objects.get(username=form.cleaned_data['username'])
+        author = self.request.user
+
+        if not target_user.groups.filter(name='Administrator').exists(): # Can't ban admins
+            if ((target_user.groups.filter(name='Moderator').exists() and request.user.has_perm('booru.ban_mod'))
+                or not target_user.groups.filter(name='Moderator').exists()):
+                instance = Timeout.objects.create(  author=author, target_user=target_user, 
+                                                    expiration=expiration, reason=reason)
+                instance.revoked.add(revoked)
+        return super().form_valid(form)
+
+    @method_decorator(csrf_protect)
+    @user_is_not_blocked
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated or not request.user.has_perm('booru.ban_user'):
+            return redirect('account:login')
+        return super().dispatch(request, *args, **kwargs)
 
 class SiteConfigurationView(FormView):
     """
