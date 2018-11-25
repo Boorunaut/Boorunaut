@@ -115,11 +115,11 @@
                     <span class="font-weight-bold">Information</span>
                 </div>
                 
-                <table class="table table-sm mt-2 borderless" style="table-layout: fixed;">
+                <table class="table table-sm mt-2 borderless" style="table-layout: fixed; word-break: break-all;">
                     <tbody>
                         <tr>
                             <th scope="row">ID</th>
-                            <td class="">{{post.id}}</td>
+                            <td>{{post.id}}</td>
                         </tr>
                         <tr>
                             <th scope="row">Uploader</th>
@@ -142,7 +142,11 @@
                         </tr>
                         <tr>
                             <th scope="row">Source</th>
-                            <td class="text-truncate">{{post.source|safe}}</td>
+                            <td>
+                                {% for source in post.get_sources %}
+                                <a href="{{source}}">{{source}}</a><br/>
+                                {% endfor %}
+                            </td>
                         </tr>
                         <tr>
                             <th scope="row">Rating</th>
@@ -253,7 +257,7 @@
                 <div id="edit" class="col-10" style="display: none;">
                     <form method="post" action="." enctype="multipart/form-data">
                         {% csrf_token %}
-        
+
                         {% for field in form %}
                         <div class="form-group">
                             <label for="{{field.auto_id}}">{{ field.label }}</label>

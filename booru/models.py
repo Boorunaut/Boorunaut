@@ -1,5 +1,6 @@
 import os
 import uuid
+from urllib.parse import urlparse
 
 from django.contrib.contenttypes.fields import (GenericForeignKey,
                                                 GenericRelation)
@@ -298,7 +299,11 @@ class Post(models.Model):
             width, height = get_image_dimensions(self.media.file)
         else:
             width, height = utils.get_video_dimensions(self.media)
-        return height    
+        return height
+    
+    def get_sources(self):
+        sources = self.source.splitlines()
+        return sources
     
     class Meta:
         permissions = (
