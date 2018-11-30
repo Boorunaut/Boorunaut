@@ -33,6 +33,7 @@
     {% load humanize %}
     {% load number_converter %}
     {% load markdown_deux_tags %}
+    {% load permission_tags %}
     <div class="row">
         <div id="sidebar" class="col-md-3 col order-2 order-md-1">
             <nav aria-label="Page navigation example">
@@ -217,7 +218,7 @@
             {% endif %}
             <div class="row mb-3">
                 <div class="col">                    
-                    {% if perms.booru.change_status or not post.status == 3 %}
+                    {% if user|can:'change_status' or not post.status == 3 %}
                     {% if post.media_type == 0 %}
                     <img src="{{post.get_sample_url}}" alt="" style="max-width: 100%;">
                     {% elif post.media_type == 1 %}
@@ -234,7 +235,7 @@
                     <button id="show_comments" class="btn btn-primary btn mr-1">Comments</button>
                     {% endif %}
                     <button id="show_edit_form" class="btn btn-outline-primary btn mr-3">Edit</button>
-                    {% if perms.booru.change_status == True %}
+                    {% if user|can:'change_status' %}
                     <div class="float-right">
                         <a id="approve_post" href="{% url 'booru:post_approve' post.id %}" class="btn btn-success btn mr-1">Approve</a>
                         <a id="hide_post" href="{% url 'booru:post_hide' post.id %}" class="btn btn-warning btn mr-1">Hide</a>
