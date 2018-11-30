@@ -1,13 +1,16 @@
 from django.apps import apps
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, Group
 from django.contrib.contenttypes.fields import (GenericForeignKey,
                                                 GenericRelation)
 from django.db import models
 from django.template.defaultfilters import slugify
 from django.urls import reverse
-from django.utils.translation import gettext as _
 from django.utils import timezone
+from django.utils.translation import gettext as _
+from rolepermissions.roles import assign_role
+
 from booru.managers import UserManager
+
 
 class Privilege(models.Model):
     name = models.CharField(_('name'), max_length=255)
@@ -53,10 +56,17 @@ class Account(AbstractUser):
     objects = UserManager()
 
     def save(self, *args, **kwargs):
+        give_role = False
         if self.__is_a_new_user():
+            give_role = True
             self.slug = slugify(self.username)
-
         super(Account, self).save(*args, **kwargs)
+
+        if give_role:
+            if self.is_staff:
+                assign_role(self, 'administrator')
+            else:
+                assign_role(self, 'user')
 
     def __is_a_new_user(self):
         return not self.id
@@ -100,4 +110,7 @@ class Account(AbstractUser):
     class Meta:
         permissions = (
             ("modify_profile", "Can change values from all profiles."),
+            ("change_user_group", "Can set the group of a user."),
+            ("ban_user", "Can ban users."),
+            ("ban_mod", "Can ban moderators."),
         )

@@ -10,6 +10,7 @@
 
 {% block body %}
     {% load humanize %}
+    {% load permission_tags %}
     <div class="row">
         <div class="col-2">
             <div class="col text-center">
@@ -17,7 +18,7 @@
             </div>
 
             <div class="col text-center">
-                <span class="text-muted">{{user_role}}</span>
+                <span class="text-muted">{{account.groups.all.0}}</span>
             </div>
 
             {% if account.avatar %}
@@ -48,6 +49,7 @@
                         <th scope="row">Comments</th>
                         <td>{{account.get_comments_count}}</td>
                     </tr>
+                    {% comment %}
                     <tr>
                         <th scope="row">Tag Edits</th>
                         <td>-</td>
@@ -64,8 +66,24 @@
                         <th scope="row">Record +</th>
                         <td>-</td>
                     </tr>
+                    {% endcomment %}
                 </tbody>
             </table>
+            {% if user|can:'change_user_group' %}
+            <div class="">                
+                <h4>Admin tools</h4>
+                <form method="post" enctype="multipart/x-www-form-urlencoded">
+                    {% csrf_token %}
+                    {% for field in user_group_form %}
+                    <div class="form-group">
+                        <label for="{{field.auto_id}}">{{ field.label }}</label>
+                        {{ field }}
+                    </div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-primary">Set</button>
+                </form>
+            </div>
+            {% endif %}
         </div>
         <div class="col-6">
             <div class="col">

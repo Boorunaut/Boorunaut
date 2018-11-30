@@ -1,5 +1,7 @@
 from django import forms
 from django.contrib.admin.widgets import AdminTextareaWidget
+from django.core.exceptions import ValidationError
+from django.core.validators import URLValidator
 from django.utils import six
 from taggit.forms import TagField, TagWidget
 from taggit.utils import edit_string_for_tags
@@ -9,8 +11,6 @@ from booru.account.forms import UsernameExistsField
 from booru.account.models import Timeout
 from booru.core.models import BannedHash
 from booru.models import Category, Gallery, Post, PostTag
-from django.core.validators import URLValidator
-from django.core.exceptions import ValidationError
 
 
 def validate_sources(source):

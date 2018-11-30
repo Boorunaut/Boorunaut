@@ -43,7 +43,7 @@
             <tbody>
                 {% for account in accounts %}
                 <tr>
-                    <th scope="row">{{account.username}}</th>
+                    <th scope="row"><a href="{{account.get_absolute_url}}">{{account.username}}</a></th>
                     <td>{{account.date_joined}}</td>
                     <td>{{account.last_login}}</td>
                 </tr>

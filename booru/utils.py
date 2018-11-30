@@ -9,6 +9,7 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.shortcuts import get_object_or_404
 from PIL import Image as ImagePIL
+from rolepermissions.roles import RolesManager
 
 sample_max_resolution = (850, None)
 preview_max_resolution = (150, 150)
@@ -241,3 +242,10 @@ def get_file_md5(file_data):
     for chunk in iter(lambda: file_data.read(4096), b""):
         hash_md5.update(chunk)
     return hash_md5.hexdigest()
+
+def get_all_roles():
+    roles_list = enumerate(list(RolesManager.get_roles_names()))
+    roles = []
+    for key, role in roles_list:
+        roles.append((role, role.title()))
+    return tuple(roles)
