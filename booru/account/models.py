@@ -7,6 +7,7 @@ from django.template.defaultfilters import slugify
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as _
+from rolepermissions.roles import assign_role
 
 from booru.managers import UserManager
 
@@ -55,17 +56,17 @@ class Account(AbstractUser):
     objects = UserManager()
 
     def save(self, *args, **kwargs):
+        give_role = False
         if self.__is_a_new_user():
+            give_role = True
             self.slug = slugify(self.username)
-
-        if self.is_staff:
-            user = Group.objects.get(name='Administrator')
-            self.groups.add(user)
-        else:
-            user = Group.objects.get(name='User')
-            self.groups.add(user)
-
         super(Account, self).save(*args, **kwargs)
+
+        if give_role:
+            if self.is_staff:
+                assign_role(self, 'administrator')
+            else:
+                assign_role(self, 'user')
 
     def __is_a_new_user(self):
         return not self.id

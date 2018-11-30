@@ -42,7 +42,7 @@ class BannedHashCreateView(CreateView):
     @method_decorator(csrf_protect)
     @user_is_not_blocked
     def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_authenticated or not request.user.has_perm('booru.core.ban_hashes'):
+        if not request.user.is_authenticated or not has_permission(request.user,'booru.ban_hashes'):
             return redirect('account:login')
         return super().dispatch(request, *args, **kwargs)
 
@@ -60,7 +60,7 @@ class BannedHashDeleteView(RedirectView):
     @method_decorator(csrf_protect)
     @user_is_not_blocked
     def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_authenticated or not request.user.has_perm('booru.core.ban_hashes'):
+        if not request.user.is_authenticated or not has_permission(request.user,'booru.ban_hashes'):
             return redirect('account:login')
         return super().dispatch(request, *args, **kwargs)
 

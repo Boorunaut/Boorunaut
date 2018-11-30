@@ -10,6 +10,7 @@
 
 {% block body %}
     {% load humanize %}
+    {% load permission_tags %}
     <div class="row">
         <div class="col-2">
             <div class="col text-center">
@@ -68,7 +69,7 @@
                     {% endcomment %}
                 </tbody>
             </table>
-            {% if can_change_group %}
+            {% if user|can:'change_user_group' %}
             <div class="">                
                 <h4>Admin tools</h4>
                 <form method="post" enctype="multipart/x-www-form-urlencoded">

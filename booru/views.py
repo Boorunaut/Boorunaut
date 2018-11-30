@@ -15,6 +15,7 @@ from django.utils.decorators import method_decorator
 from django.views import generic
 from django.views.decorators.csrf import csrf_protect
 from django.views.generic import FormView
+from rolepermissions.checkers import has_permission
 
 from booru.account.decorators import user_is_not_blocked
 from booru.account.models import Account, Privilege, Timeout
@@ -315,7 +316,7 @@ def tag_search(request):
 def post_approve(request, post_id):
     post = Post.objects.get(id=post_id)
 
-    if request.user.has_perm("booru.change_status") and post.status != 1:
+    if has_permission(request.user, "change_status") and post.status != 1:
         post.status = 1
         post.save()
     return redirect('booru:post_detail', post_id=post.id)
@@ -324,7 +325,7 @@ def post_approve(request, post_id):
 def post_hide(request, post_id):
     post = Post.objects.get(id=post_id)
 
-    if request.user.has_perm("booru.change_status") and post.status != 2:
+    if has_permission(request.user, "change_status") and post.status != 2:
         post.status = 2
         post.save()
     return redirect('booru:post_detail', post_id=post.id)
@@ -333,7 +334,7 @@ def post_hide(request, post_id):
 def post_delete(request, post_id):
     post = Post.objects.get(id=post_id)
 
-    if request.user.has_perm("booru.change_status") and post.status != 3:
+    if has_permission(request.user, "change_status") and post.status != 3:
         post.status = 3
         post.save()
     return redirect('booru:post_detail', post_id=post.id)
@@ -378,7 +379,7 @@ def post_score_vote(request, post_id):
 def staff_mass_rename(request):
     form = MassRenameForm(request.POST or None, request.FILES or None)
 
-    if request.user.has_perm("booru.mass_rename"):
+    if has_permission(request.user, "mass_rename"):
         if form.is_valid():
             filter_by = form.cleaned_data['filter_by']
             when = form.cleaned_data['when']
@@ -497,9 +498,9 @@ class StaffBanUser(FormView):
         target_user = Account.objects.get(username=form.cleaned_data['username'])
         author = self.request.user
 
-        if not target_user.groups.filter(name='Administrator').exists(): # Can't ban admins
-            if ((target_user.groups.filter(name='Moderator').exists() and request.user.has_perm('booru.ban_mod'))
-                or not target_user.groups.filter(name='Moderator').exists()):
+        if not has_role(target_user, 'administrator'): # Can't ban admins
+            if (has_role(target_user, 'moderator') and has_permission(request.user, 'booru.ban_mod')
+                or not has_role(target_user, 'moderator')):
                 instance = Timeout.objects.create(  author=author, target_user=target_user, 
                                                     expiration=expiration, reason=reason)
                 instance.revoked.add(revoked)
@@ -508,7 +509,7 @@ class StaffBanUser(FormView):
     @method_decorator(csrf_protect)
     @user_is_not_blocked
     def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_authenticated or not request.user.has_perm('booru.ban_user'):
+        if not request.user.is_authenticated or not has_permission(request.user, 'booru.ban_user'):
             return redirect('account:login')
         return super().dispatch(request, *args, **kwargs)
 
@@ -559,7 +560,7 @@ class SiteConfigurationView(FormView):
     @method_decorator(csrf_protect)
     @user_is_not_blocked
     def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_authenticated or not request.user.has_perm('booru.change_configurations'):
+        if not request.user.is_authenticated or not has_permission(request.user,'change_configurations'):
             return redirect('account:login')
 
         return super().dispatch(request, *args, **kwargs)

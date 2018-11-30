@@ -10,11 +10,14 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import FormView, RedirectView, TemplateView
+from rolepermissions.checkers import has_permission, has_role
+from rolepermissions.roles import assign_role, clear_roles
 
 from booru.account.decorators import user_is_not_blocked
 from booru.models import Comment, Post
 
-from .forms import UserAuthenticationForm, UserRegisterForm, UserSettingsForm, StaffUserGroupForm
+from .forms import (StaffUserGroupForm, UserAuthenticationForm,
+                    UserRegisterForm, UserSettingsForm)
 from .models import Account
 
 
@@ -114,7 +117,7 @@ class RegisterView(FormView):
 def profile(request, account_slug):
     account = get_object_or_404(Account.objects.active(), slug=account_slug)
 
-    can_modify_profile = (request.user == account or request.user.has_perm("account.modify_profile"))
+    can_modify_profile = (request.user == account or has_permission(request.user, "modify_profile"))
 
     user_group_form = StaffUserGroupForm(request.POST or None, request.FILES or None)
 
@@ -134,13 +137,17 @@ def profile(request, account_slug):
             return redirect('booru:profile', account_slug=account.slug)
 
     if request.user.is_authenticated:
-        if user_group_form.is_valid() and request.user.has_perm('change_user_group'):
+        if user_group_form.is_valid() and has_permission(request.user, "change_user_group"):
             group = user_group_form.cleaned_data['group']
-            account.groups.clear()
-            account.groups.add(group)
+            clear_roles(account)
+            assign_role(account, group)
+
+            if group in ['administrator','moderator','janitor']:
+                account.is_staff = True
+                account.save()
         
         has_comment_priv = request.user.has_priv("can_comment")
-        can_change_group = request.user.has_priv("change_user_group")
+        can_change_group = has_permission(request.user, "change_user_group")
     else:
         has_comment_priv = False
         can_change_group = False

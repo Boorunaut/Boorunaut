@@ -5,6 +5,7 @@ from django.contrib.auth.models import Group
 from django.db.models import Q
 from django.template.defaultfilters import slugify
 
+import booru.utils
 from booru.account.models import Account
 
 
@@ -121,7 +122,7 @@ class UserSettingsForm(forms.ModelForm):
         self.fields['tag_blacklist'].widget = forms.Textarea(attrs={'class': 'form-control', 'rows': '4', 'placeholder': "This feature wasn't implemented yet.", "disabled": ""})
 
 class StaffUserGroupForm(forms.Form):
-    group = forms.ModelChoiceField(queryset=Group.objects.all())
+    group = forms.ChoiceField()
     
     class Meta:
         fields = "__all__"
@@ -129,4 +130,4 @@ class StaffUserGroupForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(StaffUserGroupForm, self).__init__(*args, **kwargs)
         self.fields['group'].widget = forms.Select(attrs={'class': 'form-control'})
-        self.fields['group'].queryset = Group.objects.all()
+        self.fields['group'].choices = booru.utils.get_all_roles()

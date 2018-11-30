@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'taggit',
     'markdown_deux',
     'simple_history',
+    'rolepermissions',
 ]
 
 MIDDLEWARE = [
@@ -144,3 +145,5 @@ MEDIA_URL = '/media/'
 TAGGIT_CASE_INSENSITIVE = True
 TAGGIT_TAGS_FROM_STRING = 'booru.utils.space_splitter'
 TAGGIT_STRING_FROM_TAGS = 'booru.utils.space_joiner'
+
+ROLEPERMISSIONS_MODULE = 'devproject.roles'
