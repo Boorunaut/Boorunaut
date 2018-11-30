@@ -100,6 +100,7 @@ class Account(AbstractUser):
     class Meta:
         permissions = (
             ("modify_profile", "Can change values from all profiles."),
+            ("change_user_group", "Can set the group of a user."),
             ("ban_user", "Can ban users."),
             ("ban_mod", "Can ban moderators."),
         )
