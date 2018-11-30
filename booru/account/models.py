@@ -1,13 +1,15 @@
 from django.apps import apps
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, Group
 from django.contrib.contenttypes.fields import (GenericForeignKey,
                                                 GenericRelation)
 from django.db import models
 from django.template.defaultfilters import slugify
 from django.urls import reverse
-from django.utils.translation import gettext as _
 from django.utils import timezone
+from django.utils.translation import gettext as _
+
 from booru.managers import UserManager
+
 
 class Privilege(models.Model):
     name = models.CharField(_('name'), max_length=255)
@@ -55,6 +57,13 @@ class Account(AbstractUser):
     def save(self, *args, **kwargs):
         if self.__is_a_new_user():
             self.slug = slugify(self.username)
+
+        if self.is_staff:
+            user = Group.objects.get(name='Administrator')
+            self.groups.add(user)
+        else:
+            user = Group.objects.get(name='User')
+            self.groups.add(user)
 
         super(Account, self).save(*args, **kwargs)
 

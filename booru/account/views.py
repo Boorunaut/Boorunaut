@@ -14,7 +14,7 @@ from django.views.generic import FormView, RedirectView, TemplateView
 from booru.account.decorators import user_is_not_blocked
 from booru.models import Comment, Post
 
-from .forms import UserAuthenticationForm, UserRegisterForm, UserSettingsForm
+from .forms import UserAuthenticationForm, UserRegisterForm, UserSettingsForm, StaffUserGroupForm
 from .models import Account
 
 
@@ -116,7 +116,7 @@ def profile(request, account_slug):
 
     can_modify_profile = (request.user == account or request.user.has_perm("account.modify_profile"))
 
-    has_comment_priv = request.user.has_priv("can_comment")
+    user_group_form = StaffUserGroupForm(request.POST or None, request.FILES or None)
 
     if request.method == "POST":
         newCommentTextarea = request.POST.get("newCommentTextarea")
@@ -133,18 +133,31 @@ def profile(request, account_slug):
             account.save()
             return redirect('booru:profile', account_slug=account.slug)
 
+    if request.user.is_authenticated:
+        if user_group_form.is_valid() and request.user.has_perm('change_user_group'):
+            group = user_group_form.cleaned_data['group']
+            account.groups.clear()
+            account.groups.add(group)
+        
+        has_comment_priv = request.user.has_priv("can_comment")
+        can_change_group = request.user.has_priv("change_user_group")
+    else:
+        has_comment_priv = False
+        can_change_group = False
+
     # TODO: I don't remember if I can safely pass account as 
     # an parameter to the render.
     favorites = Post.objects.filter(favorites__account=account)[:5]
     
     context = {
         'account' : account,
-        'user_role' : "(User role here)", #TODO: This
-        'recent_favorites' : favorites, #TODO: This
+        'recent_favorites' : favorites,
         'recent_uploads' : account.get_posts().not_deleted().order_by('-id'),
         'deleted_posts' : account.get_posts().deleted(),
         'can_modify_profile': request.user.is_authenticated and can_modify_profile,
-        'can_comment': has_comment_priv
+        'can_comment': has_comment_priv,
+        'user_group_form': user_group_form,
+        'can_change_group': can_change_group
     }
 
     return render(request, 'booru/account/profile.html', context)

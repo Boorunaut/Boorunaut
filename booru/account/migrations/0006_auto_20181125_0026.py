@@ -9,6 +9,7 @@ def create_configs(apps, schema_editor):
     admin = Group.objects.using(db_alias).create(name='Administrator')
     mod = Group.objects.using(db_alias).create(name='Moderator')
     janitor = Group.objects.using(db_alias).create(name='Janitor')
+    user = Group.objects.using(db_alias).create(name='User')
 
     Permission = apps.get_model("auth", "Permission")
     modify_profile = Permission.objects.using(db_alias).get(codename='modify_profile')

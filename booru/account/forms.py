@@ -1,8 +1,12 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UsernameField
-from booru.account.models import Account
+from django.contrib.auth.forms import (AuthenticationForm, UserCreationForm,
+                                       UsernameField)
+from django.contrib.auth.models import Group
 from django.db.models import Q
 from django.template.defaultfilters import slugify
+
+from booru.account.models import Account
+
 
 class UniqueUserEmailField(forms.EmailField):
     """
@@ -115,3 +119,14 @@ class UserSettingsForm(forms.ModelForm):
         # TODO: implement the tag blacklist
         #self.fields['tag_blacklist'].widget = forms.Textarea(attrs={'class': 'form-control', 'rows': '4', 'placeholder': 'Ex.: wall rating:explicit user:girugamesh'})
         self.fields['tag_blacklist'].widget = forms.Textarea(attrs={'class': 'form-control', 'rows': '4', 'placeholder': "This feature wasn't implemented yet.", "disabled": ""})
+
+class StaffUserGroupForm(forms.Form):
+    group = forms.ModelChoiceField(queryset=Group.objects.all())
+    
+    class Meta:
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super(StaffUserGroupForm, self).__init__(*args, **kwargs)
+        self.fields['group'].widget = forms.Select(attrs={'class': 'form-control'})
+        self.fields['group'].queryset = Group.objects.all()
