@@ -16,6 +16,21 @@
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
 
+                {% if form.errors %}
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <div class="alert alert-danger">
+                                <strong>{{ error|escape }}</strong>
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            <strong>{{ error|escape }}</strong>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
                 <div class="form-group row">
                     <label class="col-1 col-form-label">{{ form.media.label }}</label>
                     
@@ -33,11 +48,31 @@
                 </div>
 
                 <div class="form-group row">
+                    <label for="{{ form.media_url.auto_id }}" class="col-1 col-form-label">{{ form.media_url.label }}</label>
+                    
+                    <div class="col-4">
+                        {{form.media_url}}
+                    </div>
+
+                    {% if form.media_url.errors %}
+                    <div class="col-md-offset-2 col-8 has-errors text-danger small">
+                        {{form.media_url.errors}}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group row">
                     <label for="{{ form.tags.auto_id }}" class="col-1 col-form-label">{{ form.tags.label }}</label>
                     
                     <div class="col-4">
                         {{form.tags}}
                     </div>
+
+                    {% if form.tags.help_text %}
+                    <div class="col-8">
+                        <p class="text-muted">{{form.tags.help_text}}</p>
+                    </div>
+                    {% endif %}
 
                     {% if form.tags.errors %}
                     <div class="col-md-offset-2 col-8 has-errors text-danger small">

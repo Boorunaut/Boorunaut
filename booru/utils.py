@@ -1,12 +1,15 @@
+import copy
 import hashlib
+import io
 import tempfile
-from io import BytesIO
+import urllib.request
 
 import diff_match_patch as dmp_module
 import ffmpeg
 from django.apps import apps
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
+from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.shortcuts import get_object_or_404
 from PIL import Image as ImagePIL
 from rolepermissions.roles import RolesManager
@@ -63,7 +66,7 @@ def get_video_preview(video):
                 .output('pipe:', vframes=1, format='image2', vcodec='mjpeg')
                 .run(capture_stdout=True)
         )
-        image = ImagePIL.open(BytesIO(out))
+        image = ImagePIL.open(io.BytesIO(out))
         return get_preview(image)
     except ffmpeg.Error as e:
         print(e.stderr)
@@ -100,8 +103,8 @@ def reduce_image_to_maximum_size(image, max_resolution):
 
 def convert_image_to_jpeg_bytes(pil_image):
     ''' Convert an PIL Image to JPEG and returns it as bytes. '''
-    f = BytesIO()
-    pil_image.save(f, format='JPEG', quality=90, optimize=True)
+    f = io.BytesIO()
+    pil_image.convert('RGB').save(f, format='JPEG', quality=90, optimize=True)
 
     return f
 
@@ -249,3 +252,33 @@ def get_all_roles():
     for key, role in roles_list:
         roles.append((role, role.title()))
     return tuple(roles)
+
+# Image utils
+def download_and_return_BytesIO(url):
+    response = urllib.request.urlopen(url)
+    img_bytes = response.read()
+    img_bytesio = io.BytesIO(img_bytes)
+    return img_bytesio
+
+def BytesIO_to_InMemoryUploadedFile(img_bytesio):
+    img_size = img_bytesio.getbuffer().nbytes
+    img_format = BytesIO_to_PIL(img_bytesio).format.lower()
+    img_name = "tempfile." + img_format
+    img_content_type = "image/" + img_format
+    
+    return InMemoryUploadedFile(
+        img_bytesio,
+        field_name='tempfile',
+        name=img_name,
+        content_type=img_content_type,
+        size=img_size,
+        charset='utf-8',
+    )
+
+def get_remote_image_as_InMemoryUploadedFile(url):
+    image_bytesio = download_and_return_BytesIO(url)
+    return BytesIO_to_InMemoryUploadedFile(image_bytesio)
+
+def BytesIO_to_PIL(img_bytesio):
+    img_copy = copy.copy(img_bytesio)
+    return ImagePIL.open(img_copy)
