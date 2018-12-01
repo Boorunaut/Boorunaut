@@ -38,20 +38,23 @@ class TaggitAdminTextareaWidget(AdminTextareaWidget):
 class CreatePostForm(forms.ModelForm):
     '''Form for creating an post.'''
 
-    media = forms.FileField(required=True)
+    media = forms.FileField(required=False)
+    media_url = forms.URLField(required=False)
     sample = forms.ImageField(required=False)
     preview = forms.ImageField(required=False)
-    tags = TagField(required=True)
+    tags = TagField(required=True, help_text="Required: Choose one or more tags.")
     source = forms.CharField(required=False)
     rating = forms.IntegerField()
 
     class Meta:
         model = Post
-        fields = ["media", "sample", "preview", "rating", "source", "description", "tags"]
+        fields = ["media", "media_url", "sample", "preview", "tags", "rating", "source", "description"]
 
     def __init__(self, *args, **kwargs):
         super(CreatePostForm, self).__init__(*args, **kwargs)
         self.fields['media'].widget = forms.FileInput(attrs={'class': 'custom-file-input'})
+        self.fields['media_url'].widget = forms.URLInput(attrs={'class': 'form-control'})
+        self.fields['media_url'].required = False
         self.fields['source'].widget = forms.Textarea(attrs={'class': 'form-control'})
         self.fields['rating'].widget = forms.Select(attrs={'class': 'form-control'},
                                                     choices=Post.RATING_CHOICES)
@@ -60,26 +63,37 @@ class CreatePostForm(forms.ModelForm):
 
     def clean( self ): 
         cleaned_data = self.cleaned_data
-        media_file = cleaned_data.get( "media" )
+        media_file = cleaned_data.get('media')
+        media_url = cleaned_data.get('media_url')
+        detected_media = None
 
-        if media_file is None:
-            raise forms.ValidationError("Please select a image or video")
-        
-        if not utils.get_pil_image_if_valid(media_file):
-            if not utils.check_video_is_valid(media_file):
+        if media_file is None and not media_url:
+            raise forms.ValidationError("Please select an image or video.")
+        elif media_file is not None and media_url:
+            raise forms.ValidationError("Please only upload one image or video.")
+        elif media_file is not None:
+            detected_media = media_file
+        elif media_url:
+            detected_media = utils.get_remote_image_as_InMemoryUploadedFile(media_url)
+                
+        if not utils.get_pil_image_if_valid(detected_media):
+            if not utils.check_video_is_valid(detected_media):
                 raise forms.ValidationError("Please upload a valid image or video.")
 
-        md5_checksum = utils.get_file_md5(media_file)
+        md5_checksum = utils.get_file_md5(detected_media)
 
         if BannedHash.objects.filter(content=md5_checksum).exists():
             raise forms.ValidationError("This file is not allowed to be uploaded. Contact the staff.")
-
+        
+        self.cleaned_data['media'] = detected_media
         return cleaned_data
 
     def clean_source(self):
-        source = validate_sources(self.cleaned_data['source'])
-        if not source:
-            raise forms.ValidationError("Please use valid URLs.")
+        source = self.cleaned_data['source']
+        if source:
+            source = validate_sources(self.cleaned_data['source'])
+            if not source:
+                raise forms.ValidationError("Please use valid URLs.")
         return source
 
 class EditPostForm(forms.ModelForm):

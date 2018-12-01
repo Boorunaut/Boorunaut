@@ -12,7 +12,7 @@
     {% load humanize %}
     {% load permission_tags %}
     <div class="row">
-        <div class="col-2">
+        <div class="col col-md-2 mb-5">
             <div class="col text-center">
                 <h4 class="mb-0">{{account.username}}</h4>
             </div>
@@ -70,7 +70,7 @@
                 </tbody>
             </table>
             {% if user|can:'change_user_group' %}
-            <div class="">                
+            <div class="">
                 <h4>Admin tools</h4>
                 <form method="post" enctype="multipart/x-www-form-urlencoded">
                     {% csrf_token %}
@@ -85,7 +85,7 @@
             </div>
             {% endif %}
         </div>
-        <div class="col-6">
+        <div class="col col-md-6 mb-5">
             <div class="col">
                 <h3>Recent Favorites</h3>
 
@@ -124,10 +124,10 @@
                 {% endif %}
             </div>
         </div>
-        <div class="col-4">
+        <div class="col col-md-4">
             <h3>
                 About myself
-                {% if can_modify_profile %}
+                {% if user|can:'modify_profile' %}
                 <a class="float-right" id="edit_about" href="#"><i class="fas fa-pencil-alt"></i></a>
                 {% endif %}
             </h3>

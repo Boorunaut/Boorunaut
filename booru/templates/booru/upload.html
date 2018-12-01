@@ -16,79 +16,91 @@
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
 
-                <div class="form-group row">
-                    <label class="col-1 col-form-label">{{ form.media.label }}</label>
-                    
-                    <div class="col-4">
-                        {{form.media}}
-                        <span class="custom-file-control"></span>
-                        <label class="custom-file-label ml-3 mr-3" for="{{ form.media.auto_id }}">Choose file</label>
+                {% if form.errors %}
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <div class="alert alert-danger">
+                                <strong>{{ error|escape }}</strong>
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            <strong>{{ error|escape }}</strong>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <div class="border border-secondary mb-4 p-2">
+                    <div class="form-group row mt-2">
+                        <label class="col-12 col-md-2 col-form-label text-center">{{ form.media.label }}</label>
+                        
+                        <div class="col">
+                            {{form.media}}
+                            <span class="custom-file-control"></span>
+                            <label class="custom-file-label ml-3 mr-3" for="{{ form.media.auto_id }}">
+                                Choose file
+                            </label>
+                        </div>
+
+                        {% if form.media.errors %}
+                        <div class="md-offset-2 col text-danger small">
+                            {{form.media.errors}}
+                        </div>
+                        {% endif %}
                     </div>
 
-                    {% if form.media.errors %}
-                    <div class="col-md-offset-2 col-8 has-errors text-danger small">
-                        {{form.media.errors}}
+                    <div class="form-group row">
+                        <div class="col offset-5 offset-md-6 font-weight-bold">
+                            OR
+                        </div>                        
                     </div>
-                    {% endif %}
+                
+                    <div class="form-group row">
+                        <label class="col-12 col-md-2 col-form-label text-center" for="{{ form.media_url.auto_id }}">
+                            {{ form.media_url.label }}
+                        </label>
+                        
+                        <div class="col">
+                            {{form.media_url}}
+                        </div>
+
+                        {% if form.media_url.errors %}
+                        <div class="md-offset-2 col-8 text-danger small">
+                            {{form.media_url.errors}}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="row">
+                        <p class="col offset-md-2 text-muted">
+                            Required: Use one of the methods to upload a file.
+                            Use the entire URL (including 'http://' or 'https://'), if chosen.
+                        </p>
+                    </div>
                 </div>
 
+                {% for field in form %}
+                {% if field.auto_id != "id_sample" and field.auto_id != "id_preview" and field.auto_id != "id_media" and field.auto_id != "id_media_url" %}
                 <div class="form-group row">
-                    <label for="{{ form.tags.auto_id }}" class="col-1 col-form-label">{{ form.tags.label }}</label>
+                    <label for="{{ field.auto_id }}" class="col-12 col-md-2 col-form-label text-center">{{ field.label }}</label>
                     
-                    <div class="col-4">
-                        {{form.tags}}
+                    <div class="col">
+                        {{field}}
                     </div>
-
-                    {% if form.tags.errors %}
-                    <div class="col-md-offset-2 col-8 has-errors text-danger small">
-                        {{form.tags.errors}}
-                    </div>
-                    {% endif %}
                 </div>
-
-                <div class="form-group row">
-                    <label for="{{ form.rating.auto_id }}" class="col-1 col-form-label">{{ form.rating.label }}</label>
-                    
-                    <div class="col-4">
-                        {{form.rating}}
-                    </div>
-
-                    {% if form.rating.errors %}
-                    <div class="col-md-offset-2 col-8 has-errors text-danger small">
-                        {{form.rating.errors}}
-                    </div>
-                    {% endif %}
+                {% if field.errors %}
+                <div class="row text-danger small">
+                    <div class="col">{{field.errors}}</div>
                 </div>
-
-                <div class="form-group row">
-                    <label for="{{ form.source.auto_id }}" class="col-1 col-form-label">{{ form.source.label }}</label>
-                    
-                    <div class="col-4">
-                        {{form.source}}
-                    </div>
-
-                    {% if form.source.errors %}
-                    <div class="col-md-offset-2 col-8 has-errors text-danger small">
-                        {{form.source.errors}}
-                    </div>
-                    {% endif %}
+                {% endif %}
+                {% if field.help_text %}
+                <div class="row">
+                    <p class="col offset-md-2 text-muted">{{field.help_text}}</p>
                 </div>
-
-                <div class="form-group row">
-                    <label for="{{ form.description.auto_id }}" class="col-1 col-form-label">{{ form.description.label }}</label>
-                    
-                    <div class="col-4">
-                        {{form.description}}
-                    </div>
-
-                    {% if form.description.errors %}
-                    <div class="col-md-offset-2 col-8 has-errors text-danger small">
-                        {{form.description.errors}}
-                    </div>
-                    {% endif %}
-                </div>
-
-                <button type="submit" class="btn btn-primary">Post</button>
+                {% endif %}
+                {% endif %}
+                {% endfor %}
+                <button type="submit" class="btn btn-primary btn-lg float-right">Post</button>
             </form>
         </div>
     </div>
