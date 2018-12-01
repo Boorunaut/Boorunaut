@@ -12,7 +12,7 @@
     {% load humanize %}
     {% load permission_tags %}
     <div class="row">
-        <div class="col-2">
+        <div class="col col-md-2 mb-5">
             <div class="col text-center">
                 <h4 class="mb-0">{{account.username}}</h4>
             </div>
@@ -85,7 +85,7 @@
             </div>
             {% endif %}
         </div>
-        <div class="col-6">
+        <div class="col col-md-6 mb-5">
             <div class="col">
                 <h3>Recent Favorites</h3>
 
@@ -124,7 +124,7 @@
                 {% endif %}
             </div>
         </div>
-        <div class="col-4">
+        <div class="col col-md-4">
             <h3>
                 About myself
                 {% if user|can:'modify_profile' %}
