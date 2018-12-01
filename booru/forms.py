@@ -42,13 +42,13 @@ class CreatePostForm(forms.ModelForm):
     media_url = forms.URLField(required=False)
     sample = forms.ImageField(required=False)
     preview = forms.ImageField(required=False)
-    tags = TagField(required=True, help_text="Tags are required for uploading.")
+    tags = TagField(required=True, help_text="Required: Choose one or more tags.")
     source = forms.CharField(required=False)
     rating = forms.IntegerField()
 
     class Meta:
         model = Post
-        fields = ["media", "media_url", "sample", "preview", "rating", "source", "description", "tags"]
+        fields = ["media", "media_url", "sample", "preview", "tags", "rating", "source", "description"]
 
     def __init__(self, *args, **kwargs):
         super(CreatePostForm, self).__init__(*args, **kwargs)
