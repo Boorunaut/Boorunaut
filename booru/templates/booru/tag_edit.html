@@ -8,19 +8,14 @@
 {% endblock %}
 
 {% block body %}
+{% load crispy_forms_tags %}
 <div class="container">
     <div class="row">
         <h1>Tag: {{tag.name}}</h1>
     </div>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-
-        {% for field in form %}
-        <div class="form-group">
-            <label for="{{field.auto_id}}">{{field.label}}</label>
-            {{field}}
-        </div>
-        {% endfor %}
+        {{ form |crispy }}
         <button type="submit" class="btn btn-sm btn-primary">Submit</button>
     </form>
 </div>

@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from django.views.generic import CreateView, RedirectView, TemplateView
+from rolepermissions.checkers import has_permission
 
 from booru.account.decorators import user_is_not_blocked
 from booru.core.forms import BannedHashCreateForm
