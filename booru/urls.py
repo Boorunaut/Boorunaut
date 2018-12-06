@@ -26,6 +26,7 @@ urlpatterns = [
     re_path(r'^tags/(?P<tag_id>[0-9]+)/$', views.tag_detail, name='tag_detail'),
     re_path(r'^tags/list/(?P<page_number>[0-9]+)/$', views.tags_list, name='tags_page_list'),
     re_path(r'^tags/(?P<tag_id>[0-9]+)/edit/$', views.tag_edit, name='tag_edit'),
+    path('tags/<int:pk>/delete/', views.TagDelete.as_view(), name='tag-delete'),
     re_path(r'^tags/(?P<tag_id>[0-9]+)/history/$', views.tag_history, name='tag_history'),
     re_path(r'^tags/(?P<tag_id>[0-9]+)/history/(?P<page_number>[0-9]+)/$', views.tag_history, name='tag_history'),
     re_path(r'^tags/(?P<tag_id>[0-9]+)/revision_difference/$', views.tag_revision_diff, name='tag_revision_diff'),

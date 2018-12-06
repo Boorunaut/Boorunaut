@@ -10,11 +10,12 @@ from django.db.models import Count, Q
 from django.forms.models import model_to_dict
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views import generic
 from django.views.decorators.csrf import csrf_protect
 from django.views.generic import FormView
+from django.views.generic.edit import DeleteView
 from rolepermissions.checkers import has_permission
 
 from booru.account.decorators import user_is_not_blocked
@@ -200,6 +201,11 @@ def tag_history(request, tag_id, page_number = 1):
     p = Paginator(tag.history.all(), page_limit)
     page = p.page(page_number)
     return render(request, 'booru/tag_history.html', {"page": page, "tag": tag})
+
+class TagDelete(DeleteView):
+    model = PostTag
+    success_url = reverse_lazy('booru:tags_list')
+    template_name = 'booru/tag_confirm_delete.html'
 
 @user_is_not_blocked
 def tag_revision_diff(request, tag_id):

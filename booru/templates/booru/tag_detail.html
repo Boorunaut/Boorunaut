@@ -12,8 +12,19 @@
     <div class="container">
         <div class="row">
             <h1>Tag: <a href="{% url 'booru:posts' %}?tags={{tag}}">{{tag}}</a></h1>
-            <span>[<a href="{% url 'booru:tag_edit' tag.id %}">edit</a>]</span>
-            <span>[<a href="{% url 'booru:tag_history' tag.id %}">history</a>]</span>
+        </div>
+        <div class="row">
+            <span class="col">
+                <a class="btn btn-sm btn-primary" href="{% url 'booru:tag_edit' tag.id %}">
+                    <i class="fas fa-edit"></i> Edit
+                </a>
+                <a class="btn btn-sm btn-primary" href="{% url 'booru:tag_history' tag.id %}">
+                    <i class="fas fa-history"></i> History
+                </a>
+                <a class="btn btn-sm btn-danger" href="{% url 'booru:tag-delete' tag.id %}">
+                    <i class="fas fa-trash"></i> Delete
+                </a>
+            </span>
         </div>
         <div class="row">
             <div id="table" class="col mt-3">
