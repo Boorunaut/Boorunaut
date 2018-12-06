@@ -32,7 +32,7 @@
                                     </a>
                                 </th>
                                 <td class="tag-label">
-                                    <a style="color: #{{tag.category.color}};" href="{% url 'booru:posts' %}?tags={{tag}}">{{tag}}</a>
+                                    <a style="color: #{{tag.category.color}};" href="{{ tag.get_search_url }}">{{tag}}</a>
                                 </td>
                                 <td class="tag-count">{{tag.get_count|number_converter}}</td>
                             </tr>

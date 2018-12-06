@@ -39,7 +39,7 @@
                         <td>{{tag.get_count}}</td>
                         <td>
                             <a class="font-weight-bold" style="color: #{{tag.category.color}};" href="{% url 'booru:tag_detail' tag.id %}">?</a>
-                            <a style="color: #{{tag.category.color}};" href="{% url 'booru:posts' %}?tags={{tag}}">{{tag.name}}</a>
+                            <a style="color: #{{tag.category.color}};" href="{{ tag.get_search_url |urlencode }}">{{tag.name}}</a>
                         </td>
                         {% if user.is_authenticated %}
                         <td scope="col"><a href="{% url 'booru:tag_edit' tag.id %}">Edit</a></td>
