@@ -11,6 +11,7 @@
 {% block body %}
     {% load humanize %}
     {% load permission_tags %}
+    {% load crispy_forms_tags %}
     <div class="row">
         <div class="col col-md-2 mb-5">
             <div class="col text-center">
@@ -70,16 +71,11 @@
                 </tbody>
             </table>
             {% if user|can:'change_user_group' %}
-            <div class="">
+            <div>
                 <h4>Admin tools</h4>
                 <form method="post" enctype="multipart/x-www-form-urlencoded">
                     {% csrf_token %}
-                    {% for field in user_group_form %}
-                    <div class="form-group">
-                        <label for="{{field.auto_id}}">{{ field.label }}</label>
-                        {{ field }}
-                    </div>
-                    {% endfor %}
+                    {{ user_group_form |crispy }}
                     <button type="submit" class="btn btn-primary">Set</button>
                 </form>
             </div>
@@ -136,7 +132,7 @@
 
             <div id="about-data">
                 {% if account.about %}
-                {{account.about|markdown}}
+                {{ account.about|markdown }}
                 {% else %}
                 <p class="text-muted">This user have not written nothing about themselves yet!</p>
                 {% endif %}

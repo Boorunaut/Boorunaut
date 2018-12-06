@@ -34,6 +34,7 @@
     {% load number_converter %}
     {% load markdown_deux_tags %}
     {% load permission_tags %}
+    {% load crispy_forms_tags %}
     <div class="row">
         <div id="sidebar" class="col-md-3 col order-2 order-md-1">
             <nav aria-label="Page navigation example">
@@ -258,24 +259,8 @@
                 <div id="edit" class="col-10" style="display: none;">
                     <form method="post" action="." enctype="multipart/form-data">
                         {% csrf_token %}
-
-                        {% for field in form %}
-                        <div class="form-group">
-                            <label for="{{field.auto_id}}">{{ field.label }}</label>
-                            {{ field }}
-                            {% if field.errors %}
-                            <div class="invalid-feedback">
-                                {{field.errors}}
-                            </div>
-                            {% endif %}
-                        </div>
-                        {% endfor %}
-        
-                        <div class="form-group">
-                            <div class="col">
-                                <button type="submit" id="send" class="btn btn-primary submit-media">Submit</button>
-                            </div>
-                        </div>
+                        {{ form |crispy }}
+                        <button type="submit" id="send" class="btn btn-primary submit-media">Update</button>
                     </form>
                 </div>
             </div>

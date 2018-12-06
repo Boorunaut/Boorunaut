@@ -8,6 +8,7 @@
 {% endblock %}
 
 {% block content %}
+{% load crispy_forms_tags %}
 <div class="col-12 text-white bg-primary">
     <h1 class="h4 text-uppercase p-3 mb-0"><i class="fas fa-chart-line mr-3"></i>Configuration</h1>
 </div>
@@ -17,13 +18,7 @@
 
     <form method="post" enctype="multipart/x-www-form-urlencoded">
         {% csrf_token %}
-        {% for field in form %}
-        <div class="form-group">
-            <label for="{{field.auto_id}}">{{ field.label }}</label>
-            {{ field }}        
-            <p class="text-muted">{{field.help_text}}</p>
-        </div>
-        {% endfor %}
+        {{ form |crispy }}
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>    
 </div>
