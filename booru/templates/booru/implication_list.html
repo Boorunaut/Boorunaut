@@ -19,7 +19,7 @@
         </form>
     </div>
 
-    <div class="row">            
+    <div class="row">
         <div id="table" class="col mt-3">
             <table class="table table-striped table-hover text-center">
                 <thead class="thead-light">
@@ -29,7 +29,7 @@
                         <th scope="col">To</th>
                         <th scope="col">Approver</th>
                         <th scope="col">Status</th>
-                        <th scope="col"></th>                            
+                        <th scope="col"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -38,16 +38,16 @@
                         <th scope="row">{{ forloop.counter }}</th>
                         <td>
                             <a class="font-weight-bold" style="color: #{{implication.from_tag.category.color}};" href="{% url 'booru:tag_detail' implication.from_tag.id %}">?</a>
-                            <a href="{% url 'booru:posts' %}?tags={{implication.from_tag}}" style="color: #{{implication.from_tag.category.color}};">{{implication.from_tag}}</a> 
+                            <a href="{{ implication.from_tag.get_search_url |urlencode }}" style="color: #{{implication.from_tag.category.color}};">{{implication.from_tag}}</a> 
                             <span class="text-muted">{{implication.from_tag.get_count}}</span>
                         </td>
                         <td>
                             <a class="font-weight-bold" style="color: #{{implication.to_tag.category.color}};" href="{% url 'booru:tag_detail' implication.to_tag.id %}">?</a>
-                            <a href="{% url 'booru:posts' %}?tags={{implication.to_tag}}" style="color: #{{implication.to_tag.category.color}};">{{implication.to_tag}}</a> 
+                            <a href="{{ implication.to_tag.get_search_url |urlencode }}" style="color: #{{implication.to_tag.category.color}};">{{implication.to_tag}}</a> 
                             <span class="text-muted">{{implication.to_tag.get_count}}</span>
                         </td>
                         <td><a href="{{implication.approver.get_absolute_url}}">{{implication.approver}}</a></td>                            
-                        <td>{{implication.get_status_display}}</td>                      
+                        <td>{{implication.get_status_display}}</td>
                         <td><a href="{% url 'booru:implication-detail' implication.id %}">Show</a></td>
                     </tr>
                     {% endfor %}

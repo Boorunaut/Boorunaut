@@ -91,7 +91,8 @@
                                     </a>
                                 </th>
                                 <td class="tag-label">
-                                    <a href="{% url 'booru:posts' %}?tags={{tag}}">{{tag}}</a>
+                                    {% url 'booru:posts' as posts_url %}
+                                    <a href="{{ tag.get_search_url |urlencode }}">{{ tag }}</a>
                                 </td>
                                 {% else %}
                                 <th class="tag-wiki-link" scope="row">
@@ -100,7 +101,7 @@
                                     </a>
                                 </th>
                                 <td class="tag-label">
-                                    <a style="color: #{{category.color}};" href="{% url 'booru:posts' %}?tags={{tag}}">{{tag}}</a>
+                                    <a style="color: #{{category.color}};" href="{{ tag.get_search_url |urlencode }}">{{tag}}</a>
                                 </td>
                                 {% endif %}
                                 <td class="tag-count">{{tag.get_count|number_converter}}</td>
@@ -146,7 +147,7 @@
                             <th scope="row">Source</th>
                             <td>
                                 {% for source in post.get_sources %}
-                                <a href="{{source}}">{{source}}</a><br/>
+                                {{source|urlize}}<br/>
                                 {% endfor %}
                             </td>
                         </tr>

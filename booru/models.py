@@ -1,4 +1,5 @@
 import os
+import urllib.parse
 import uuid
 from urllib.parse import urlparse
 
@@ -110,6 +111,10 @@ class PostTag(TagBase):
 
     def get_absolute_url(self):
         return reverse('booru:tag_detail', kwargs={'tag_id': self.id})
+    
+    def get_search_url(self):
+        tags = urllib.parse.quote_plus(self.name)
+        return reverse('booru:posts') + "tags=%s" % tags
 
     def get_count(self):
         return TaggedPost.objects.filter(tag=self).count()
