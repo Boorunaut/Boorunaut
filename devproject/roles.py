@@ -10,6 +10,7 @@ class Administrator(AbstractUserRole):
         'mass_rename': True,
         'ban_hashes': True,
         'change_user_group': True,
+        'manage_tags': True,
     }
 
 class Moderator(AbstractUserRole):
@@ -22,6 +23,7 @@ class Moderator(AbstractUserRole):
         'mass_rename': True,
         'ban_hashes': True,
         'change_user_group': False,
+        'manage_tags': True,
     }
     
 class Janitor(AbstractUserRole):
@@ -34,6 +36,7 @@ class Janitor(AbstractUserRole):
         'mass_rename': True,
         'ban_hashes': True,
         'change_user_group': False,
+        'manage_tags': True,
     }
 
 class User(AbstractUserRole):
@@ -46,4 +49,5 @@ class User(AbstractUserRole):
         'mass_rename': False,
         'ban_hashes': False,
         'change_user_group': False,
+        'manage_tags': False,
     }

@@ -207,6 +207,12 @@ class TagDelete(DeleteView):
     success_url = reverse_lazy('booru:tags_list')
     template_name = 'booru/tag_confirm_delete.html'
 
+    @user_is_not_blocked
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated or not has_permission(request.user, 'booru.manage_tags'):
+            return redirect('account:login')
+        return super().dispatch(request, *args, **kwargs)
+
 @user_is_not_blocked
 def tag_revision_diff(request, tag_id):
     tag = get_object_or_404(PostTag, pk=tag_id)

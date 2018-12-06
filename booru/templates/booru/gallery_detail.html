@@ -14,9 +14,15 @@
             <h1>Gallery: {{gallery.name}}</h1>
         </div>
         <div class="row mb-2">
-            <a href="{% url 'booru:posts' %}?tags=gallery:{{gallery.id}}" class="btn btn-primary btn-sm">Search</a>
-            <a href="{% url 'booru:gallery_edit' gallery.id %}" class="btn btn-primary btn-sm ml-1">Edit</a>
-            <a href="{% url 'booru:gallery_history' gallery.id %}" class="btn btn-primary btn-sm ml-1">History</a>
+            <a href="{% url 'booru:posts' %}?tags=gallery:{{gallery.id}}" class="btn btn-primary btn-sm">
+                <i class="fas fa-search"></i> Search
+            </a>
+            <a href="{% url 'booru:gallery_edit' gallery.id %}" class="btn btn-primary btn-sm ml-1">
+                <i class="fas fa-edit"></i> Edit
+            </a>
+            <a href="{% url 'booru:gallery_history' gallery.id %}" class="btn btn-primary btn-sm ml-1">
+                <i class="fas fa-history"></i> History
+            </a>
         </div>
         <div class="row">
             <p>{{gallery.description}}</p>

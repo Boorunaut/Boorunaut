@@ -104,6 +104,9 @@ class PostTag(TagBase):
     class Meta:
         verbose_name = ("Tag")
         verbose_name_plural = ("Tags")
+        permissions = (
+            ("manage_tags", "Can manage tags"),
+        )
 
     def get_absolute_url(self):
         return reverse('booru:tag_detail', kwargs={'tag_id': self.id})
