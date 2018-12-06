@@ -1,0 +1,19 @@
+{% extends 'booru/base.html' %}
+
+{% block css %}
+    {% load staticfiles %}
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block body %}
+    {% load markdown_deux_tags %}
+    <div class="container">
+        <form method="post">{% csrf_token %}
+            <h1>Delete tag</h1>
+            <p>Are you sure you want to delete "{{ object }}"? This tag will be removed from all posts that have it.</p>
+            <input class="btn btn-danger" type="submit" value="Confirm">
+        </form>
+    </div>
+{% endblock %}
