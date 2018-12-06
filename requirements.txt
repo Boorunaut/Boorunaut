@@ -9,3 +9,4 @@ pytz==2018.5
 django-simple-history==2.5.1
 ffmpeg-python==0.1.16
 django-role-permissions==2.2.0
+django-crispy-forms==1.7.2

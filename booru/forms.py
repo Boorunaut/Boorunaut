@@ -108,9 +108,11 @@ class EditPostForm(forms.ModelForm):
         fields = ["rating", "parent", "source", "tags", "description"]
     
     def clean_source(self):
-        source = validate_sources(self.cleaned_data['source'])
-        if not source:
-            raise forms.ValidationError("Please use valid URLs.")
+        source = self.cleaned_data['source']
+        if source:
+            source = validate_sources(self.cleaned_data['source'])
+            if not source:
+                raise forms.ValidationError("Please use valid URLs.")
         return source
 
     def __init__(self, *args, **kwargs):

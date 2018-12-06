@@ -9,6 +9,7 @@
 {% endblock %}
 
 {% block body %}
+{% load crispy_forms_tags %}
 <div class="container">
     <div class="row">
         <h1>Create new gallery</h1>
@@ -16,13 +17,8 @@
 
     <form class="mb-3" method="post" enctype="multipart/x-www-form-urlencoded">
         {% csrf_token %}
-        {% for field in form %}
-        <div class="form-group">
-            <label for="{{field.auto_id}}">{{ field.label }}</label>
-            {{ field }}
-        </div>
-        {% endfor %}
-        <button type="submit" class="btn btn-primary">Submit</button>
+        {{ form |crispy }}
+        <button type="submit" class="btn btn-primary">Create</button>
     </form>
 </div>
 {% endblock %}

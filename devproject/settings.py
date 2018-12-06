@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'markdown_deux',
     'simple_history',
     'rolepermissions',
+    'crispy_forms',
 ]
 
 MIDDLEWARE = [
@@ -147,3 +148,5 @@ TAGGIT_TAGS_FROM_STRING = 'booru.utils.space_splitter'
 TAGGIT_STRING_FROM_TAGS = 'booru.utils.space_joiner'
 
 ROLEPERMISSIONS_MODULE = 'devproject.roles'
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
