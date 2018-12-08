@@ -92,7 +92,7 @@
                                 </th>
                                 <td class="tag-label">
                                     {% url 'booru:posts' as posts_url %}
-                                    <a href="{{ tag.get_search_url |urlencode }}">{{ tag }}</a>
+                                    <a href="{{ tag.get_search_url }}">{{ tag }}</a>
                                 </td>
                                 {% else %}
                                 <th class="tag-wiki-link" scope="row">
@@ -101,7 +101,7 @@
                                     </a>
                                 </th>
                                 <td class="tag-label">
-                                    <a style="color: #{{category.color}};" href="{{ tag.get_search_url |urlencode }}">{{tag}}</a>
+                                    <a style="color: #{{category.color}};" href="{{ tag.get_search_url }}">{{tag}}</a>
                                 </td>
                                 {% endif %}
                                 <td class="tag-count">{{tag.get_count|number_converter}}</td>

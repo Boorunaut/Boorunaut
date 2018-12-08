@@ -38,12 +38,12 @@
                         <th scope="row">{{ forloop.counter }}</th>
                         <td>
                             <a class="font-weight-bold" style="color: #{{implication.from_tag.category.color}};" href="{% url 'booru:tag_detail' implication.from_tag.id %}">?</a>
-                            <a href="{{ implication.from_tag.get_search_url |urlencode }}" style="color: #{{implication.from_tag.category.color}};">{{implication.from_tag}}</a> 
+                            <a href="{{ implication.from_tag.get_search_url }}" style="color: #{{implication.from_tag.category.color}};">{{implication.from_tag}}</a> 
                             <span class="text-muted">{{implication.from_tag.get_count}}</span>
                         </td>
                         <td>
                             <a class="font-weight-bold" style="color: #{{implication.to_tag.category.color}};" href="{% url 'booru:tag_detail' implication.to_tag.id %}">?</a>
-                            <a href="{{ implication.to_tag.get_search_url |urlencode }}" style="color: #{{implication.to_tag.category.color}};">{{implication.to_tag}}</a> 
+                            <a href="{{ implication.to_tag.get_search_url }}" style="color: #{{implication.to_tag.category.color}};">{{implication.to_tag}}</a> 
                             <span class="text-muted">{{implication.to_tag.get_count}}</span>
                         </td>
                         <td><a href="{{implication.approver.get_absolute_url}}">{{implication.approver}}</a></td>                            

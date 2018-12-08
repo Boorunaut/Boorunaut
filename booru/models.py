@@ -114,7 +114,7 @@ class PostTag(TagBase):
     
     def get_search_url(self):
         tags = urllib.parse.quote_plus(self.name)
-        return reverse('booru:posts') + "tags=%s" % tags
+        return reverse('booru:posts') + "?tags=%s" % tags
 
     def get_count(self):
         return TaggedPost.objects.filter(tag=self).count()

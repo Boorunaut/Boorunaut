@@ -12,7 +12,7 @@
     {% load permission_tags %}
     <div class="container">
         <div class="row">
-            <h1>Tag: <a href="{{ tag.get_search_url |urlencode }}">{{tag}}</a></h1>
+            <h1>Tag: <a href="{{ tag.get_search_url }}">{{tag}}</a></h1>
         </div>
         <div class="row">
             <span class="col">
