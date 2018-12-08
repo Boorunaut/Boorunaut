@@ -229,8 +229,8 @@
                 <div class="card">
                     <div class="card-header p-0" id="parentHeading">
                         <h5 class="mb-0">
-                            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#parentCollapse" aria-expanded="true" aria-controls="parentCollapse">
-                            Parent
+                            <button class="btn btn-sm collapsed col" type="button" data-toggle="collapse" data-target="#parentCollapse" aria-expanded="true" aria-controls="parentCollapse">
+                                <i class="fas fa-stream"></i> Parent
                             </button>
                         </h5>
                     </div>
@@ -248,8 +248,8 @@
                 <div class="card">
                     <div class="card-header p-0" id="siblingsHeading">
                         <h5 class="mb-0">
-                            <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#siblingsCollapse" aria-expanded="false" aria-controls="siblingsCollapse">
-                            Siblings ({{post.get_siblings.count}})
+                            <button class="btn btn-sm collapsed col" type="button" data-toggle="collapse" data-target="#siblingsCollapse" aria-expanded="false" aria-controls="siblingsCollapse">
+                                <i class="fas fa-stream"></i> Siblings <span class="badge badge-dark">{{post.get_siblings.count}}</span>
                             </button>
                         </h5>
                     </div>
@@ -266,8 +266,8 @@
                 <div class="card">
                     <div class="card-header p-0" id="childrenHeading">
                         <h5 class="mb-0">
-                            <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#childrenCollapse" aria-expanded="false" aria-controls="childrenCollapse">
-                            Children ({{post.get_children.count}})
+                            <button class="btn btn-sm collapsed col" type="button" data-toggle="collapse" data-target="#childrenCollapse" aria-expanded="false" aria-controls="childrenCollapse">
+                                <i class="fas fa-stream"></i> Children <span class="badge badge-dark">{{post.get_children.count}}</span>
                             </button>
                         </h5>
                     </div>
