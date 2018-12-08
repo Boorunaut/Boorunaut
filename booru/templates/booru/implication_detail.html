@@ -18,11 +18,21 @@
                 <tbody>
                     <tr>
                         <td><strong>From:</strong></td>
-                        <td>{{object.from_tag}}</td>
+                        <td>
+                            {% with color='#'|add:object.from_tag.category.color %}
+                            <a class="font-weight-bold" style="color: {{color}};" href="{% url 'booru:tag_detail' object.from_tag.id %}">?</a>
+                            <a style="color: {{color}};" href="{{ object.from_tag.get_search_url }}">{{object.from_tag}}</a>
+                            {% endwith %}
+                        </td>
                     </tr>
                     <tr>
                         <td><strong>To:</strong></td>
-                        <td>{{object.to_tag}}</td>
+                        <td>
+                            {% with color='#'|add:object.to_tag.category.color %}
+                            <a class="font-weight-bold" style="color: {{color}};" href="{% url 'booru:tag_detail' object.to_tag.id %}">?</a>
+                            <a style="color: {{color}};" href="{{ object.to_tag.get_search_url }}">{{object.to_tag}}</a>
+                            {% endwith %}
+                        </td>
                     </tr>
                     <tr>
                         <td><strong>Creator:</strong></td>

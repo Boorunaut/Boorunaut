@@ -146,7 +146,7 @@ class TagEditForm(forms.ModelForm):
                                       widget=forms.Select(attrs={'class': 'form-control'}),
                                       required=False, empty_label=None)
     associated_user_name = forms.CharField(required=False)
-    aliases = TagField(required=False)
+    aliases = TagField(required=False, help_text="Separate the aliases with spaces. They are used to find tags easier on the search bar.")
 
     def __init__(self, *args, **kwargs):
         super(TagEditForm, self).__init__(*args, **kwargs)
@@ -154,7 +154,7 @@ class TagEditForm(forms.ModelForm):
         self.fields['associated_link'].widget = forms.Textarea(attrs={'class': 'form-control'})
         self.fields['associated_user_name'].widget = forms.Textarea(attrs={'class': 'form-control'})
         self.fields['aliases'].widget = TaggitAdminTextareaWidget(attrs={'class': 'form-control',
-                                                                        'data-role': 'tagsinput'})
+                                                                        'data-role': 'tagsinput', 'rows':1})
 
     class Meta:
         model = PostTag
