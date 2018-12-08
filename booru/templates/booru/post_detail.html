@@ -128,6 +128,12 @@
                             <th scope="row">Uploader</th>
                             <td><a href="{{post.uploader.get_absolute_url}}">{{post.uploader}}</a></td>
                         </tr>
+                        {% if post.get_parent %}
+                        <tr>
+                            <th scope="row">Parent</th>
+                            <td><a href="{{post.get_parent.get_absolute_url}}">{{post.get_parent}}</a></td>
+                        </tr>
+                        {% endif %}
                         <tr>
                             <th scope="row">Date</th>
                             <td>
@@ -205,7 +211,7 @@
                         </button>
                     </span>
                 </div>
-                {% endif %}                
+                {% endif %}
             </div>
         </div>
         <div id="post" class="col-9 order-1 order-md-2">
@@ -218,13 +224,70 @@
                 This post was deleted by a staff member.
             </div>
             {% endif %}
+            <div class="accordion mb-1" id="relationshipAccordion">
+                {% if post.get_parent %}
+                <div class="card">
+                    <div class="card-header p-0" id="parentHeading">
+                        <h5 class="mb-0">
+                            <button class="btn btn-sm collapsed col" type="button" data-toggle="collapse" data-target="#parentCollapse" aria-expanded="true" aria-controls="parentCollapse">
+                                <i class="fas fa-stream"></i> Parent
+                            </button>
+                        </h5>
+                    </div>
+                
+                    <div id="parentCollapse" class="collapse" aria-labelledby="parentHeading" data-parent="#relationshipAccordion">
+                        <div class="card-body">
+                            <a href="{{post.get_parent.get_absolute_url}}">
+                                <img src="{{post.get_parent.preview.url}}" alt="">
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if post.get_siblings %}
+                <div class="card">
+                    <div class="card-header p-0" id="siblingsHeading">
+                        <h5 class="mb-0">
+                            <button class="btn btn-sm collapsed col" type="button" data-toggle="collapse" data-target="#siblingsCollapse" aria-expanded="false" aria-controls="siblingsCollapse">
+                                <i class="fas fa-stream"></i> Siblings <span class="badge badge-dark">{{post.get_siblings.count}}</span>
+                            </button>
+                        </h5>
+                    </div>
+                    <div id="siblingsCollapse" class="collapse" aria-labelledby="siblingsHeading" data-parent="#relationshipAccordion">
+                    <div class="card-body">
+                        {% for sibling in post.get_siblings %}
+                        <a href="{{sibling.get_absolute_url}}"><img src="{{sibling.preview.url}}" alt=""></a>
+                        {% endfor %}
+                    </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if post.get_children %}
+                <div class="card">
+                    <div class="card-header p-0" id="childrenHeading">
+                        <h5 class="mb-0">
+                            <button class="btn btn-sm collapsed col" type="button" data-toggle="collapse" data-target="#childrenCollapse" aria-expanded="false" aria-controls="childrenCollapse">
+                                <i class="fas fa-stream"></i> Children <span class="badge badge-dark">{{post.get_children.count}}</span>
+                            </button>
+                        </h5>
+                    </div>
+                    <div id="childrenCollapse" class="collapse" aria-labelledby="childrenHeading" data-parent="#relationshipAccordion">
+                        <div class="card-body">
+                            {% for child in post.get_children %}
+                            <a href="{{child.get_absolute_url}}"><img src="{{child.preview.url}}" alt=""></a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
             <div class="row mb-3">
-                <div class="col">                    
+                <div class="col">
                     {% if user|can:'change_status' or not post.status == 3 %}
                     {% if post.media_type == 0 %}
                     <img src="{{post.get_sample_url}}" alt="" style="max-width: 100%;">
                     {% elif post.media_type == 1 %}
-                    <video controls> 
+                    <video controls>
                         <source src={{post.media.url}}>
                     </video>
                     {% endif %}

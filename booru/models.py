@@ -313,6 +313,19 @@ class Post(models.Model):
         sources = self.source.splitlines()
         return sources
     
+    def get_parent(self):
+        if self.parent:
+            return Post.objects.not_deleted().filter(id=self.parent).first()
+        return None
+    
+    def get_siblings(self):
+        if self.parent:
+            return Post.objects.not_deleted().filter(parent=self.parent).exclude(id=self.id)
+        return None
+    
+    def get_children(self):
+        return Post.objects.not_deleted().filter(parent=self.id) or None
+    
     class Meta:
         permissions = (
             ("change_status", "Can change the status of posts"),
