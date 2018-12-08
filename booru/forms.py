@@ -97,7 +97,7 @@ class CreatePostForm(forms.ModelForm):
         return source
 
 class EditPostForm(forms.ModelForm):
-    '''Form for editing an post.'''    
+    '''Form for editing an post.'''
     rating = forms.IntegerField()
     parent = forms.IntegerField(required=False)
     source = forms.CharField(required=False)
@@ -171,6 +171,15 @@ class ImplicationCreateForm(forms.Form):
         super(ImplicationCreateForm, self).__init__(*args, **kwargs)
         self.fields['from_tag'].widget = forms.TextInput(attrs={'class': 'form-control'})
         self.fields['to_tag'].widget = forms.TextInput(attrs={'class': 'form-control'})
+    
+    def clean_from_tag(self):
+        from_tag = self.cleaned_data['from_tag']
+        return from_tag.lower()
+    
+    def clean_to_tag(self):
+        to_tag = self.cleaned_data['to_tag']
+        return to_tag.lower()
+
 
 class MassRenameForm(forms.Form):
     filter_by = forms.CharField(required=False)
