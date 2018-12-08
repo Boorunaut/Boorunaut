@@ -99,3 +99,11 @@ class CreateBooruFormTests(TestCase):
         self.assertTrue(form.is_valid())
         self.assertEqual('test3', form.cleaned_data['from_tag'])
         self.assertEqual('test4', form.cleaned_data['to_tag'])
+
+    def test_implication_create_form_turns_lowercase(self):
+        form_data = {'from_tag': 'Test3', 'to_tag': 'TesT4_WiTh_UppeRcAse'}
+        form = ImplicationCreateForm(form_data)
+        
+        self.assertTrue(form.is_valid())
+        self.assertEqual('test3', form.cleaned_data['from_tag'])
+        self.assertEqual('test4_with_uppercase', form.cleaned_data['to_tag'])

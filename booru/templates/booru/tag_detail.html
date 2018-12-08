@@ -12,7 +12,7 @@
     {% load permission_tags %}
     <div class="container">
         <div class="row">
-            <h1>Tag: <a href="{{ tag.get_search_url |urlencode }}">{{tag}}</a></h1>
+            <h1>Tag: <a href="{{ tag.get_search_url }}">{{tag}}</a></h1>
         </div>
         <div class="row">
             <span class="col">
@@ -32,7 +32,7 @@
         <div class="row">
             <div id="table" class="col mt-3">
                 <table class="table table-sm">
-                    <tbody>                        
+                    <tbody>
                         {% if tag.description %}
                         <tr>
                             <td><strong>Description:</strong></td>
@@ -74,8 +74,40 @@
                         <tr>
                             <td><strong>Aliases:</strong></td>
                             <td>
-                                {% for alias in tag.aliases.all %}
-                                {{ alias }}<br/>
+                                {% for tag in tag.aliases.all %}
+                                {{tag}}{% if not forloop.last %},{% endif %} 
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% if tag.from_implications.count > 0 %}
+                        <tr>
+                            <td><strong>Implies:</strong></td>
+                            <td>
+                                {% for implication in tag.from_implications.all %}
+                                {% with color='#'|add:implication.to_tag.category.color %}
+                                <a style="color: {{color}};" class="font-weight-bold" href="{% url 'booru:tag_detail' implication.to_tag.id %}">
+                                    ?
+                                </a>
+                                <a style="color: {{color}};" href="{{ implication.to_tag.get_search_url }}">{{implication.to_tag}}</a>
+                                {% endwith %}
+                                {% if not forloop.last %},{% endif %}
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% if tag.to_implications.count > 0 %}
+                        <tr>
+                            <td><strong>Is implied in:</strong></td>
+                            <td>
+                                {% for implication in tag.to_implications.all %}
+                                {% with color='#'|add:implication.from_tag.category.color %}
+                                <a style="color:{{color}};" class="font-weight-bold" href="{% url 'booru:tag_detail' implication.from_tag.id %}">
+                                    ?
+                                </a>
+                                <a style="color:{{color}};" href="{{ implication.from_tag.get_search_url }}">{{implication.from_tag}}</a>
+                                {% endwith %}
+                                {% if not forloop.last %},{% endif %} 
                                 {% endfor %}
                             </td>
                         </tr>

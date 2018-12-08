@@ -56,8 +56,8 @@ class Comment(models.Model):
         return upvotes - downvotes
 
 class Implication(models.Model):
-    from_tag = models.ForeignKey('booru.PostTag', blank=True, null=True, default=None, on_delete=models.CASCADE, related_name="from_implications")    
-    to_tag = models.ForeignKey('booru.PostTag', blank=True, null=True, default=None, on_delete=models.CASCADE, related_name="to_implications")    
+    from_tag = models.ForeignKey('booru.PostTag', blank=True, null=True, default=None, on_delete=models.CASCADE, related_name="from_implications")
+    to_tag = models.ForeignKey('booru.PostTag', blank=True, null=True, default=None, on_delete=models.CASCADE, related_name="to_implications")
     author = models.ForeignKey(Account, null=True, on_delete=models.SET_NULL, related_name="authored_implications")
     approver = models.ForeignKey(Account, blank=True, null=True, default=None, on_delete=models.SET_NULL, related_name="approved_implications")
     timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
@@ -114,7 +114,7 @@ class PostTag(TagBase):
     
     def get_search_url(self):
         tags = urllib.parse.quote_plus(self.name)
-        return reverse('booru:posts') + "tags=%s" % tags
+        return reverse('booru:posts') + "?tags=%s" % tags
 
     def get_count(self):
         return TaggedPost.objects.filter(tag=self).count()

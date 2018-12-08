@@ -8,6 +8,7 @@
 {% endblock %}
 
 {% block body %}
+{% load permission_tags %}
 <div class="container">
     <div class="row">
         <h1>Tag implication: {{object.from_tag}} → {{object.to_tag}}</h1>
@@ -18,11 +19,21 @@
                 <tbody>
                     <tr>
                         <td><strong>From:</strong></td>
-                        <td>{{object.from_tag}}</td>
+                        <td>
+                            {% with color='#'|add:object.from_tag.category.color %}
+                            <a class="font-weight-bold" style="color: {{color}};" href="{% url 'booru:tag_detail' object.from_tag.id %}">?</a>
+                            <a style="color: {{color}};" href="{{ object.from_tag.get_search_url }}">{{object.from_tag}}</a>
+                            {% endwith %}
+                        </td>
                     </tr>
                     <tr>
                         <td><strong>To:</strong></td>
-                        <td>{{object.to_tag}}</td>
+                        <td>
+                            {% with color='#'|add:object.to_tag.category.color %}
+                            <a class="font-weight-bold" style="color: {{color}};" href="{% url 'booru:tag_detail' object.to_tag.id %}">?</a>
+                            <a style="color: {{color}};" href="{{ object.to_tag.get_search_url }}">{{object.to_tag}}</a>
+                            {% endwith %}
+                        </td>
                     </tr>
                     <tr>
                         <td><strong>Creator:</strong></td>
@@ -42,10 +53,26 @@
                     </tr>
                 </tbody>
             </table>
-            {% if request.user.is_staff %}
+            {% if user|can:'manage_tags' %}
             <div class="row">
-                <a href="{% url 'booru:implication_approve' object.id %}" class="btn btn-success btn-sm">Approve</a>
-                <a href="{% url 'booru:implication_disapprove' object.id %}" class="btn btn-danger btn-sm">Disapprove</a>
+                {% if object.status == 1 %}
+                <a href="{% url 'booru:implication_approve' object.id %}" class="btn btn-success btn-sm disabled mr-1">
+                    <i class="fas fa-check"></i> Approve
+                </a>
+                {% else %}
+                <a href="{% url 'booru:implication_approve' object.id %}" class="btn btn-success btn-sm mr-1">
+                    <i class="fas fa-check"></i> Approve
+                </a>
+                {% endif %}
+                {% if object.status == 2 %}
+                <a href="{% url 'booru:implication_disapprove' object.id %}" class="btn btn-danger disabled btn-sm">
+                    <i class="fas fa-times"></i> Disapprove
+                </a>
+                {% else %}
+                <a href="{% url 'booru:implication_disapprove' object.id %}" class="btn btn-danger btn-sm">
+                    <i class="fas fa-times"></i> Disapprove
+                </a>
+                {% endif %}
             </div>
             {% endif %}
         </div>
