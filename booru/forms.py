@@ -169,8 +169,8 @@ class ImplicationCreateForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super(ImplicationCreateForm, self).__init__(*args, **kwargs)
-        self.fields['from_tag'].widget = forms.TextInput(attrs={'class': 'form-control'})
-        self.fields['to_tag'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        self.fields['from_tag'].widget = forms.TextInput(attrs={'class': 'form-control tag-search'})
+        self.fields['to_tag'].widget = forms.TextInput(attrs={'class': 'form-control tag-search'})
     
     def clean_from_tag(self):
         from_tag = self.cleaned_data['from_tag']
