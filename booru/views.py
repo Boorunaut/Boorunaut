@@ -32,7 +32,8 @@ from .models import (Comment, Configuration, Favorite, Gallery, Implication,
 
 @user_is_not_blocked
 def index(request):
-    return render(request, 'booru/index.html', {})
+    post_count = Post.objects.not_deleted().count()
+    return render(request, 'booru/index.html', {'post_count': post_count})
 
 @user_is_not_blocked
 def post_detail(request, post_id):
