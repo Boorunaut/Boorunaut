@@ -10,6 +10,7 @@ from django.apps import apps
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.db.models import Count, Sum
 from django.shortcuts import get_object_or_404
 from PIL import Image as ImagePIL
 from rolepermissions.roles import RolesManager
@@ -206,11 +207,13 @@ def compare_strings(old_string, new_string):
 def parse_tags(tag_string):
     splitted_tags = space_splitter(tag_string)
 
-    tag_info = {'~': [], '' : [], '-' : []}
+    tag_info = {'~': [], '' : [], '-' : [], 'meta': []}
 
     for tag in splitted_tags:
         if tag.startswith('~') or tag.startswith('-'):
             tag_info[tag[0]].append(tag[1:])
+        elif ':' in tag:
+            tag_info['meta'].append(tag)
         else:
             tag_info[''].append(tag)
 
@@ -219,8 +222,10 @@ def parse_tags(tag_string):
 def filter_posts(tag_list):
     from booru.models import Post
     from django.db.models import Q
+    import re
 
     filtered_posts = Post.objects.all()
+    filtered_posts = filtered_posts.order_by('-id')
 
     query = Q()
 
@@ -234,7 +239,56 @@ def filter_posts(tag_list):
 
     for tag in tag_list['-']:
         filtered_posts = filtered_posts.exclude(Q(tags__name__in=[tag]))
-
+    
+    for tag in tag_list['meta']:
+        score_match = re.match('score:(>|<|>=|<=|)((?:\+|-|)\d+)', tag)
+        if tag == 'status:pending':
+            filtered_posts = filtered_posts.filter(status=Post.PENDING)
+        elif tag == 'status:approved':
+            filtered_posts = filtered_posts.filter(status=Post.APPROVED)
+        elif tag == 'status:hidden':
+            filtered_posts = filtered_posts.filter(status=Post.HIDDEN)
+        elif tag == 'status:deleted':
+            filtered_posts = filtered_posts.filter(status=Post.DELETED)
+        elif tag == 'rating:safe' or tag == 'rating:s':
+            filtered_posts = filtered_posts.filter(rating=Post.SAFE)
+        elif tag == 'rating:questionable' or tag == 'rating:q':
+            filtered_posts = filtered_posts.filter(rating=Post.QUESTIONABLE)
+        elif tag == 'rating:explicit' or tag == 'rating:e':
+            filtered_posts = filtered_posts.filter(rating=Post.EXPLICIT)
+        elif tag == 'rating:none' or tag == 'rating:n':
+            filtered_posts = filtered_posts.filter(rating=Post.NONE)
+        elif score_match:
+            inequality = score_match[1]
+            value = score_match[2]
+            if inequality == '>':
+                filtered_posts = filtered_posts.annotate(score_sum=Sum('scorevote__point'))\
+                                                    .filter(score_sum__gt=value)
+            elif inequality == '>=':
+                filtered_posts = filtered_posts.annotate(score_sum=Sum('scorevote__point'))\
+                                                    .filter(score_sum__gte=value)
+            elif inequality == '<':
+                filtered_posts = filtered_posts.annotate(score_sum=Sum('scorevote__point'))\
+                                                    .filter(score_sum__lt=value)
+            elif inequality == '<=':
+                filtered_posts = filtered_posts.annotate(score_sum=Sum('scorevote__point'))\
+                                                    .filter(score_sum__lte=value)
+            else:
+                if value == '0':
+                    filtered_posts = filtered_posts.annotate(score_sum=Sum('scorevote__point'))\
+                                                .annotate(scorevote_count=Count('scorevote'))\
+                                                .filter(Q(score_sum=value) | Q(scorevote_count=0))
+                else:
+                    filtered_posts = filtered_posts.annotate(score_sum=Sum('scorevote__point'))\
+                                                    .filter(score_sum=value)
+        elif tag == 'order:score':
+            filtered_posts = filtered_posts.annotate(score_sum=Sum('scorevote__point'))\
+                                                    .order_by('-score_sum')
+        elif tag == 'order:score_asc':
+            filtered_posts = filtered_posts.annotate(score_sum=Sum('scorevote__point'))\
+                                                    .order_by('score_sum')
+        elif tag == 'order:random':
+            filtered_posts = filtered_posts.order_by('?')
     return filtered_posts.distinct()
 
 def parse_and_filter_tags(tags):

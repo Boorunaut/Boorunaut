@@ -8,13 +8,13 @@ from django.core.files.images import ImageFile
 from django.db.models import Q
 from django.test import TestCase
 
-from booru.models import Post
+from booru.models import Post, ScoreVote
 from booru.utils import parse_and_filter_tags
 from booru.views import tags_list
 
 
-def create_test_user():
-    user = get_user_model().objects.create_user('Test', password="123")
+def create_test_user(username='Test'):
+    user = get_user_model().objects.create_user(username, password="123")
     user.save()
     return user
 
@@ -43,6 +43,7 @@ class UtilitiesTests(TestCase):
     @classmethod
     def setUpClass(cls):
         mock_user = create_test_user()
+        mock_user_two = create_test_user("Test2")
         
         cls.post_one = create_test_post(mock_user, ['test1', 'test2', 'test3'])
         cls.post_two = create_test_post(mock_user, ['test1', 'test2', 'test4', 'test5'])
@@ -102,4 +103,114 @@ class UtilitiesTests(TestCase):
     def test_tag_search_no_tags(self):
         posts = parse_and_filter_tags('')
 
+        self.assertEqual(list(posts), [self.post_one, self.post_two, self.post_three])
+
+    def test_tag_search_status_pending(self):
+        posts = parse_and_filter_tags('status:pending')
+        self.assertEqual(list(posts), [self.post_one, self.post_two, self.post_three])
+    
+    def test_tag_search_status_approved(self):
+        posts = parse_and_filter_tags('status:approved')
+        self.post_two.status = Post.APPROVED
+        self.post_two.save()
+        self.assertEqual(list(posts), [self.post_two])
+    
+    def test_tag_search_status_deleted(self):
+        posts = parse_and_filter_tags('status:deleted')
+        self.post_two.status = Post.DELETED
+        self.post_two.save()
+        self.assertEqual(list(posts), [self.post_two])
+    
+    def test_tag_search_status_score_zero(self):
+        posts = parse_and_filter_tags('score:0')
+        self.assertEqual(list(posts), [self.post_one, self.post_two, self.post_three])
+
+    def test_tag_search_status_score_one(self):
+        posts = parse_and_filter_tags('score:1')
+        user = get_user_model().objects.get(username="Test")
+        ScoreVote.objects.create(account=user, post=self.post_three, point=1)
+        self.assertEqual(list(posts), [self.post_three])
+    
+    def test_tag_search_status_score_greater_than_zero(self):
+        posts = parse_and_filter_tags('score:>0')
+        user = get_user_model().objects.get(username="Test")
+        ScoreVote.objects.create(account=user, post=self.post_one, point=1)
+        ScoreVote.objects.create(account=user, post=self.post_three, point=0)
+        self.assertEqual(list(posts), [self.post_one])
+
+    def test_tag_search_status_score_greater_than_one(self):
+        posts = parse_and_filter_tags('score:>1')
+        user = get_user_model().objects.get(username="Test")
+        user_two = get_user_model().objects.get(username="Test2")
+        ScoreVote.objects.create(account=user, post=self.post_three, point=1)
+        ScoreVote.objects.create(account=user_two, post=self.post_three, point=1)
+        self.assertEqual(list(posts), [self.post_three])
+    
+    def test_tag_search_status_score_less_than_zero(self):
+        posts = parse_and_filter_tags('score:<0')
+        user = get_user_model().objects.get(username="Test")
+        user_two = get_user_model().objects.get(username="Test2")
+        ScoreVote.objects.create(account=user, post=self.post_two, point=-1)
+        ScoreVote.objects.create(account=user_two, post=self.post_two, point=-1)
+        self.assertEqual(list(posts), [self.post_two])
+    
+    def test_tag_search_status_score_less_than_one(self):
+        posts = parse_and_filter_tags('score:<1')
+        user = get_user_model().objects.get(username="Test")
+        user_two = get_user_model().objects.get(username="Test2")
+        ScoreVote.objects.create(account=user, post=self.post_two, point=-1)
+        ScoreVote.objects.create(account=user_two, post=self.post_two, point=1)
+        self.assertEqual(list(posts), [self.post_two])
+    
+    def test_tag_search_rating_safe(self):
+        posts = parse_and_filter_tags('rating:safe')
+        posts_abbreviation = parse_and_filter_tags('rating:s')
+        self.post_one.rating = Post.SAFE
+        self.post_one.save()
+        self.assertEqual(list(posts), list(posts_abbreviation))
+        self.assertEqual(list(posts), [self.post_one])
+    
+    def test_tag_search_rating_questionable(self):
+        posts = parse_and_filter_tags('rating:questionable')
+        posts_abbreviation = parse_and_filter_tags('rating:q')
+        self.post_two.rating = Post.QUESTIONABLE
+        self.post_two.save()
+        self.assertEqual(list(posts), list(posts_abbreviation))
+        self.assertEqual(list(posts), [self.post_two])
+    
+    def test_tag_search_rating_explicit(self):
+        posts = parse_and_filter_tags('rating:explicit')
+        posts_abbreviation = parse_and_filter_tags('rating:e')
+        self.post_three.rating = Post.EXPLICIT
+        self.post_three.save()
+        self.assertEqual(list(posts), [self.post_three])
+    
+    def test_tag_search_rating_none(self):
+        posts = parse_and_filter_tags('rating:none')
+        posts_abbreviation = parse_and_filter_tags('rating:n')
+        self.post_three.rating = Post.SAFE
+        self.post_three.save()
+        self.assertEqual(list(posts), list(posts_abbreviation))
+        self.assertEqual(list(posts), [self.post_one, self.post_two])
+    
+    def test_tag_search_order_by_score(self):
+        posts = parse_and_filter_tags('order:score')
+        user = get_user_model().objects.get(username="Test")
+        user_two = get_user_model().objects.get(username="Test2")
+        ScoreVote.objects.create(account=user, post=self.post_one, point=-1)
+        ScoreVote.objects.create(account=user, post=self.post_two, point=-1)
+        ScoreVote.objects.create(account=user_two, post=self.post_two, point=1)
+        ScoreVote.objects.create(account=user, post=self.post_three, point=1)
+        ScoreVote.objects.create(account=user_two, post=self.post_three, point=1)
+        self.assertEqual(list(posts), [self.post_three, self.post_two, self.post_one])
+
+    def test_tag_search_order_by_score_asc(self):
+        posts = parse_and_filter_tags('order:score_asc')
+        user = get_user_model().objects.get(username="Test")
+        user_two = get_user_model().objects.get(username="Test2")
+        ScoreVote.objects.create(account=user, post=self.post_one, point=-1)
+        ScoreVote.objects.create(account=user, post=self.post_two, point=-1)
+        ScoreVote.objects.create(account=user_two, post=self.post_two, point=1)
+        ScoreVote.objects.create(account=user, post=self.post_three, point=1)
+        ScoreVote.objects.create(account=user_two, post=self.post_three, point=1)
         self.assertEqual(list(posts), [self.post_one, self.post_two, self.post_three])
