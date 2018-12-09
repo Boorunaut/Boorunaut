@@ -8,15 +8,15 @@
 {% endblock %}
 
 {% block body %}
+{% load crispy_forms_tags %}
 <div class="container">
     <div class="row">
-        <form method="get" class="form-inline col">
-            <div class="form-group mx-sm-3 mb-2">
-                <label for="nameInput" class="sr-only">Tag name</label>
-                <input name="name" type="text" class="form-control tag-search" id="nameInput" placeholder="Tag name">
-            </div>
-            <button type="submit" class="btn btn-primary mb-2">Search</button>
-        </form>
+        <div class="col">
+            <form method="get">
+                {{ form |crispy }}
+                <button type="submit" class="btn btn-primary">Search</button>
+            </form>
+        </div>
     </div>
 
     <div class="row">

@@ -10,7 +10,7 @@ from booru import utils
 from booru.account.forms import UsernameExistsField
 from booru.account.models import Timeout
 from booru.core.models import BannedHash
-from booru.models import Category, Gallery, Post, PostTag
+from booru.models import Category, Gallery, Implication, Post, PostTag
 
 
 def validate_sources(source):
@@ -180,6 +180,15 @@ class ImplicationCreateForm(forms.Form):
         to_tag = self.cleaned_data['to_tag']
         return to_tag.lower()
 
+class ImplicationFilterForm(forms.Form):
+    name = forms.CharField(required=False)
+    status = forms.ChoiceField(required=False, choices=(('', '-----'),) + Implication.STATUS_CHOICES)
+
+    class Meta:
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super(ImplicationFilterForm, self).__init__(*args, **kwargs)
 
 class MassRenameForm(forms.Form):
     filter_by = forms.CharField(required=False)
