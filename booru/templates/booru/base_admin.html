@@ -29,7 +29,7 @@
             <div class="row">
                 <div id="sidebar-menu" class="col-{{sidebar_size}} pl-0 pr-0 text-white">
                     <div class="col sticky-top pl-0 pr-0">
-                        <a class="navbar-brand col text-white text-center mt-4 mb-4" href="/post/list/">{{SITE_TITLE}}</a>
+                        <a class="navbar-brand col text-white text-center mt-4 mb-4" href="{% url 'booru:posts' %}">{{SITE_TITLE}}</a>
 
                         <a type="button" href="{% url 'booru:staff_page' %}" class="btn btn-dark col text-left">
                             <i class="fas fa-chart-line"></i> Statistics
@@ -53,6 +53,10 @@
 
                         <a type="button" href="{% url 'core:hash_ban' %}" class="btn btn-dark col text-left">
                             <i class="fas fa-ban"></i> Hash Ban
+                        </a>
+
+                        <a type="button" href="{% url 'core:mod_queue' %}" class="btn btn-dark col text-left">
+                            <i class="fas fa-tasks"></i> Mod Queue
                         </a>
                     </div>
                     <div class="col-{{sidebar_size}} fixed-bottom">

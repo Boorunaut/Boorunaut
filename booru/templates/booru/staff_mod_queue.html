@@ -1,0 +1,32 @@
+{% extends 'booru/base_admin.html' %}
+
+{% block css %}
+    {% load staticfiles %}
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block content %}
+{% load crispy_forms_tags %}
+<div class="col-12 text-white bg-primary">
+    <h1 class="h4 text-uppercase p-3 mb-0"><i class="fas fa-tasks mr-3"></i>Moderation Queue</h1>
+</div>
+
+<div class="col bg-white pt-3">
+    <div class="row h2">
+        <div class="col">
+            <i class="fas fa-archive"></i> 
+            <a href="{% url 'booru:posts' %}?tags=status:pending">
+                {{pending_posts.count}} pending posts
+            </a>
+        </div>
+        <div class="col">
+            <i class="fas fa-archive"></i> 
+            <a href="{% url 'booru:implication-list' %}?status=0">
+                {{pending_implications.count}} pending implications
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

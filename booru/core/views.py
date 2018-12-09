@@ -7,7 +7,7 @@ from rolepermissions.checkers import has_permission
 from booru.account.decorators import user_is_not_blocked
 from booru.core.forms import BannedHashCreateForm
 from booru.core.models import BannedHash
-from booru.models import Configuration
+from booru.models import Configuration, Implication, Post
 
 
 class TermsOfServiceView(TemplateView):
@@ -70,3 +70,12 @@ class BannedHashDeleteView(RedirectView):
         banned_hash.delete()
         kwargs.pop('pk', None)
         return super().get_redirect_url(*args, **kwargs)
+
+class ModQueueView(TemplateView):
+    template_name = "booru/staff_mod_queue.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(ModQueueView, self).get_context_data(**kwargs)
+        context['pending_posts'] = Post.objects.not_deleted().filter(status=Post.PENDING)
+        context['pending_implications'] = Implication.objects.filter(status=Implication.PENDING)
+        return context
