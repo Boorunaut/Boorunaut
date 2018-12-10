@@ -11,6 +11,7 @@ class Administrator(AbstractUserRole):
         'ban_hashes': True,
         'change_user_group': True,
         'manage_tags': True,
+        'manage_comments': True,
     }
 
 class Moderator(AbstractUserRole):
@@ -24,6 +25,7 @@ class Moderator(AbstractUserRole):
         'ban_hashes': True,
         'change_user_group': False,
         'manage_tags': True,
+        'manage_comments': True,
     }
     
 class Janitor(AbstractUserRole):
@@ -37,6 +39,7 @@ class Janitor(AbstractUserRole):
         'ban_hashes': True,
         'change_user_group': False,
         'manage_tags': True,
+        'manage_comments': True,
     }
 
 class User(AbstractUserRole):
@@ -50,4 +53,5 @@ class User(AbstractUserRole):
         'ban_hashes': False,
         'change_user_group': False,
         'manage_tags': False,
+        'manage_comments': False,
     }
