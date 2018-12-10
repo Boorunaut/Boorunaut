@@ -205,7 +205,14 @@
                         </button>
                     </span>
                 </div>
-                {% endif %}                
+                {% endif %}
+                <div class="row mt-3 text-center">
+                    <span class="col" data-toggle="tooltip" title="Flag this post for deletion.">
+                        <a href="{% url 'booru:post_flag' post.pk %}" class="btn btn-sm btn-secondary">
+                            <i class="fas fa-flag"></i> Flag
+                        </a>
+                    </span>
+                </div>
             </div>
         </div>
         <div id="post" class="col-9 order-1 order-md-2">

@@ -10,4 +10,5 @@ urlpatterns = [
     path('staff_page/hash_ban/', views.BannedHashCreateView.as_view(), name="hash_ban"),
     path('staff_page/hash_ban/<int:pk>/delete', views.BannedHashDeleteView.as_view(), name="hash_ban_delete"),
     path('staff_page/mod_queue/', views.ModQueueView.as_view(), name="mod_queue"),
+    path('staff_page/mod_queue/<int:pk>/resolve', views.StaffPostFlagResolveView.as_view(), name="mod_queue_resolve"),
 ]

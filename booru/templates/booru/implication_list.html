@@ -46,7 +46,7 @@
                             <a href="{{ implication.to_tag.get_search_url }}" style="color: #{{implication.to_tag.category.color}};">{{implication.to_tag}}</a> 
                             <span class="text-muted">{{implication.to_tag.get_count}}</span>
                         </td>
-                        <td><a href="{{implication.approver.get_absolute_url}}">{{implication.approver}}</a></td>                            
+                        <td><a href="{{implication.approver.get_absolute_url}}">{{implication.approver}}</a></td>
                         <td>{{implication.get_status_display}}</td>
                         <td><a href="{% url 'booru:implication-detail' implication.id %}">Show</a></td>
                     </tr>

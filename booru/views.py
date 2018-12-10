@@ -551,7 +551,7 @@ class SiteConfigurationView(FormView):
         """
         Returns the initial data to use for forms on this view.
         """
-        initial = super().get_initial()        
+        initial = super().get_initial()
 
         initial['site_title'] = Configuration.objects.get(code_name='site_title').value
         initial['terms_of_service'] = Configuration.objects.get(code_name='terms_of_service').value
