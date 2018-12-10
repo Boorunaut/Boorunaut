@@ -303,7 +303,7 @@
             </div>
             <div class="row">
                 <div class="col mt-2 mb-4">
-                    {% if request.user.show_comments %}
+                    {% if request.user.show_comments or not user.is_authenticated %}
                     <button id="show_comments" class="btn btn-primary btn mr-1">Comments</button>
                     {% endif %}
                     <button id="show_edit_form" class="btn btn-outline-primary btn mr-3">Edit</button>
@@ -335,10 +335,11 @@
                     </form>
                 </div>
             </div>
-            {% if request.user.show_comments %}
+            {% if request.user.show_comments or not user.is_authenticated %}
             <div id="comment-section" class="mb-3">
                 <div id="comments" class="row">
                     {% for comment in post.comments.all %}
+                    {% if not comment.is_hidden or user|can:'manage_comments' %}
                     <div id="comment-{{comment.id}}" class="comment col-10 border comment-border pt-3 pb-3 mb-2">
                         <div class="row">
                             <div class="comment col">
@@ -361,12 +362,35 @@
                                         <small>Score: {{comment.get_score}}</small>
                                     </span>
                                 </div>
+                                {% if comment.is_hidden %}
+                                <div class="row">
+                                    <span class="col">
+                                        <small>Comment is hidden</small>
+                                    </span>
+                                </div>
+                                {% endif %}
                             </div>
                             <div class="comment col-9">
                                 {{comment.content|markdown}}
                             </div>
                         </div>
+                        {% if user|can:'manage_comments' %}
+                        <div class="row">
+                            <div class="col offset-3">
+                                {% if comment.is_hidden %}
+                                <a href="{% url 'booru:comment-toggle-view' comment.pk %}" class="btn btn-sm btn-success">
+                                     <i class="far fa-eye"></i> Show
+                                </a>
+                                {% else %}
+                                <a href="{% url 'booru:comment-toggle-view' comment.pk %}" class="btn btn-sm btn-danger">
+                                    <i class="far fa-eye-slash"></i> Hide
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endif %}
                     </div>
+                    {% endif %}
                     {% endfor %}
                 </div>
                 <div id="comment-create-form" class="row mt-3">

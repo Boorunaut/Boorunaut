@@ -7,7 +7,7 @@ from rolepermissions.checkers import has_permission
 from booru.account.decorators import user_is_not_blocked
 from booru.core.forms import BannedHashCreateForm, PostFlagCreateForm
 from booru.core.models import BannedHash, PostFlag
-from booru.models import Configuration, Implication, Post
+from booru.models import Comment, Configuration, Implication, Post
 
 
 class TermsOfServiceView(TemplateView):
@@ -128,4 +128,29 @@ class StaffPostFlagResolveView(RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
         kwargs.pop('pk', None)
+        return super().get_redirect_url(*args, **kwargs)
+
+class StaffCommentToggleHiddenView(RedirectView):
+
+    permanent = False
+    query_string = False
+    pattern_name = 'booru:post_detail'
+
+    def get(self, request, *args, **kwargs):
+        comment = get_object_or_404(Comment, id=kwargs['pk'])
+        comment.is_hidden = not comment.is_hidden
+        comment.save()
+        return super(StaffCommentToggleHiddenView, self).get(request, *args, **kwargs)
+
+    @method_decorator(csrf_protect)
+    @user_is_not_blocked
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated or not has_permission(request.user,'booru.manage_comments'):
+            return redirect('account:login')
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_redirect_url(self, *args, **kwargs):
+        comment = get_object_or_404(Comment, id=kwargs['pk'])
+        kwargs['post_id'] = comment.object_id
+        kwargs.pop('pk')
         return super().get_redirect_url(*args, **kwargs)

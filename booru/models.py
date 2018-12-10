@@ -42,6 +42,7 @@ class Comment(models.Model):
     content = models.CharField(max_length=1000, blank=True)
     timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
     update_timestamp = models.DateTimeField(auto_now=True, auto_now_add=False)
+    is_hidden = models.BooleanField(default=False)
 
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
