@@ -63,7 +63,7 @@ class UtilitiesTests(TestCase):
     def test_tag_search_three_results(self):
         posts = parse_and_filter_tags('test1')
 
-        self.assertEqual(list(posts), [self.post_one, self.post_two, self.post_three])
+        self.assertEqual(list(posts), [self.post_three, self.post_two, self.post_one])
 
     def test_tag_search_and_operation_result_none(self):
         posts = parse_and_filter_tags('test3 test5')
@@ -83,7 +83,7 @@ class UtilitiesTests(TestCase):
     def test_tag_search_two_or_operation_between_two_tags(self):
         posts = parse_and_filter_tags('~test3 ~test6')
 
-        self.assertEqual(list(posts), [self.post_one, self.post_three])
+        self.assertEqual(list(posts), [self.post_three, self.post_one])
 
     def test_tag_search_not_operation_between_two_tags(self):
         posts = parse_and_filter_tags('test1 -test2')
@@ -103,11 +103,11 @@ class UtilitiesTests(TestCase):
     def test_tag_search_no_tags(self):
         posts = parse_and_filter_tags('')
 
-        self.assertEqual(list(posts), [self.post_one, self.post_two, self.post_three])
+        self.assertEqual(list(posts), [self.post_three, self.post_two, self.post_one])
 
     def test_tag_search_status_pending(self):
         posts = parse_and_filter_tags('status:pending')
-        self.assertEqual(list(posts), [self.post_one, self.post_two, self.post_three])
+        self.assertEqual(list(posts), [self.post_three, self.post_two, self.post_one])
     
     def test_tag_search_status_approved(self):
         posts = parse_and_filter_tags('status:approved')
@@ -123,7 +123,7 @@ class UtilitiesTests(TestCase):
     
     def test_tag_search_status_score_zero(self):
         posts = parse_and_filter_tags('score:0')
-        self.assertEqual(list(posts), [self.post_one, self.post_two, self.post_three])
+        self.assertEqual(list(posts), [self.post_three, self.post_two, self.post_one])
 
     def test_tag_search_status_score_one(self):
         posts = parse_and_filter_tags('score:1')
@@ -191,7 +191,7 @@ class UtilitiesTests(TestCase):
         self.post_three.rating = Post.SAFE
         self.post_three.save()
         self.assertEqual(list(posts), list(posts_abbreviation))
-        self.assertEqual(list(posts), [self.post_one, self.post_two])
+        self.assertEqual(list(posts), [self.post_two, self.post_one])
     
     def test_tag_search_order_by_score(self):
         posts = parse_and_filter_tags('order:score')
