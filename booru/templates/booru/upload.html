@@ -5,6 +5,24 @@
 {% endblock %}
 
 {% block scripts %}
+<script>
+    $(function () {
+        $("#id_media_url").blur(function() {
+            var image_url = $("#id_media_url").val();
+            if (checkURL(image_url)) {
+                $("#image_preview_block").show();
+                $("#image_preview").attr("src", image_url);
+            }
+            else {
+                $("#image_preview_block").hide();
+            }
+        });
+    });
+
+    function checkURL(url) {
+        return(url.match(/\.(jpeg|jpg|gif|png)$/) != null);
+    }
+</script>
 {% endblock %}
 
 {% block body %}
@@ -76,6 +94,15 @@
                             Required: Use one of the methods to upload a file.
                             Use the entire URL (including 'http://' or 'https://'), if chosen.
                         </p>
+                    </div>
+                </div>
+
+                <div id="image_preview_block" class="row text-center mt-3 mb-3" style="display: none;">
+                    <div class="col border">
+                        <h3>Preview</h3>
+                        <figure>
+                            <img src="#" title="Preview of image" id="image_preview" height="400"/>
+                        </figure>
                     </div>
                 </div>
 
