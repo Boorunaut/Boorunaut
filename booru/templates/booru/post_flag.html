@@ -1,0 +1,28 @@
+{% extends 'booru/base.html' %}
+
+{% block css %}
+    {% load staticfiles %}
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block body %}
+{% load crispy_forms_tags %}
+<div class="container">
+    <div class="row">
+        <h1>Flag post for deletion</h1>
+    </div>
+    <div class="row">
+        <p class="text-muted">
+            This will flag the post <a href="{{ post.get_absolute_url }}">{{post}}</a> so it can be deleted or reapproved by the staff.
+            Only posts that break the rules should be reported.
+        </p>
+    </div>
+    <form method="post" enctype="multipart/x-www-form-urlencoded">
+        {% csrf_token %}
+        {{ form |crispy }}
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+{% endblock %}

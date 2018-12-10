@@ -25,14 +25,15 @@ from . import utils
 from .forms import (BanUserForm, CreatePostForm, EditPostForm,
                     GalleryCreateForm, GalleryEditForm, GalleryListSearchForm,
                     ImplicationCreateForm, MassRenameForm,
-                    SiteConfigurationForm, TagEditForm, TagListSearchForm)
+                    SiteConfigurationForm, TagEditForm, TagListSearchForm, ImplicationFilterForm)
 from .models import (Comment, Configuration, Favorite, Gallery, Implication,
                      Post, PostTag, ScoreVote, TaggedPost)
 
 
 @user_is_not_blocked
 def index(request):
-    return render(request, 'booru/index.html', {})
+    post_count = Post.objects.not_deleted().count()
+    return render(request, 'booru/index.html', {'post_count': post_count})
 
 @user_is_not_blocked
 def post_detail(request, post_id):
@@ -120,7 +121,6 @@ def post_list_detail(request, page_number = 1):
         posts = posts.exclude(rating=2).exclude(rating=3)
     
     page_limit = 20
-    posts = posts.order_by('-id')
     p = Paginator(posts, page_limit)
     page = p.page(page_number)
     post_list = page.object_list
@@ -237,7 +237,20 @@ class ImplicationListView(generic.ListView):
         if self.request.GET.get('name'):
             queryset = queryset.filter( Q(from_tag__name=self.request.GET.get('name'))|
                                         Q(to_tag__name=self.request.GET.get('name')))
+        
+        status = self.request.GET.get('status')
+        if status:
+            try:
+                status = int(status)
+                queryset = queryset.filter(status=status)
+            except ValueError:
+                pass
         return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super(ImplicationListView, self).get_context_data(**kwargs)
+        context['form'] = ImplicationFilterForm(self.request.GET)
+        return context
     
     @user_is_not_blocked
     def dispatch(self, request, *args, **kwargs):
@@ -538,7 +551,7 @@ class SiteConfigurationView(FormView):
         """
         Returns the initial data to use for forms on this view.
         """
-        initial = super().get_initial()        
+        initial = super().get_initial()
 
         initial['site_title'] = Configuration.objects.get(code_name='site_title').value
         initial['terms_of_service'] = Configuration.objects.get(code_name='terms_of_service').value

@@ -1,6 +1,7 @@
 from django.urls import include, path, re_path
 
 import booru.account.views
+import booru.core.views
 
 from . import views
 
@@ -18,6 +19,7 @@ urlpatterns = [
     re_path(r'^post/view/(?P<post_id>[0-9]+)/delete$', views.post_delete, name='post_delete'),
     re_path(r'^post/view/(?P<post_id>[0-9]+)/favorite$', views.post_favorite, name='post_favorite'),
     re_path(r'^post/view/(?P<post_id>[0-9]+)/vote$', views.post_score_vote, name='post_score_vote'),
+    re_path(r'^post/view/(?P<post_id>[0-9]+)/flag$', booru.core.views.PostFlagCreateView.as_view(), name='post_flag'),
 
     re_path(r'^post/list/$', views.post_list_detail, name='posts'),
     re_path(r'^post/list/(?P<page_number>[0-9]+)/$', views.post_list_detail, name='post_page_detail'),

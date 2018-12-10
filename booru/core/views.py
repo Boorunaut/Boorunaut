@@ -5,9 +5,9 @@ from django.views.generic import CreateView, RedirectView, TemplateView
 from rolepermissions.checkers import has_permission
 
 from booru.account.decorators import user_is_not_blocked
-from booru.core.forms import BannedHashCreateForm
-from booru.core.models import BannedHash
-from booru.models import Configuration
+from booru.core.forms import BannedHashCreateForm, PostFlagCreateForm
+from booru.core.models import BannedHash, PostFlag
+from booru.models import Configuration, Implication, Post
 
 
 class TermsOfServiceView(TemplateView):
@@ -68,5 +68,64 @@ class BannedHashDeleteView(RedirectView):
     def get_redirect_url(self, *args, **kwargs):
         banned_hash = get_object_or_404(BannedHash.objects.all(), id=kwargs['pk'])
         banned_hash.delete()
+        kwargs.pop('pk', None)
+        return super().get_redirect_url(*args, **kwargs)
+
+class ModQueueView(TemplateView):
+    template_name = "booru/staff_mod_queue.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(ModQueueView, self).get_context_data(**kwargs)
+        context['pending_posts'] = Post.objects.not_deleted().filter(status=Post.PENDING)
+        context['pending_implications'] = Implication.objects.filter(status=Implication.PENDING)
+        context['post_flags'] = PostFlag.objects.filter(status=PostFlag.PENDING)
+        return context
+
+class PostFlagCreateView(CreateView):
+    """
+    Provides a form for users to flag posts for deletion.
+    """
+    success_url = '.'
+    form_class = PostFlagCreateForm
+    template_name = "booru/post_flag.html"
+
+    def form_valid(self, form):
+        form.instance.creator = self.request.user
+        form.instance.post = Post.objects.get(id=self.kwargs['post_id'])
+        form.save()
+        return super().form_valid(form)
+
+    @method_decorator(csrf_protect)
+    @user_is_not_blocked
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('account:login')
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get_context_data(self, **kwargs):
+        context = super(PostFlagCreateView, self).get_context_data(**kwargs)
+        context['post'] = Post.objects.get(id=self.kwargs['post_id'])
+        return context
+
+class StaffPostFlagResolveView(RedirectView):
+
+    permanent = False
+    query_string = False
+    pattern_name = 'core:mod_queue'
+
+    def get(self, request, *args, **kwargs):
+        flag = get_object_or_404(PostFlag, id=kwargs['pk'])
+        flag.status = PostFlag.RESOLVED
+        flag.save()
+        return super(StaffPostFlagResolveView, self).get(request, *args, **kwargs)
+
+    @method_decorator(csrf_protect)
+    @user_is_not_blocked
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated or not has_permission(request.user,'booru.change_status'):
+            return redirect('account:login')
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_redirect_url(self, *args, **kwargs):
         kwargs.pop('pk', None)
         return super().get_redirect_url(*args, **kwargs)
