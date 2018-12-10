@@ -121,15 +121,15 @@
                 <table class="table table-sm mt-2 borderless" style="table-layout: fixed; word-break: break-all;">
                     <tbody>
                         <tr>
-                            <th scope="row">ID</th>
+                            <th scope="row"><i class="fas fa-hashtag"></i> ID</th>
                             <td>{{post.id}}</td>
                         </tr>
                         <tr>
-                            <th scope="row">Uploader</th>
+                            <th scope="row"><i class="fas fa-user"></i> Uploader</th>
                             <td><a href="{{post.uploader.get_absolute_url}}">{{post.uploader}}</a></td>
                         </tr>
                         <tr>
-                            <th scope="row">Date</th>
+                            <th scope="row"><i class="far fa-calendar"></i> Date</th>
                             <td>
                                 <time datetime="{{post.timestamp|date:'c'}}" title="{{post.timestamp|date}}">
                                     {{post.timestamp|naturaltime}}
@@ -137,34 +137,34 @@
                             </td>
                         </tr>
                         <tr>
-                            <th scope="row">Size</th>
+                            <th scope="row"><i class="far fa-image"></i> Size</th>
                             <td>
                                 <a href="{{post.media.url}}">{{post.media.size}} KB</a>
                                 ({{post.get_media_width}}x{{post.get_media_height}})
                             </td>
                         </tr>
                         <tr>
-                            <th scope="row">Source</th>
+                            <th scope="row"><i class="fas fa-link"></i> Source</th>
                             <td>
                                 {% for source in post.get_sources %}
-                                {{source|urlize}}<br/>
+                                {{source|urlizetrunc:22}}<br/>
                                 {% endfor %}
                             </td>
                         </tr>
                         <tr>
-                            <th scope="row">Rating</th>
+                            <th scope="row"><i class="far fa-eye"></i> Rating</th>
                             <td>{{post.get_rating_display}}</td>
                         </tr>
                         <tr>
-                            <th scope="row">Score</th>
+                            <th scope="row"><i class="far fa-thumbs-up"></i> Score</th>
                             <td id="score_count">{{post.get_score_count}}</td>
                         </tr>
                         <tr>
-                            <th scope="row">Favorites</th>
+                            <th scope="row"><i class="far fa-star"></i> Favorites</th>
                             <td id="favorite_count">{{post.get_favorites_count}}</td>
                         </tr>
                         <tr>
-                            <th scope="row">Status</th>
+                            <th scope="row"><i class="far fa-check-circle"></i> Status</th>
                             <td>{{post.get_status_display}}</td>
                         </tr>
                     </tbody>
