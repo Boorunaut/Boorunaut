@@ -34,7 +34,7 @@ urlpatterns = [
     re_path(r'^', include('booru.urls')),
     re_path(r'^', include('booru.core.urls')),
     re_path(r'^account/', include('booru.account.urls')),
-    path('sitemap.xml', sitemap, {'sitemaps': sitemaps, name='django.contrib.sitemaps.views.sitemap')
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap')
 ]
 
 if settings.DEBUG == True:
