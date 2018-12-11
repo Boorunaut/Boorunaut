@@ -30,6 +30,8 @@ AUTH_USER_MODEL = 'account.Account'
 
 LOGIN_URL = 'account:login'
 
+SITE_ID = 1
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -41,6 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
+    'django.contrib.sitemaps',
+    'django.contrib.sites',
     # Site apps
     'booru',
     'booru.core',
@@ -153,3 +157,11 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 BOORUNAUT_MAX_SIZE_FILE = 10 * 1024 * 1024
 BOORUNAUT_INITIAL_UPLOAD_TIMEOUT = 2000
 BOORUNAUT_MAXIMUM_UPLOAD_TIMEOUT = 2000
+
+BOORUNAUT_INCLUDE_HEADER_CODE = '''
+'''
+
+BOORUNAUT_ADS_CODE = '''
+'''
+BOORUNAUT_ADS_ON_QUESTIONABLE = False
+BOORUNAUT_ADS_ON_EXPLICIT = False

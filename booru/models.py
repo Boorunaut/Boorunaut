@@ -100,6 +100,7 @@ class PostTag(TagBase):
                                                  on_delete=models.SET_NULL, related_name="associated_tags")
     author = models.ForeignKey(Account, null=True, on_delete=models.SET_NULL, related_name="authored_tags")
     timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
+    update_timestamp = models.DateTimeField(auto_now=True, auto_now_add=False)
     aliases = TaggableManager()
     history = HistoricalRecords()
 

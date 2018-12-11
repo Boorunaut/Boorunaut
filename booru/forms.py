@@ -278,7 +278,6 @@ class SiteConfigurationForm(forms.Form):
     terms_of_service = forms.CharField(required=False)
     privacy_policy = forms.CharField(required=False)
     announcement = forms.CharField(required=False, help_text="The contents here will be shown on the top of the website for all users. Markdown is enabled.")
-    custom_code = forms.CharField(required=False, help_text="WARNING: This executes arbitrary HTML code on the top of the site for all users. Be careful of the contents here.")
 
     class Meta:
         fields = "__all__"
@@ -289,4 +288,3 @@ class SiteConfigurationForm(forms.Form):
         self.fields['terms_of_service'].widget = forms.Textarea(attrs={'class': 'form-control'})
         self.fields['privacy_policy'].widget = forms.Textarea(attrs={'class': 'form-control'})
         self.fields['announcement'].widget = forms.Textarea(attrs={'class': 'form-control'})
-        self.fields['custom_code'].widget = forms.Textarea(attrs={'class': 'form-control'})

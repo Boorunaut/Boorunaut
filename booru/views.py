@@ -2,6 +2,7 @@ import json
 
 import diff_match_patch as dmp_module
 from django.apps import apps
+from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import REDIRECT_FIELD_NAME, authenticate
 from django.contrib.auth.decorators import login_required
@@ -24,8 +25,9 @@ from booru.account.models import Account, Privilege, Timeout
 from . import utils
 from .forms import (BanUserForm, CreatePostForm, EditPostForm,
                     GalleryCreateForm, GalleryEditForm, GalleryListSearchForm,
-                    ImplicationCreateForm, MassRenameForm,
-                    SiteConfigurationForm, TagEditForm, TagListSearchForm, ImplicationFilterForm)
+                    ImplicationCreateForm, ImplicationFilterForm,
+                    MassRenameForm, SiteConfigurationForm, TagEditForm,
+                    TagListSearchForm)
 from .models import (Comment, Configuration, Favorite, Gallery, Implication,
                      Post, PostTag, ScoreVote, TaggedPost)
 
@@ -76,11 +78,15 @@ def post_detail(request, post_id):
 
     ordered_tags = post.get_ordered_tags()
 
+    SHOW_ADS = (post.rating == Post.QUESTIONABLE and settings.BOORUNAUT_ADS_ON_QUESTIONABLE or
+                post.rating == Post.EXPLICIT and settings.BOORUNAUT_ADS_ON_EXPLICIT or
+                post.rating == Post.SAFE)
+
     return render(  request=request, template_name='booru/post_detail.html',
                     context={"post": post, "ordered_tags": ordered_tags, "form": form,
                         "previous_post": previous_post, "next_post": next_post,
                         "is_favorited":is_favorited, "current_vote": current_vote, 
-                        "can_comment": has_comment_priv})
+                        "can_comment": has_comment_priv, "SHOW_ADS": SHOW_ADS})
 
 @user_is_not_blocked
 def post_history(request, post_id, page_number = 1):
@@ -125,10 +131,9 @@ def post_list_detail(request, page_number = 1):
     page = p.page(page_number)
     post_list = page.object_list
 
-    
     tags_list = Post.tags.most_common().filter(post__id__in=post_list)[:25]
     
-    return render(request, 'booru/posts.html', {"posts": post_list, "page": page, "tags_list": tags_list})
+    return render(request, 'booru/posts.html', {"posts": post_list, "page": page, "tags_list": tags_list, "SHOW_ADS": True})
 
 @user_is_not_blocked
 def tags_list(request, page_number = 1):
@@ -557,7 +562,6 @@ class SiteConfigurationView(FormView):
         initial['terms_of_service'] = Configuration.objects.get(code_name='terms_of_service').value
         initial['privacy_policy'] = Configuration.objects.get(code_name='privacy_policy').value
         initial['announcement'] = Configuration.objects.get(code_name='announcement').value
-        initial['custom_code'] = Configuration.objects.get(code_name='custom_code').value
         return initial
 
     def form_valid(self, form):
@@ -576,10 +580,6 @@ class SiteConfigurationView(FormView):
         announcement = Configuration.objects.get(code_name='announcement')
         announcement.value = form.cleaned_data.get('announcement')
         announcement.save()
-
-        custom_code = Configuration.objects.get(code_name='custom_code')
-        custom_code.value = form.cleaned_data.get('custom_code')
-        custom_code.save()
         return super().form_valid(form)
 
     @method_decorator(csrf_protect)
