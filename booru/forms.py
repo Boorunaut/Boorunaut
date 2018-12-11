@@ -1,4 +1,5 @@
 from django import forms
+from django.conf import settings
 from django.contrib.admin.widgets import AdminTextareaWidget
 from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator
@@ -75,10 +76,13 @@ class CreatePostForm(forms.ModelForm):
             detected_media = media_file
         elif media_url:
             detected_media = utils.get_remote_image_as_InMemoryUploadedFile(media_url)
-                
         if not utils.get_pil_image_if_valid(detected_media):
             if not utils.check_video_is_valid(detected_media):
                 raise forms.ValidationError("Please upload a valid image or video.")
+
+        if detected_media.size >= settings.BOORUNAUT_MAX_SIZE_FILE:
+            max_size_mb = settings.BOORUNAUT_MAX_SIZE_FILE / 1024 / 1024
+            raise forms.ValidationError("Please upload a file with less than {} MB.".format(max_size_mb))
 
         md5_checksum = utils.get_file_md5(detected_media)
 

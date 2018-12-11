@@ -2,11 +2,15 @@ import copy
 import hashlib
 import io
 import tempfile
+import time
 import urllib.request
 
 import diff_match_patch as dmp_module
 import ffmpeg
+import requests
+from django import forms
 from django.apps import apps
+from django.conf import settings
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.core.files.uploadedfile import InMemoryUploadedFile
@@ -309,9 +313,27 @@ def get_all_roles():
 
 # Image utils
 def download_and_return_BytesIO(url):
-    response = urllib.request.urlopen(url)
-    img_bytes = response.read()
-    img_bytesio = io.BytesIO(img_bytes)
+    r = requests.get(url, stream=True, timeout=settings.BOORUNAUT_INITIAL_UPLOAD_TIMEOUT)
+    r.raise_for_status()
+
+    if int(r.headers.get('Content-Length')) > settings.BOORUNAUT_MAX_SIZE_FILE:
+        max_size_mb = settings.BOORUNAUT_MAX_SIZE_FILE / 1024 / 1024
+        raise forms.ValidationError("Please upload a file with less than {} MB.".format(max_size_mb))
+
+    size = 0
+    start = time.time()
+
+    img_bytesio = io.BytesIO()
+
+    for chunk in r.iter_content(1024):
+        if time.time() - start > settings.BOORUNAUT_MAXIMUM_UPLOAD_TIMEOUT:
+            raise forms.ValidationError("Timeout of connection was reached.")
+
+        size += len(chunk)
+        if size > settings.BOORUNAUT_MAX_SIZE_FILE:
+            raise forms.ValidationError("Please upload a file with less than {} MB.".format(max_size_mb))
+        
+        img_bytesio.write(chunk)
     return img_bytesio
 
 def BytesIO_to_InMemoryUploadedFile(img_bytesio):
