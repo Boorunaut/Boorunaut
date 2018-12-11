@@ -2,7 +2,7 @@
 <html lang="en" prefix="og: http://ogp.me/ns#">
     <head>
         <meta charset="utf-8"/>
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">        
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
         {% load staticfiles %}
         <link rel="stylesheet" type="text/css" href="{% static 'booru/css/custom_cosmo.css' %}"/>
@@ -12,6 +12,9 @@
         {% endblock %}
         
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+        {{ INCLUDE_HEADER_CODE |safe }}
+
         {% block scripts %}
         {% endblock %}
 

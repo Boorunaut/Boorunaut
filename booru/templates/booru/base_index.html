@@ -23,6 +23,8 @@
         {% block scripts %}
         {% endblock %}
 
+        {{ INCLUDE_HEADER_CODE |safe }}
+
         <title>
             {% block title %}{{SITE_TITLE}} | Imageboard{% endblock %}
         </title>

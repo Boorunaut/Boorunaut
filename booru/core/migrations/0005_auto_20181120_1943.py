@@ -7,7 +7,6 @@ def create_configs(apps, schema_editor):
     db_alias = schema_editor.connection.alias
     Configuration = apps.get_model("booru", "Configuration")
     Configuration.objects.using(db_alias).create(code_name="announcement", value="")
-    Configuration.objects.using(db_alias).create(code_name="custom_code", value="")
 
 class Migration(migrations.Migration):
 
