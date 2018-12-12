@@ -6,6 +6,11 @@
     {% endblock %}
 
 {% block scripts %}
+<script>
+$(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+})
+</script>
 {% endblock %}
 
 {% block ld_json %}
@@ -48,7 +53,7 @@
                 <div class="col">
                     <div class="alert alert-primary pt-1 pb-1" role="alert">
                         <small>
-                            <a href="{% url 'account:settings' %}">
+                            <a href="{% url 'account:settings' %}" data-toggle="tooltip" title="Only safe posts will be shown. Search with any tags or disable it in your account.">
                                 <i class="far fa-eye"></i> Safe Only Listing: On
                             </a>
                         </small>

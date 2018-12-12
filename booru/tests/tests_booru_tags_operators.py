@@ -116,9 +116,9 @@ class UtilitiesTests(TestCase):
         self.assertEqual(list(posts), [self.post_two])
 
     def test_tag_search_status_deleted(self):
-        posts = parse_and_filter_tags('status:deleted')
         self.post_two.status = Post.DELETED
         self.post_two.save()
+        posts = parse_and_filter_tags('status:deleted')
         self.assertEqual(list(posts), [self.post_two])
     
     def test_tag_search_status_score_zero(self):
