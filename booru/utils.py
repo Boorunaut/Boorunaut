@@ -139,7 +139,7 @@ def check_video_is_valid(video):
             if probe_result['format']['probe_score'] == 100:
                 result = True
     except:
-        pass    
+        pass
     return result
 
 def get_video_dimensions(video):

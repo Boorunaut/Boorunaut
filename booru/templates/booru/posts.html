@@ -6,6 +6,11 @@
     {% endblock %}
 
 {% block scripts %}
+<script>
+$(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+})
+</script>
 {% endblock %}
 
 {% block ld_json %}
@@ -16,7 +21,7 @@
 {% block body %}
     {% load number_converter %}
     <div class="row">
-        <div id="sidebar" class="col-md-3 col">
+        <aside id="sidebar" class="col-md-3 col">
             <div id="tag-tables" class="col">
                 <div id="tag-table-general" class="mb-3">
                     <div class="row col">
@@ -41,45 +46,63 @@
                     </table>
                 </div>
             </div>
-        </div>
-        <div id="post" class="col">
-            {% for post in posts %}
-            <a href="{{post.get_absolute_url}}"><img src="{{post.preview.url}}" alt=""></a>
-            {% endfor %}
-
-            <nav aria-label="..." class="mt-5">
-                <ul class="pagination">
-                    {% if page.has_previous %}
-                        <li class="page-item">
-                            <a class="page-link" href="{% url 'booru:post_page_detail' page.previous_page_number %}" tabindex="-1">Previous</a>
-                        </li>
-                    {% else %}
-                        <li class="page-item disabled">
-                            <a class="page-link" href="#" tabindex="-1">Previous</a>
-                        </li>
-                    {% endif %}
-                    {% for i in page.paginator.page_range %}
-                        {% if page.number == i %}
-                        <li class="page-item active">
-                            <a class="page-link" href="{% url 'booru:post_page_detail' i %}">{{i}} <span class="sr-only">(current)</span></a>
-                        </li>
-                        {% elif i > page.number|add:'-3' and i < page.number|add:'3' %}
-                        <li class="page-item">
-                            <a class="page-link" href="{% url 'booru:post_page_detail' i %}">{{i}}</a>
-                        </li>
-                        {% endif %}
+        </aside>
+        <section id="post" class="col">
+            {% if is_safe_only %}
+            <div class="row mb-3">
+                <div class="col">
+                    <div class="alert alert-primary pt-1 pb-1" role="alert">
+                        <small>
+                            <a href="{% url 'account:settings' %}" data-toggle="tooltip" title="Only safe posts will be shown. Search with any tags or disable it in your account.">
+                                <i class="far fa-eye"></i> Safe Only Listing: On
+                            </a>
+                        </small>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            <div class="row">
+                <main class="col">
+                    {% for post in posts %}
+                    <a href="{{post.get_absolute_url}}"><img src="{{post.preview.url}}" alt="{{ post.tags_mirror }}"></a>
                     {% endfor %}
-                    {% if page.has_next %}
-                        <li class="page-item">
-                            <a class="page-link" href="{% url 'booru:post_page_detail' page.next_page_number %}">Next</a>
-                        </li>
-                    {% else %}                        
-                        <li class="page-item disabled">
-                            <a class="page-link" href="#">Next</a>
-                        </li>
-                    {% endif %}
-                </ul>
-            </nav>
-        </div>
+                </main>
+            </div>
+            <div class="row">
+                <nav aria-label="..." class="col mt-5">
+                    <ul class="pagination">
+                        {% if page.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="{% url 'booru:post_page_detail' page.previous_page_number %}" tabindex="-1">Previous</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1">Previous</a>
+                            </li>
+                        {% endif %}
+                        {% for i in page.paginator.page_range %}
+                            {% if page.number == i %}
+                            <li class="page-item active">
+                                <a class="page-link" href="{% url 'booru:post_page_detail' i %}">{{i}} <span class="sr-only">(current)</span></a>
+                            </li>
+                            {% elif i > page.number|add:'-3' and i < page.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="{% url 'booru:post_page_detail' i %}">{{i}}</a>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+                        {% if page.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="{% url 'booru:post_page_detail' page.next_page_number %}">Next</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#">Next</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        </section>
     </div>
 {% endblock %}

@@ -20,8 +20,8 @@ register = template.Library()
 def version_comparator(current_version, field_name):
     previous_version = current_version.prev_record
 
-    current_value = getattr(current_version, field_name)    
-    
+    current_value = getattr(current_version, field_name)
+
     if previous_version != None:
         previous_value = getattr(previous_version, field_name)
     else:

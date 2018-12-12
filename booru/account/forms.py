@@ -26,7 +26,7 @@ class UniqueUserEmailField(forms.EmailField):
 
 class UsernameExistsField(UsernameField):
     """
-    An UsernameField that raises an error when the name is 
+    An UsernameField that raises an error when the name is
     not registered on the database.
     """
 
@@ -39,7 +39,7 @@ class UsernameExistsField(UsernameField):
 
 class UsernameNotBlockedField(UsernameExistsField):
     """
-    An UsernameExistsField that raises an error when the account 
+    An UsernameExistsField that raises an error when the account
     is banned from the website.
     """
 
@@ -53,7 +53,7 @@ class UsernameNotBlockedField(UsernameExistsField):
 
 class UniqueUsernameField(UsernameField):
     """
-    An UsernameField that raises an error when the 
+    An UsernameField that raises an error when the
     name is already in use.
     """
 
@@ -69,7 +69,7 @@ class UniqueUsernameField(UsernameField):
 
 class UserRegisterForm(UserCreationForm):
     """
-    Extends the built in UserCreationForm to include the Account email 
+    Extends the built in UserCreationForm to include the Account email
     and the form-control class in each widget.
     """
 
@@ -91,7 +91,7 @@ class UserRegisterForm(UserCreationForm):
 
 class UserAuthenticationForm(AuthenticationForm):
     """
-    Extends the built in AuthenticationForm to add 
+    Extends the built in AuthenticationForm to add
     the form-control class in each widget.
     """
 

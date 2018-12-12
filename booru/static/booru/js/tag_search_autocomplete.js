@@ -19,5 +19,5 @@ $(function() {
     if (searchParams.has('tags')){
         let tags = searchParams.get('tags');
         $('.tag-search').importTags(tags);
-    }    
+    }
 });

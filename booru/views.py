@@ -85,7 +85,7 @@ def post_detail(request, post_id):
     return render(  request=request, template_name='booru/post_detail.html',
                     context={"post": post, "ordered_tags": ordered_tags, "form": form,
                         "previous_post": previous_post, "next_post": next_post,
-                        "is_favorited":is_favorited, "current_vote": current_vote, 
+                        "is_favorited":is_favorited, "current_vote": current_vote,
                         "can_comment": has_comment_priv, "SHOW_ADS": SHOW_ADS})
 
 @user_is_not_blocked
@@ -119,12 +119,15 @@ def post_list_detail(request, page_number = 1):
     tags = request.GET.get("tags", "")
     
     posts = utils.parse_and_filter_tags(tags)
-    posts = posts.exclude(status=2).exclude(status=3)
+    if not has_permission(request.user, 'change_status'):
+        posts = posts.exclude(status=Post.HIDDEN).exclude(status=Post.DELETED)
 
     # Check if user enabled safe only
     # TODO: transform these tag operations into a class
-    if request.user.is_authenticated and request.user.safe_only:
-        posts = posts.exclude(rating=2).exclude(rating=3)
+    is_safe_only = False
+    if (request.user.is_authenticated and request.user.safe_only) or (not request.user.is_authenticated and tags == ""):
+        posts = posts.exclude(rating=Post.QUESTIONABLE).exclude(rating=Post.EXPLICIT)
+        is_safe_only = True
     
     page_limit = 20
     p = Paginator(posts, page_limit)
@@ -133,7 +136,8 @@ def post_list_detail(request, page_number = 1):
 
     tags_list = Post.tags.most_common().filter(post__id__in=post_list)[:25]
     
-    return render(request, 'booru/posts.html', {"posts": post_list, "page": page, "tags_list": tags_list, "SHOW_ADS": True})
+    return render(request, 'booru/posts.html', {"posts": post_list, "page": page, "tags_list": tags_list,
+                                                "SHOW_ADS": True, "is_safe_only": is_safe_only})
 
 @user_is_not_blocked
 def tags_list(request, page_number = 1):
@@ -214,7 +218,7 @@ class TagDelete(DeleteView):
 
     @user_is_not_blocked
     def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_authenticated or not has_permission(request.user, 'booru.manage_tags'):
+        if not request.user.is_authenticated or not has_permission(request.user, 'manage_tags'):
             return redirect('account:login')
         return super().dispatch(request, *args, **kwargs)
 
@@ -270,7 +274,7 @@ class ImplicationDetailView(generic.DetailView):
 
 @login_required
 @user_is_not_blocked
-def implication_create(request):    
+def implication_create(request):
     form = ImplicationCreateForm(data=request.POST)
     
     if form.is_valid():

@@ -47,7 +47,7 @@ $(document).ready(function() {
         }
     }
 
-    $("#btn_vote_up").click(function(){            
+    $("#btn_vote_up").click(function(){
         $.get(vote_url + "?point=1", function(data, status){
             var value = data['value'];
             var current_points = data['current_points'];
@@ -64,7 +64,7 @@ $(document).ready(function() {
         });
     });
 
-    $("#btn_vote_down").click(function(){            
+    $("#btn_vote_down").click(function(){
         $.get(vote_url + "?point=-1", function(data, status){
             var value = data['value'];
             var current_points = data['current_points'];

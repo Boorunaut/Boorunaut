@@ -70,7 +70,7 @@ class LogoutView(RedirectView):
 
 class RegisterView(FormView):
     """
-    Provides the ability to a visitor to register as new user 
+    Provides the ability to a visitor to register as new user
     with an username, an email and a password
     """
     success_url = '/post/list'
@@ -152,7 +152,7 @@ def profile(request, account_slug):
         has_comment_priv = False
         can_change_group = False
 
-    # TODO: I don't remember if I can safely pass account as 
+    # TODO: I don't remember if I can safely pass account as
     # an parameter to the render.
     favorites = Post.objects.filter(favorites__account=account)[:5]
     
@@ -171,8 +171,8 @@ def profile(request, account_slug):
 
 class SettingsView(FormView):
     """
-    Provides the ability to a visitor to register as new user 
-    with an username, an email and a password
+    Provides the ability to a visitor to register as new user
+    with an username, an email and a password.
     """
     success_url = '.'
     form_class = UserSettingsForm

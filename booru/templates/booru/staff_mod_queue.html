@@ -17,13 +17,13 @@
 <div class="col bg-white pt-3 pb-3">
     <div class="row h2 text-center">
         <div class="col">
-            <i class="fas fa-archive"></i> 
+            <i class="fas fa-archive"></i>
             <a href="{% url 'booru:posts' %}?tags=status:pending">
                 {{pending_posts.count}} posts waiting approval
             </a>
         </div>
         <div class="col">
-            <i class="fas fa-archive"></i> 
+            <i class="fas fa-archive"></i>
             <a href="{% url 'booru:implication-list' %}?status=0">
                 {{pending_implications.count}} pending implications
             </a>

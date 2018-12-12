@@ -10,7 +10,7 @@ def user_is_not_blocked(function):
         if user_request.is_authenticated and not user_request.has_priv("can_login"):
             return redirect('account:logout')
         else:
-            return function(request, *args, **kwargs)            
+            return function(request, *args, **kwargs)
 
     wrap.__doc__ = function.__doc__
     wrap.__name__ = function.__name__

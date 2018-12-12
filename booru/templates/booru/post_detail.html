@@ -36,7 +36,7 @@
     {% load permission_tags %}
     {% load crispy_forms_tags %}
     <div class="row">
-        <div id="sidebar" class="col-md-3 col order-2 order-md-1">
+        <aside id="sidebar" class="col-md-3 col order-2 order-md-1">
             <nav aria-label="Page navigation example">
                 <ul class="pagination justify-content-center">
                     {% if previous_post %}
@@ -195,7 +195,7 @@
                 </div>
                 {% else %}
                 <div class="row text-center">
-                    <span class="col-2 offset-3" data-toggle="tooltip" title="Login to mark posts as favorite">                            
+                    <span class="col-2 offset-3" data-toggle="tooltip" title="Login to mark posts as favorite">
                         <button type="button" class="btn btn-primary" disabled>
                             <i class='fas fa-star'></i>
                         </button>
@@ -220,8 +220,8 @@
                     </span>
                 </div>
             </div>
-        </div>
-        <div id="post" class="col-9 order-1 order-md-2">
+        </aside>
+        <section id="post" class="col-9 order-1 order-md-2">
             {% if post.status == 2 %}
             <div class="alert alert-warning text-center" role="alert">
                 This post was hid by a staff member.
@@ -289,17 +289,17 @@
                 {% endif %}
             </div>
             <div class="row mb-3">
-                <div class="col">
+                <main class="col">
                     {% if user|can:'change_status' or not post.status == 3 %}
                     {% if post.media_type == 0 %}
-                    <img src="{{post.get_sample_url}}" alt="" style="max-width: 100%;">
+                    <img src="{{ post.get_sample_url }}" alt="{{ post.tags_mirror }}" style="max-width: 100%;">
                     {% elif post.media_type == 1 %}
                     <video controls>
-                        <source src={{post.media.url}}>
+                        <source src="{{ post.media.url }}">
                     </video>
                     {% endif %}
                     {% endif %}
-                </div>
+                </main>
             </div>
             <div class="row">
                 <div class="col mt-2 mb-4">
@@ -419,6 +419,6 @@
                 </div>
             </div>
             {% endif %}
-        </div>
+        </section>
     </div>
 {% endblock %}
