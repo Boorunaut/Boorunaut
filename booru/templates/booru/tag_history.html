@@ -13,7 +13,7 @@
             <h1>Tag: <a href="{% url 'booru:tag_detail' tag.id %}">{{tag}}</a></h1>
         </div>
 
-        <div class="row mt-3 mb-3">            
+        <div class="row mt-3 mb-3">
             <form class="col" method="get" action="{% url 'booru:tag_revision_diff' tag.id %}" enctype="multipart/form-data">
                 <div id="table">
                     <table class="table table-striped text-center">
@@ -76,7 +76,7 @@
                     <li class="page-item">
                         <a class="page-link" href="{% url 'booru:tag_history' tag.id page.next_page_number %}">Next</a>
                     </li>
-                {% else %}                        
+                {% else %}
                     <li class="page-item disabled">
                         <a class="page-link" href="#">Next</a>
                     </li>

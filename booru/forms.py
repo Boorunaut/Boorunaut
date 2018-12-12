@@ -62,7 +62,7 @@ class CreatePostForm(forms.ModelForm):
         self.fields['description'].widget = forms.Textarea(attrs={'class': 'form-control'})
         self.fields['tags'].widget = forms.TextInput(attrs={'class': 'form-control'})
 
-    def clean( self ): 
+    def clean( self ):
         cleaned_data = self.cleaned_data
         media_file = cleaned_data.get('media')
         media_url = cleaned_data.get('media_url')

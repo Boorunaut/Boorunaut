@@ -29,7 +29,7 @@ def create_test_post(user, tags=[]):
 
     test_post = Post.objects.create(uploader=user, media=image_mock,
                                     source=source)
-    
+
     for tag in tags:
         test_post.tags.add(tag)
 
@@ -44,13 +44,13 @@ class UtilitiesTests(TestCase):
     def setUpClass(cls):
         mock_user = create_test_user()
         mock_user_two = create_test_user("Test2")
-        
+
         cls.post_one = create_test_post(mock_user, ['test1', 'test2', 'test3'])
         cls.post_two = create_test_post(mock_user, ['test1', 'test2', 'test4', 'test5'])
         cls.post_three = create_test_post(mock_user, ['test1', 'test4', 'test6'])
 
         super().setUpClass()
-    
+
     @classmethod
     def tearDownClass(cls):
         super().tearDownClass()
@@ -108,13 +108,13 @@ class UtilitiesTests(TestCase):
     def test_tag_search_status_pending(self):
         posts = parse_and_filter_tags('status:pending')
         self.assertEqual(list(posts), [self.post_three, self.post_two, self.post_one])
-    
+
     def test_tag_search_status_approved(self):
         posts = parse_and_filter_tags('status:approved')
         self.post_two.status = Post.APPROVED
         self.post_two.save()
         self.assertEqual(list(posts), [self.post_two])
-    
+
     def test_tag_search_status_deleted(self):
         posts = parse_and_filter_tags('status:deleted')
         self.post_two.status = Post.DELETED

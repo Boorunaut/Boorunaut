@@ -33,7 +33,7 @@
             "@context": "http://schema.org",
             "@type": "WebSite",
             "name": "{{SITE_TITLE}}",
-            "url" : "{{request.get_host}}",
+            "url" : "http://{{request.get_host}}",
             "potentialAction": [{
                 "@type": "SearchAction",
                 "target": "{{request.get_host}}{% url 'booru:posts' %}?tags={search_term}",

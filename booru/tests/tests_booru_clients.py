@@ -92,5 +92,5 @@ class PostClientsTests(TestCase):
         response = c.post(upload_url, data)
         del image
 
-        post_url = reverse('booru:post_detail', args=(1,))    
+        post_url = reverse('booru:post_detail', args=(1,))
         self.assertEqual(200, response.status_code)

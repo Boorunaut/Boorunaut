@@ -85,7 +85,7 @@ def post_detail(request, post_id):
     return render(  request=request, template_name='booru/post_detail.html',
                     context={"post": post, "ordered_tags": ordered_tags, "form": form,
                         "previous_post": previous_post, "next_post": next_post,
-                        "is_favorited":is_favorited, "current_vote": current_vote, 
+                        "is_favorited":is_favorited, "current_vote": current_vote,
                         "can_comment": has_comment_priv, "SHOW_ADS": SHOW_ADS})
 
 @user_is_not_blocked
@@ -270,7 +270,7 @@ class ImplicationDetailView(generic.DetailView):
 
 @login_required
 @user_is_not_blocked
-def implication_create(request):    
+def implication_create(request):
     form = ImplicationCreateForm(data=request.POST)
     
     if form.is_valid():

@@ -27,7 +27,7 @@
         <div class="row">
             <p>{{gallery.description}}</p>
         </div>
-        <div class="row">        
+        <div class="row">
             <div id="post" class="col">
                 {% for post in page.object_list %}
                 <a href="{{post.get_absolute_url}}"><img src="{{post.preview.url}}" alt=""></a>
@@ -59,7 +59,7 @@
                             <li class="page-item">
                                 <a class="page-link" href="{% url 'booru:gallery_detail' gallery.id %}?page={{page.next_page_number}}">Next</a>
                             </li>
-                        {% else %}                        
+                        {% else %}
                             <li class="page-item disabled">
                                 <a class="page-link" href="#">Next</a>
                             </li>

@@ -1,4 +1,4 @@
-$(document).ready(function(){        
+$(document).ready(function(){
     $("#edit_about").click(function(){
         if ($("#about-data").css('display') === "none")
         {
@@ -10,5 +10,5 @@ $(document).ready(function(){
             $("#about-data").hide();
             $("#about-edit").show();
         }
-    }); 
+    });
 });

@@ -150,7 +150,7 @@
     {% if request.user.show_comments %}
     <div class="row">
         <div id="comment-section" class="mt-3 mb-3 col offset-2">
-            <h3>Comments</h3>            
+            <h3>Comments</h3>
             <div id="comments" class="row">
                 {% for comment in account.comments.all %}
                 <div id="comment-{{comment.id}}" class="comment col-10 border comment-border pt-3 pb-3 mb-2">
@@ -170,7 +170,7 @@
                                 <span class="col">
                                     <small>Score: {{comment.get_score}}</small>
                                 </span>
-                            </div>                            
+                            </div>
                         </div>
                         <div class="comment col-9">
                             {% load markdown_deux_tags %}

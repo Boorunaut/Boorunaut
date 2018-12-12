@@ -27,7 +27,7 @@ class Moderator(AbstractUserRole):
         'manage_tags': True,
         'manage_comments': True,
     }
-    
+
 class Janitor(AbstractUserRole):
     available_permissions = {
         'modify_profile': False,

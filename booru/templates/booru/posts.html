@@ -16,7 +16,7 @@
 {% block body %}
     {% load number_converter %}
     <div class="row">
-        <div id="sidebar" class="col-md-3 col">
+        <aside id="sidebar" class="col-md-3 col">
             <div id="tag-tables" class="col">
                 <div id="tag-table-general" class="mb-3">
                     <div class="row col">
@@ -41,11 +41,13 @@
                     </table>
                 </div>
             </div>
-        </div>
-        <div id="post" class="col">
-            {% for post in posts %}
-            <a href="{{post.get_absolute_url}}"><img src="{{post.preview.url}}" alt=""></a>
-            {% endfor %}
+        </aside>
+        <section id="post" class="col">
+            <main>
+                {% for post in posts %}
+                <a href="{{post.get_absolute_url}}"><img src="{{post.preview.url}}" alt="{{ post.tags_mirror }}"></a>
+                {% endfor %}
+            </main>
 
             <nav aria-label="..." class="mt-5">
                 <ul class="pagination">
@@ -73,13 +75,13 @@
                         <li class="page-item">
                             <a class="page-link" href="{% url 'booru:post_page_detail' page.next_page_number %}">Next</a>
                         </li>
-                    {% else %}                        
+                    {% else %}
                         <li class="page-item disabled">
                             <a class="page-link" href="#">Next</a>
                         </li>
                     {% endif %}
                 </ul>
             </nav>
-        </div>
+        </section>
     </div>
 {% endblock %}

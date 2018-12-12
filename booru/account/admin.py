@@ -5,7 +5,7 @@ from .models import Account, Timeout
 # Define a new User admin
 class UserAdmin(BaseUserAdmin):
     fieldsets = BaseUserAdmin.fieldsets + (
-            (None, {'fields': ( 'avatar', 'slug', 'email_activated', 
+            (None, {'fields': ( 'avatar', 'slug', 'email_activated',
                                 'comments_locked', 'about', 'safe_only',
                                 'show_comments', 'tag_blacklist', 'is_deleted')}),
     )
