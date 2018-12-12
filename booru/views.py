@@ -123,7 +123,7 @@ def post_list_detail(request, page_number = 1):
 
     # Check if user enabled safe only
     # TODO: transform these tag operations into a class
-    if request.user.is_authenticated and request.user.safe_only:
+    if (request.user.is_authenticated and request.user.safe_only) or (not request.user.is_authenticated and tags == ""):
         posts = posts.exclude(rating=2).exclude(rating=3)
     
     page_limit = 20
@@ -133,7 +133,8 @@ def post_list_detail(request, page_number = 1):
 
     tags_list = Post.tags.most_common().filter(post__id__in=post_list)[:25]
     
-    return render(request, 'booru/posts.html', {"posts": post_list, "page": page, "tags_list": tags_list, "SHOW_ADS": True})
+    return render(request, 'booru/posts.html', {"posts": post_list, "page": page, "tags_list": tags_list,
+                                                "SHOW_ADS": True, "is_safe_only": request.user.safe_only})
 
 @user_is_not_blocked
 def tags_list(request, page_number = 1):
