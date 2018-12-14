@@ -10,6 +10,7 @@ def create_configs(apps, schema_editor):
     Configuration.objects.using(db_alias).create(code_name="google_analytics_id", value="")
     Configuration.objects.using(db_alias).create(code_name="terms_of_service", value="")
     Configuration.objects.using(db_alias).create(code_name="privacy_policy", value="")
+    Configuration.objects.using(db_alias).create(code_name="welcome_page", value="1")
 
 class Migration(migrations.Migration):
 
