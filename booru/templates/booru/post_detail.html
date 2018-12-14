@@ -292,7 +292,7 @@
                 <main class="col">
                     {% if user|can:'change_status' or not post.status == 3 %}
                     {% if post.media_type == 0 %}
-                    <img src="{{ post.get_sample_url }}" alt="{{ post.tags_mirror }}" style="max-width: 100%;">
+                    <img src="{{ post.get_sample_url }}" alt="{{ post.tags_mirror }}" title="{{ post.tags_mirror }}" style="max-width: 100%;">
                     {% elif post.media_type == 1 %}
                     <video controls>
                         <source src="{{ post.media.url }}">
