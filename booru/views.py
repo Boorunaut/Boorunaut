@@ -34,8 +34,13 @@ from .models import (Comment, Configuration, Favorite, Gallery, Implication,
 
 @user_is_not_blocked
 def index(request):
-    post_count = Post.objects.not_deleted().count()
-    return render(request, 'booru/index.html', {'post_count': post_count})
+    welcome_page = bool(int(Configuration.objects.get(code_name='welcome_page').value))
+
+    if welcome_page:
+        post_count = Post.objects.not_deleted().count()
+        return render(request, 'booru/index.html', {'post_count': post_count})
+    else:
+        return redirect('booru:posts')
 
 @user_is_not_blocked
 def post_detail(request, post_id):
@@ -566,6 +571,7 @@ class SiteConfigurationView(FormView):
         initial['terms_of_service'] = Configuration.objects.get(code_name='terms_of_service').value
         initial['privacy_policy'] = Configuration.objects.get(code_name='privacy_policy').value
         initial['announcement'] = Configuration.objects.get(code_name='announcement').value
+        initial['welcome_page'] = bool(int(Configuration.objects.get(code_name='welcome_page').value))
         return initial
 
     def form_valid(self, form):
@@ -584,6 +590,11 @@ class SiteConfigurationView(FormView):
         announcement = Configuration.objects.get(code_name='announcement')
         announcement.value = form.cleaned_data.get('announcement')
         announcement.save()
+
+        welcome_page = Configuration.objects.get(code_name='welcome_page')
+        welcome_page.value = int(form.cleaned_data.get('welcome_page') == True)
+        welcome_page.save()
+
         return super().form_valid(form)
 
     @method_decorator(csrf_protect)
