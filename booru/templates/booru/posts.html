@@ -64,7 +64,7 @@ $(function () {
             <div class="row">
                 <main class="col">
                     {% for post in posts %}
-                    <a href="{{post.get_absolute_url}}"><img src="{{post.preview.url}}" alt="{{ post.tags_mirror }}"></a>
+                    <a href="{{post.get_absolute_url}}"><img src="{{post.preview.url}}" alt="{{ post.tags_mirror }}" title="{{ post.tags_mirror }}"></a>
                     {% endfor %}
                 </main>
             </div>
