@@ -327,6 +327,12 @@ class Post(models.Model):
     
     def get_children(self):
         return Post.objects.not_deleted().filter(parent=self.id) or None
+
+    def is_deleted(self):
+        return self.status == Post.DELETED
+
+    def is_hidden(self):
+        return self.status == Post.HIDDEN
     
     class Meta:
         permissions = (
