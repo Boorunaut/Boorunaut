@@ -65,7 +65,7 @@ $(function () {
                 <main class="col">
                     <div class="row">
                         {% for post in posts %}
-                        <a class="mr-3 mb-3" href="{{post.get_absolute_url}}"><img src="{{post.preview.url}}" alt="{{ post.tags_mirror }}" title="{{ post.tags_mirror }}"></a>
+                        <a class="mr-3 mb-3 {% if post.is_deleted %}border border-danger{% elif post.is_hidden %}border border-warning{% endif %}" style="border-width: 3px !important;" href="{{post.get_absolute_url}}"><img src="{{post.preview.url}}" alt="{{ post.tags_mirror }}" title="{{ post.tags_mirror }}"></a>
                         {% endfor %}
                     </div>
                 </main>
