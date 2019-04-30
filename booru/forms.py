@@ -275,6 +275,7 @@ class GalleryListSearchForm(forms.Form):
 
 class SiteConfigurationForm(forms.Form):
     site_title = forms.CharField(required=True, help_text="The name of the website to be shown.")
+    site_description = forms.CharField(required=False, help_text="The description of the website for search engines.")
     welcome_page = forms.BooleanField(required=False)
     terms_of_service = forms.CharField(required=False)
     privacy_policy = forms.CharField(required=False)
@@ -286,6 +287,7 @@ class SiteConfigurationForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(SiteConfigurationForm, self).__init__(*args, **kwargs)
         self.fields['site_title'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        self.fields['site_description'].widget = forms.TextInput(attrs={'class': 'form-control'})
         self.fields['welcome_page'].widget = forms.CheckboxInput(attrs={'class': 'form-control', 'data-toggle': 'toggle'})
         self.fields['terms_of_service'].widget = forms.Textarea(attrs={'class': 'form-control'})
         self.fields['privacy_policy'].widget = forms.Textarea(attrs={'class': 'form-control'})

@@ -47,6 +47,7 @@
         {% block ld_json %}
         <link href="{{request.get_host}}" rel="canonical" />
         {% endblock %}
+        <meta name="description" content="{{SITE_DESCRIPTION}}">
     </head>
     <body>
         {% load static %}

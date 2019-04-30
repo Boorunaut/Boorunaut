@@ -568,6 +568,7 @@ class SiteConfigurationView(FormView):
         initial = super().get_initial()
 
         initial['site_title'] = Configuration.objects.get(code_name='site_title').value
+        initial['site_description'] = Configuration.objects.get(code_name='site_description').value
         initial['terms_of_service'] = Configuration.objects.get(code_name='terms_of_service').value
         initial['privacy_policy'] = Configuration.objects.get(code_name='privacy_policy').value
         initial['announcement'] = Configuration.objects.get(code_name='announcement').value
@@ -578,6 +579,10 @@ class SiteConfigurationView(FormView):
         site_title = Configuration.objects.get(code_name='site_title')
         site_title.value = form.cleaned_data.get('site_title')
         site_title.save()
+
+        site_description = Configuration.objects.get(code_name='site_description')
+        site_description.value = form.cleaned_data.get('site_description')
+        site_description.save()
 
         terms_of_service = Configuration.objects.get(code_name='terms_of_service')
         terms_of_service.value = form.cleaned_data.get('terms_of_service')
