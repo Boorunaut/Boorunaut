@@ -139,7 +139,7 @@ def post_list_detail(request, page_number = 1):
     page = p.page(page_number)
     post_list = page.object_list
 
-    tags_list = Post.tags.most_common().filter(post__id__in=post_list)[:25]
+    tags_list = Post.tags.most_common().filter(id__in=post_list)[:25]
     
     return render(request, 'booru/posts.html', {"posts": post_list, "page": page, "tags_list": tags_list,
                                                 "SHOW_ADS": True, "is_safe_only": is_safe_only})
