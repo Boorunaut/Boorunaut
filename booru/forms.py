@@ -29,13 +29,6 @@ def validate_sources(source):
     sources = "\n".join(sources)
     return sources
 
-class TaggitAdminTextareaWidget(AdminTextareaWidget):
-    # taken from taggit.forms.TagWidget
-    def render(self, name, value, attrs=None, renderer=None):
-        if value is not None and not isinstance(value, six.string_types):
-            value = edit_string_for_tags([o.tag for o in value.select_related("tag")])
-        return super(TaggitAdminTextareaWidget, self).render(name, value, attrs, renderer)
-
 class CreatePostForm(forms.ModelForm):
     '''Form for creating an post.'''
 
@@ -126,7 +119,6 @@ class EditPostForm(forms.ModelForm):
         self.fields['parent'].widget = forms.NumberInput(attrs={'class': 'form-control'})
         self.fields['source'].widget = forms.Textarea(attrs={'class': 'form-control', 'rows':4, 'cols':15})
         self.fields['description'].widget = forms.Textarea(attrs={'class': 'form-control', 'rows':4, 'cols':15})
-        self.fields['tags'].widget = TaggitAdminTextareaWidget(attrs={'class': 'form-control'})
 
 class TagListSearchForm(forms.Form):
     '''Form for creating an post.'''
@@ -157,8 +149,6 @@ class TagEditForm(forms.ModelForm):
         self.fields['description'].widget = forms.Textarea(attrs={'class': 'form-control'})
         self.fields['associated_link'].widget = forms.Textarea(attrs={'class': 'form-control'})
         self.fields['associated_user_name'].widget = forms.Textarea(attrs={'class': 'form-control'})
-        self.fields['aliases'].widget = TaggitAdminTextareaWidget(attrs={'class': 'form-control',
-                                                                        'data-role': 'tagsinput', 'rows':1})
 
     class Meta:
         model = PostTag
