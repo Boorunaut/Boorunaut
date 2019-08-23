@@ -28,35 +28,13 @@ def space_splitter(tag_string):
 def space_joiner(tags):
     return ' '.join(t.name for t in tags)
 
-def get_sample(original_pil_image):
-    ''' Returns the resized sample image. '''
-    pil_image = reduce_image_to_maximum_size(original_pil_image, sample_max_resolution)
-
-    if pil_image == None:
-        return None
-
-    pil_image = convert_to_rgb(pil_image)
-    pil_image = convert_image_to_jpeg_bytes(pil_image)
-
-    if pil_image:
-        return convert_bytes_to_content_file(pil_image)
-    else:
-        return None
-
-def get_preview(original_pil_image):
-    ''' Returns the resized preview image. '''
-    pil_image = reduce_image_to_maximum_size(original_pil_image, preview_max_resolution)
-
-    if pil_image == None:
-        return None
-
-    pil_image = convert_to_rgb(pil_image)
-    pil_image = convert_image_to_jpeg_bytes(pil_image)
-
-    if pil_image:
-        return convert_bytes_to_content_file(pil_image)
-    else:
-        return convert_bytes_to_content_file(original_pil_image)
+def image_resizer(original_image, size):
+    img_io = io.BytesIO()
+    resized_image = original_image.copy()
+    resized_image.thumbnail(size, ImagePIL.ANTIALIAS)
+    resized_image.convert('RGB').save(img_io, format='JPEG', quality=100)
+    img_content = ContentFile(img_io.getvalue(), original_image.filename)
+    return img_content
 
 def get_video_preview(video):
     ''' Returns the resized preview image. '''
@@ -77,48 +55,6 @@ def get_video_preview(video):
         print(e.stderr)
 
     return None
-
-def reduce_image_to_maximum_size(image, max_resolution):
-    ''' Reduce the given image to be equal to the maximum resolution allowed (or None if already lower).
-    If one of the max_resolution's components is equal to None, it will be ignored.'''
-    original_size = image.size
-
-    max_resolution = list(max_resolution)
-
-    if max_resolution[0] == None:
-        max_resolution[0] = original_size[0]
-
-    if max_resolution[1] == None:
-        max_resolution[1] = original_size[1]
-    
-    x_proportion = original_size[0] / max_resolution[0]
-    y_proportion = original_size[1] / max_resolution[1]
-
-    if x_proportion > y_proportion:
-        proportion = x_proportion
-    else:
-        proportion = y_proportion
-
-    if proportion <= 1:
-        return None
-    else:
-        new_size = (int(round(original_size[0] / proportion)), int(round(original_size[1] / proportion)))
-
-        return image.resize(new_size, ImagePIL.ANTIALIAS)
-
-def convert_image_to_jpeg_bytes(pil_image):
-    ''' Convert an PIL Image to JPEG and returns it as bytes. '''
-    f = io.BytesIO()
-    pil_image.convert('RGB').save(f, format='JPEG', quality=90, optimize=True)
-
-    return f
-
-def convert_bytes_to_content_file(pil_image_bytes):
-    ''' Convert the bytes of an Image to a Django ContentFile. '''
-    s = pil_image_bytes.getvalue()
-    pil_image_bytes.close()
-
-    return ContentFile(s)
 
 def get_pil_image_if_valid(image):
     ''' Returns a PIL Image if the given image file is valid, returns False otherwise. '''
