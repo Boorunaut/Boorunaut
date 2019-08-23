@@ -221,6 +221,9 @@ class Post(models.Model):
 
             if pil_image:
                 width, height = pil_image.size
+                media = utils.image_resizer(pil_image, (width, height))
+                self.media.save(".jpg", media, save=False)
+
                 sample = None
                 if width > 850 or height > 850:
                     sample = utils.image_resizer(pil_image, (850, 850))
