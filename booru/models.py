@@ -3,6 +3,7 @@ import urllib.parse
 import uuid
 from urllib.parse import urlparse
 
+from django.conf import settings
 from django.contrib.contenttypes.fields import (GenericForeignKey,
                                                 GenericRelation)
 from django.contrib.contenttypes.models import ContentType
@@ -220,22 +221,26 @@ class Post(models.Model):
             pil_image = utils.get_pil_image_if_valid(self.media)
 
             if pil_image:
-                width, height = pil_image.size
-                media = utils.image_resizer(pil_image, (width, height))
-                self.media.save(".jpg", media, save=False)
+                if settings.BOORUNAUT_EMBED_MODE == False:
+                    width, height = pil_image.size
+                    media = utils.image_resizer(pil_image, (width, height))
+                    self.media.save(".jpg", media, save=False)
 
-                sample = None
-                if width > 850 or height > 850:
-                    sample = utils.image_resizer(pil_image, (850, 850))
+                    sample = None
+                    if width > 850 or height > 850:
+                        sample = utils.image_resizer(pil_image, (850, 850))
+                    
+                    if sample:
+                        self.sample.save(".jpg", sample, save=False)
+
                 preview = utils.image_resizer(pil_image, (150, 150))
-                
-                if sample:
-                    self.sample.save(".jpg", sample, save=False)
-
                 if preview:
                     self.preview.save(".jpg", preview, save=False)
 
                 self.media_type = self.IMAGE
+
+                if settings.BOORUNAUT_EMBED_MODE == True:
+                    self.media.delete()
             else:
                 self.media_type = self.VIDEO
         super(Post, self).save(*args, **kwargs)
@@ -320,6 +325,18 @@ class Post(models.Model):
     def get_sources(self):
         sources = self.source.splitlines()
         return sources
+    
+    def get_embed_code(self):
+        sources = self.get_sources()
+
+        if sources:
+            url = sources[0]
+            return f'''
+            <a class="embedly-card" data-card-controls="0" href="{url}"></a>
+            <script async src="//cdn.embedly.com/widgets/platform.js" charset="UTF-8"></script>
+            '''
+        else:
+            return None
     
     def get_parent(self):
         if self.parent:
