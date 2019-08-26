@@ -1,9 +1,11 @@
+import base64
 import copy
 import hashlib
 import io
 import tempfile
 import time
 import urllib.request
+from io import BytesIO
 
 import diff_match_patch as dmp_module
 import ffmpeg
@@ -294,3 +296,22 @@ def get_remote_image_as_InMemoryUploadedFile(url):
 def BytesIO_to_PIL(img_bytesio):
     img_copy = copy.copy(img_bytesio)
     return ImagePIL.open(img_copy)
+
+def generate_mock_image(empty=True):
+    image_base64 = "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=="
+    image_bytes = base64.b64decode(image_base64)
+    
+    im = ImagePIL.new(mode='RGB', size=(200, 200))
+    im_io = BytesIO()
+    im.save(im_io, format='JPEG')
+    im_io.seek(0)
+
+    if empty == False:
+        im_io.write(image_bytes)
+        im_io.seek(0)
+
+    image = InMemoryUploadedFile(
+        im_io, None, 'random-name.jpg', 'image/jpeg', im_io.getbuffer().nbytes, None
+    )
+
+    return image

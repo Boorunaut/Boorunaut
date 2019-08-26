@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-import base64
 import tempfile
 from collections import Counter
-from io import BytesIO
 from urllib.parse import urlparse
 
 import django
@@ -13,6 +11,7 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.test import Client, RequestFactory, TestCase
 from django.urls import reverse
 from PIL import Image
+from booru.utils import generate_mock_image
 
 from booru.models import Post
 
@@ -33,17 +32,17 @@ class PostClientsTests(TestCase):
         user.save()
         return user
 
-    def create_test_post(self, user):
-        image_base64 = "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=="
-        image_bytes = base64.b64decode(image_base64)
-        image_file = tempfile.NamedTemporaryFile(suffix='.png')
-        image_file.write(image_bytes)
-
+    def create_test_post(self, user, id_number=None):
+        image_file = generate_mock_image(empty=False)
         image_mock = ImageFile(image_file)
         tags = ['test1', 'test2']
         source = "http://example.org"
-
-        test_post = Post.objects.create(uploader=user, media=image_mock,
+        
+        if id_number:
+            test_post = Post.objects.create(id=id_number, uploader=user, media=image_mock,
+                                        source=source, tags=tags)
+        else:
+            test_post = Post.objects.create(uploader=user, media=image_mock,
                                         source=source, tags=tags)
         return test_post
 
@@ -60,12 +59,13 @@ class PostClientsTests(TestCase):
 
     def test_request_post_detail_by_anonymous_client(self):
         user = self.create_test_user()
-        post = self.create_test_post(user)
+        post = self.create_test_post(user, 1)
 
         c = Client()
         post = reverse('booru:post_detail', args=(post.id,))
         response = c.get(post)
         self.assertEqual(200, response.status_code)
+        del post
 
     def test_post_was_created_by_logged_client(self):
         user = self.create_test_user()
@@ -75,22 +75,15 @@ class PostClientsTests(TestCase):
         c = Client()
         c.login(username=user.username, password="123")
 
-        im = Image.new(mode='RGB', size=(200, 200))
-        im_io = BytesIO()
-        im.save(im_io, format='JPEG')
-        im_io.seek(0)
+        image_file = generate_mock_image()
 
-        image = InMemoryUploadedFile(
-            im_io, None, 'random-name.jpg', 'image/jpeg', im_io.getbuffer().nbytes, None
-        )
-
-        data = {"image": image,
+        data = {"image": image_file,
                 "tags": "test3 test4",
                 "source": "http://example.org/testing"}
 
         upload_url = reverse('booru:upload')
         response = c.post(upload_url, data)
-        del image
+        del image_file
 
         post_url = reverse('booru:post_detail', args=(1,))
         self.assertEqual(200, response.status_code)
