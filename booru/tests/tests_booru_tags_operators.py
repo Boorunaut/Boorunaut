@@ -5,12 +5,14 @@ import tempfile
 import django
 from django.contrib.auth import get_user_model
 from django.core.files.images import ImageFile
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db.models import Q
 from django.test import TestCase
 
 from booru.models import Post, ScoreVote
 from booru.utils import parse_and_filter_tags
 from booru.views import tags_list
+from booru.utils import generate_mock_image
 
 
 def create_test_user(username='Test'):
@@ -18,17 +20,16 @@ def create_test_user(username='Test'):
     user.save()
     return user
 
-def create_test_post(user, tags=[]):
-    image_base64 = "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=="
-    image_bytes = base64.b64decode(image_base64)
-    image_file = tempfile.NamedTemporaryFile(suffix='.png')
-    image_file.write(image_bytes)
-
+def create_test_post(user, tags=[], id_number=None):
+    image_file = generate_mock_image(empty=False)
     image_mock = ImageFile(image_file)
     source = "http://example.org"
 
-    test_post = Post.objects.create(uploader=user, media=image_mock,
-                                    source=source)
+    test_post = None
+    if id_number:
+        test_post = Post.objects.create(id=id_number, uploader=user, media=image_mock, source=source)
+    else:
+        test_post = Post.objects.create(uploader=user, media=image_mock, source=source)
 
     for tag in tags:
         test_post.tags.add(tag)
@@ -45,9 +46,9 @@ class UtilitiesTests(TestCase):
         mock_user = create_test_user()
         mock_user_two = create_test_user("Test2")
 
-        cls.post_one = create_test_post(mock_user, ['test1', 'test2', 'test3'])
-        cls.post_two = create_test_post(mock_user, ['test1', 'test2', 'test4', 'test5'])
-        cls.post_three = create_test_post(mock_user, ['test1', 'test4', 'test6'])
+        cls.post_one = create_test_post(mock_user, ['test1', 'test2', 'test3'], 1)
+        cls.post_two = create_test_post(mock_user, ['test1', 'test2', 'test4', 'test5'], 2)
+        cls.post_three = create_test_post(mock_user, ['test1', 'test4', 'test6'], 3)
 
         super().setUpClass()
 

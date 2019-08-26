@@ -7,6 +7,7 @@
 
 {% block ld_json %}
 <script type="application/ld+json">
+    {% if EMBED_MODE == False %}
     {
       "@context": "http://schema.org",
       "@type": "ImageObject",
@@ -14,6 +15,7 @@
       "datePublished": "{{post.timestamp|date:'c'}}",
       "description": "{{post.description}}"
     }
+    {% endif %}
 </script>
 
 <link href="{{post.get_absolute_url}}" rel="canonical" />
@@ -142,6 +144,7 @@
                                 </time>
                             </td>
                         </tr>
+                        {% if EMBED_MODE == False %}
                         <tr>
                             <th scope="row"><i class="far fa-image"></i> Size</th>
                             <td>
@@ -149,6 +152,7 @@
                                 ({{post.get_media_width}}x{{post.get_media_height}})
                             </td>
                         </tr>
+                        {% endif %}
                         <tr>
                             <th scope="row"><i class="fas fa-link"></i> Source</th>
                             <td>
@@ -291,13 +295,17 @@
             <div class="row mb-3">
                 <main class="col">
                     {% if user|can:'change_status' or not post.status == 3 %}
-                    {% if post.media_type == 0 %}
-                    <img src="{{ post.get_sample_url }}" alt="{{ post.tags_mirror }}" title="{{ post.tags_mirror }}" style="max-width: 100%;">
-                    {% elif post.media_type == 1 %}
-                    <video controls>
-                        <source src="{{ post.media.url }}">
-                    </video>
-                    {% endif %}
+                        {% if EMBED_MODE == False %}
+                            {% if post.media_type == 0 %}
+                            <img src="{{ post.get_sample_url }}" alt="{{ post.tags_mirror }}" title="{{ post.tags_mirror }}" style="max-width: 100%;">
+                            {% elif post.media_type == 1 %}
+                            <video controls>
+                                <source src="{{ post.media.url }}">
+                            </video>
+                            {% endif %}
+                        {% else %}
+                            {{post.get_embed_code |safe }}
+                        {% endif %}
                     {% endif %}
                 </main>
             </div>

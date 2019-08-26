@@ -85,6 +85,7 @@ TEMPLATES = [
                 'booru.context_processors.site_description',
                 'booru.context_processors.announcement',
                 'booru.context_processors.custom_code',
+                'booru.context_processors.preferences',
             ],
         },
     },
@@ -166,3 +167,5 @@ BOORUNAUT_ADS_CODE = '''
 '''
 BOORUNAUT_ADS_ON_QUESTIONABLE = False
 BOORUNAUT_ADS_ON_EXPLICIT = False
+
+BOORUNAUT_EMBED_MODE = False

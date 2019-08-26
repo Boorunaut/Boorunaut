@@ -14,3 +14,6 @@ def announcement(request):
 def custom_code(request):
     return {"INCLUDE_HEADER_CODE": settings.BOORUNAUT_INCLUDE_HEADER_CODE,
             "ADS_CODE": settings.BOORUNAUT_ADS_CODE}
+
+def preferences(request):
+    return {"EMBED_MODE": settings.BOORUNAUT_EMBED_MODE}
