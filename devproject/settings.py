@@ -87,6 +87,7 @@ TEMPLATES = [
                 'booru.context_processors.site_description',
                 'booru.context_processors.announcement',
                 'booru.context_processors.custom_code',
+                'booru.context_processors.preferences',
             ],
         },
     },
