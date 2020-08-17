@@ -1,5 +1,5 @@
 diff-match-patch==20181111
-Django==2.2.13
+Django==2.2.15
 django-crispy-forms==1.7.2
 django-markdown-deux==1.0.5
 django-role-permissions==2.2.1
@@ -7,6 +7,6 @@ django-simple-history==2.7.2
 django-taggit==1.1.0
 ffmpeg-python==0.1.17
 olefile==0.46
-Pillow==6.2.0
+Pillow==7.2.0
 pytz==2019.1
 requests==2.21.0
