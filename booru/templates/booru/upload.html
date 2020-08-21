@@ -17,6 +17,23 @@
                 $("#image_preview_block").hide();
             }
         });
+
+        $('.custom-file-input').change(function(e){
+            var file = e.target.files[0];
+            var fileName = file.name;
+
+            if (file){
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    $("#image_preview").attr("src", e.target.result);
+                };
+                reader.readAsDataURL(file);
+                $("#image_preview_block").show();
+            }
+            else{
+                $("#image_preview_block").hide();
+            }
+        });
     });
 
     function checkURL(url) {
@@ -91,8 +108,7 @@
                     </div>
                     <div class="row">
                         <p class="col offset-md-2 text-muted">
-                            Required: Use one of the methods to upload a file.
-                            Use the entire URL (including 'http://' or 'https://'), if chosen.
+                            <small>Required: Use one of the methods to upload a file. Use the entire URL (including 'http://' or 'https://'), if chosen.</small>
                         </p>
                     </div>
                 </div>
