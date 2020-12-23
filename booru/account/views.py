@@ -121,21 +121,6 @@ def profile(request, account_slug):
 
     user_group_form = StaffUserGroupForm(request.POST or None, request.FILES or None)
 
-    if request.method == "POST":
-        newCommentTextarea = request.POST.get("newCommentTextarea")
-        aboutUserTextarea = request.POST.get("aboutUserTextarea")
-        
-        if not request.user.is_authenticated:
-            return redirect('account:login')
-        elif newCommentTextarea and has_comment_priv: # Comment creating
-            comment_content = newCommentTextarea
-            Comment.objects.create(content=comment_content, author=request.user, content_object=account)
-            return redirect('booru:profile', account_slug=account.slug)
-        elif aboutUserTextarea and can_modify_profile: # About myself editing
-            account.about = aboutUserTextarea
-            account.save()
-            return redirect('booru:profile', account_slug=account.slug)
-
     if request.user.is_authenticated:
         if user_group_form.is_valid() and has_permission(request.user, "change_user_group"):
             group = user_group_form.cleaned_data['group']
@@ -151,6 +136,22 @@ def profile(request, account_slug):
     else:
         has_comment_priv = False
         can_change_group = False
+
+    
+    if request.method == "POST":
+        newCommentTextarea = request.POST.get("newCommentTextarea")
+        aboutUserTextarea = request.POST.get("aboutUserTextarea")
+        
+        if not request.user.is_authenticated:
+            return redirect('account:login')
+        elif newCommentTextarea and has_comment_priv: # Comment creating
+            comment_content = newCommentTextarea
+            Comment.objects.create(content=comment_content, author=request.user, content_object=account)
+            return redirect('booru:profile', account_slug=account.slug)
+        elif aboutUserTextarea and can_modify_profile: # About myself editing
+            account.about = aboutUserTextarea
+            account.save()
+            return redirect('booru:profile', account_slug=account.slug)
 
     # TODO: I don't remember if I can safely pass account as
     # an parameter to the render.
