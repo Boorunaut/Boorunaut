@@ -1,5 +1,5 @@
 diff-match-patch==20181111
-Django==2.2.15
+Django==2.2.22
 django-crispy-forms==1.7.2
 django-markdown-deux==1.0.5
 django-role-permissions==2.2.1
