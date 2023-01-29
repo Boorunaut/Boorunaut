@@ -55,9 +55,9 @@
 
         {% if SITE_ANNOUNCEMENT %}
         <div class="container">
-            {% load markdown_deux_tags %}
+            {% load markdownify %}
             <div class="alert alert-info" role="alert">
-                {{SITE_ANNOUNCEMENT|markdown}}
+                {{SITE_ANNOUNCEMENT|markdownify}}
             </div>
         </div>
         {% endif %}

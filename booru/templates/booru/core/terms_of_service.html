@@ -10,13 +10,13 @@
 {% endblock %}
 
 {% block body %}
-{% load markdown_deux_tags %}
+{% load markdownify %}
 <div class="container">
     <div class="row">
         <div class="col">
             <h1>Terms of Service</h1>
             <div>
-                {{ terms_of_service|markdown }}
+                {{ terms_of_service|markdownify }}
             </div>
         </div>
     </div>

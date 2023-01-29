@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block body %}
-    {% load markdown_deux_tags %}
+    {% load markdownify %}
     <div class="container">
         <form method="post">{% csrf_token %}
             <h1>Delete tag</h1>

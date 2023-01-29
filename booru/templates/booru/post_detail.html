@@ -34,7 +34,7 @@
 {% block body %}
     {% load humanize %}
     {% load number_converter %}
-    {% load markdown_deux_tags %}
+    {% load markdownify %}
     {% load permission_tags %}
     {% load crispy_forms_tags %}
     <div class="row">
@@ -329,7 +329,7 @@
                 <div class="card col-10">
                     <div class="card-body">
                         <h5 class="card-title">Description</h5>
-                        <p class="card-text">{{post.description|markdown}}</p>
+                        <p class="card-text">{{post.description|markdownify}}</p>
                     </div>
                 </div>
             </div>
@@ -379,7 +379,7 @@
                                 {% endif %}
                             </div>
                             <div class="comment col-9">
-                                {{comment.content|markdown}}
+                                {{comment.content|markdownify}}
                             </div>
                         </div>
                         {% if user|can:'manage_comments' %}
