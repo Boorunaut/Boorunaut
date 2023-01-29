@@ -5,7 +5,7 @@ from django.core.paginator import Paginator
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.decorators import method_decorator
-from django.utils.http import is_safe_url
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
@@ -54,7 +54,7 @@ class LoginView(FormView):
 
     def get_success_url(self):
         redirect_to = self.request.GET.get(self.redirect_field_name)
-        if not is_safe_url(url=redirect_to, allowed_hosts=self.request.get_host()):
+        if not url_has_allowed_host_and_scheme(url=redirect_to, allowed_hosts=self.request.get_host()):
             redirect_to = self.success_url
         return redirect_to
 
@@ -109,7 +109,7 @@ class RegisterView(FormView):
 
     def get_success_url(self):
         redirect_to = self.request.GET.get(self.redirect_field_name)
-        if not is_safe_url(url=redirect_to, allowed_hosts=self.request.get_host()):
+        if not url_has_allowed_host_and_scheme(url=redirect_to, allowed_hosts=self.request.get_host()):
             redirect_to = self.success_url
         return redirect_to
 

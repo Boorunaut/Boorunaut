@@ -3,7 +3,6 @@ from django.conf import settings
 from django.contrib.admin.widgets import AdminTextareaWidget
 from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator
-from django.utils import six
 from taggit.forms import TagField, TagWidget
 from taggit.utils import edit_string_for_tags
 
