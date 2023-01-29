@@ -143,7 +143,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -171,3 +171,5 @@ BOORUNAUT_ADS_ON_QUESTIONABLE = False
 BOORUNAUT_ADS_ON_EXPLICIT = False
 
 BOORUNAUT_EMBED_MODE = False
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

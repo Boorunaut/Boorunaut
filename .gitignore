@@ -103,6 +103,6 @@ ENV/
 # local
 db.sqlite3
 .vscode
-staticfiles/
+static/
 media/data/
 data/
