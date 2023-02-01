@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block body %}
-    {% load markdown_deux_tags %}
+    {% load markdownify %}
     <div class="container">
         <div class="row mb-1">
             <h1>Tag: <a href="{% url 'booru:tag_history' tag.id %}">{{tag}}</a></h1>

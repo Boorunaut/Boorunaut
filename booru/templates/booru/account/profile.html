@@ -128,11 +128,11 @@
                 {% endif %}
             </h3>
 
-            {% load markdown_deux_tags %}
+            {% load markdownify %}
 
             <div id="about-data">
                 {% if account.about %}
-                {{ account.about|markdown }}
+                {{ account.about|markdownify }}
                 {% else %}
                 <p class="text-muted">This user have not written nothing about themselves yet!</p>
                 {% endif %}
@@ -173,8 +173,8 @@
                             </div>
                         </div>
                         <div class="comment col-9">
-                            {% load markdown_deux_tags %}
-                            {{comment.content|markdown}}
+                            {% load markdownify %}
+                            {{comment.content|markdownify}}
                         </div>
                     </div>
                 </div>

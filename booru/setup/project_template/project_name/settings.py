@@ -50,7 +50,7 @@ INSTALLED_APPS = [
     'booru.core',
     # Dependency apps
     'taggit',
-    'markdown_deux',
+    'markdownify.apps.MarkdownifyConfig',
     'simple_history',
     'rolepermissions',
     'crispy_forms',

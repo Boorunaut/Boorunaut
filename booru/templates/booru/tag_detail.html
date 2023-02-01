@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block body %}
-    {% load markdown_deux_tags %}
+    {% load markdownify %}
     {% load permission_tags %}
     <div class="container">
         <div class="row">
@@ -36,7 +36,7 @@
                         {% if tag.description %}
                         <tr>
                             <td><strong>Description:</strong></td>
-                            <td>{{tag.description|markdown}}</td>
+                            <td>{{tag.description|markdownify}}</td>
                         </tr>
                         {% endif %}
                         <tr>
