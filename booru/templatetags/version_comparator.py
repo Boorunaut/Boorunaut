@@ -1,16 +1,5 @@
-import re
-from datetime import date, datetime
-from decimal import Decimal
-
 from django import template
-from django.conf import settings
-from django.shortcuts import get_object_or_404
-from django.template import defaultfilters
-from django.utils.formats import number_format
-from django.utils.safestring import mark_safe
-from django.utils.timezone import is_aware, utc
 from django.utils.translation import gettext as _
-from django.utils.translation import ngettext, pgettext
 
 from booru.utils import compare_strings
 
