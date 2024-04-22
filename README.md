@@ -25,7 +25,7 @@ You can also check the documentation below for more detailed instructions on how
 
 ### Python
 
-The project is mainly written on the Python programming language, so it's an essential requirement. In order to download it, you can visit [the official website](https://www.python.org/), download it and install it.
+The project is mainly written in the Python programming language, so it's an essential requirement. In order to download it, you can visit [the official website](https://www.python.org/), download it and install it.
 
 On Linux you can just run the following command on the bash:
 
