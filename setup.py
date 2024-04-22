@@ -14,7 +14,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='Boorunaut',
-    version='0.4.3',
+    version='0.5.0',
     packages=find_packages(),
     include_package_data=True,
     license='MIT License',
@@ -22,8 +22,8 @@ setup(
     long_description=README,
     long_description_content_type='text/markdown',
     url='https://github.com/Boorunaut/Boorunaut',
-    author='Luk3M, NogardRyuu',
-    author_email='luk3@hotmail.com.br, thiago_dragon_@hotmail.com',
+    author='LucasCTN, ThiagoCamposTN',
+    author_email='lucascampostn@gmail.com, thiagocampostn@gmail.com',
     entry_points={'console_scripts': [
         'boorunaut=booru.setup.start_project:main',
     ]},

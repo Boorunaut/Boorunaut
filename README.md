@@ -51,7 +51,7 @@ python3 -m pip install virtualenv
 
 #### Create the virtual environment
 
-Now you create a new virtual environment on the directory you your choosing. After nativating to the directory, you can run on the bash:
+Now you create a new virtual environment on the directory you your choosing. After nativating to the directory, let's say it's called `mynewbooru` for example. Inside it, you can run on bash:
 
 ```bash
 virtualenv env
@@ -92,6 +92,19 @@ It will create a new project folder. You can enter it and run Django's (the unde
 
 ```bash
 cd mysite
+```
+
+Your project should have the following file structure:
+
+```bash
+mynewbooru/
+├── env/
+└── mysite/
+    └── mysite
+        ├── __init__.py
+        └── ...
+    ├── __init__.py
+    └── manage.py
 ```
 
 Then you run the following commands:
