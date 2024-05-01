@@ -33,7 +33,7 @@ def space_joiner(tags):
 def image_resizer(original_image, size):
     img_io = io.BytesIO()
     resized_image = original_image.copy()
-    resized_image.thumbnail(size, ImagePIL.ANTIALIAS)
+    resized_image.thumbnail(size, ImagePIL.LANCZOS)
     resized_image.convert('RGB').save(img_io, format='JPEG', quality=100)
     img_content = ContentFile(img_io.getvalue(), original_image.filename)
     return img_content
