@@ -10,7 +10,7 @@ markdown2==2.4.7
 olefile==0.46
 Pillow==10.3.0
 pytz==2022.7.1
-requests==2.31.0
+requests==2.32.0
 six==1.16.0
 django-ninja-jwt==5.2.6
 orjson==3.9.15
